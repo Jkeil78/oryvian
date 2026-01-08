@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details: {{ item.title }}</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; background-color: #f4f4f4; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+        
+        .header { background-color: #333; color: white; padding: 1.5rem; }
+        .header h1 { margin: 0; font-size: 1.8rem; }
+        .header .subtitle { color: #ccc; margin-top: 5px; font-size: 1rem; }
+        
+        .content { display: flex; padding: 2rem; gap: 2rem; flex-wrap: wrap; }
+        .image-placeholder { width: 250px; height: 350px; background-color: #eee; display: flex; align-items: center; justify-content: center; color: #aaa; border: 1px dashed #ccc; flex-shrink: 0; }
+        
+        .info-grid { flex-grow: 1; min-width: 300px; }
+        .info-row { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; }
+        .info-label { width: 150px; font-weight: bold; color: #555; }
+        .info-value { color: #000; flex-grow: 1; }
+        
+        .description-box { margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; }
+        
+        /* TRACK LISTE STYLES */
+        .track-section { width: 100%; margin-top: 2rem; border-top: 2px solid #eee; padding-top: 1rem; }
+        .track-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.9rem; }
+        .track-table th, .track-table td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+        .track-table th { background-color: #f8f9fa; }
+        
+        .add-track-form { background-color: #e9ecef; padding: 10px; border-radius: 5px; display: flex; gap: 10px; align-items: center; }
+        .add-track-form input { padding: 6px; border: 1px solid #ccc; border-radius: 3px; }
+        
+        .footer { background-color: #f8f9fa; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
+        
+        .btn { padding: 8px 15px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; cursor: pointer; border: none; font-size: 14px;}
+        .btn-back { background-color: #6c757d; }
+        .btn-del { background-color: #dc3545; }
+        .btn-edit { background-color: #007bff; margin-right: 10px; }
+        .btn-add-track { background-color: #28a745; }
+        
+        .loc-badge { background-color: #e2e3e5; padding: 3px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>{{ item.title }}</h1>
+        <div class="subtitle">{{ item.category }} &bull; {{ item.author_artist or 'Kein Autor' }} &bull; {{ item.release_year or 'Unbekanntes Jahr' }}</div>
+    </div>
+
+    <div class="content">
+        <div class="image-placeholder">
+            {% if item.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" alt="Cover" style="max-width:100%; max-height:100%;">
+            {% else %}
+                <span>Kein Bild vorhanden</span>
+            {% endif %}
+        </div>
+
+        <div class="info-grid">
+            <div class="info-row">
+                <div class="info-label">Inventar-Nr.</div>
+                <div class="info-value"><code>{{ item.inventory_number }}</code></div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Barcode / ISBN</div>
+                <div class="info-value">{{ item.barcode or '-' }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Standort</div>
+                <div class="info-value">
+                    {% if item.location %}
+                        <span class="loc-badge">
+                        {% if item.location.parent %}
+                            {{ item.location.parent.name }} &rsaquo; 
+                        {% endif %}
+                        {{ item.location.name }}
+                        </span>
+                    {% else %}
+                        Unsortiert
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Status</div>
+                <div class="info-value">
+                    {% if item.lent_to %}
+                        <span style="color: red;">Verliehen an: {{ item.lent_to }}</span>
+                        <br><small>am {{ item.lent_at.strftime('%d.%m.%Y') if item.lent_at else '' }}</small>
+                    {% else %}
+                        <span style="color: green;">Verfügbar</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Erfasst von</div>
+                <div class="info-value">{{ item.creator_user.username }} <small style="color:#888;">am {{ item.created_at.strftime('%d.%m.%Y') }}</small></div>
+            </div>
+
+            {% if item.description %}
+            <div class="description-box">
+                <strong>Beschreibung:</strong><br>
+                {{ item.description }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="track-section">
+            <h3>Titel / Tracks</h3>
+            
+            {% if tracks %}
+            <table class="track-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Titel</th>
+                        <th style="width: 80px;">Dauer</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for track in tracks %}
+                    <tr>
+                        <td>{{ track.position }}</td>
+                        <td>{{ track.title }}</td>
+                        <td>{{ track.duration or '-' }}</td>
+                        <td>
+                            <a href="{{ url_for('main.track_delete', track_id=track.id) }}" 
+                               style="color: red; text-decoration: none; font-weight: bold;"
+                               onclick="return confirm('Track löschen?');">&times;</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p style="color:#888; font-style: italic;">Noch keine Tracks hinterlegt.</p>
+            {% endif %}
+
+            <form action="{{ url_for('main.track_add', item_id=item.id) }}" method="POST" class="add-track-form">
+                <input type="number" name="position" placeholder="#" style="width: 50px;" value="{{ tracks|length + 1 }}">
+                <input type="text" name="title" placeholder="Titel Name" required style="flex-grow: 1;">
+                <input type="text" name="duration" placeholder="Zeit (z.B. 3:45)" style="width: 100px;">
+                <button type="submit" class="btn btn-add-track">Hinzufügen</button>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <a href="{{ url_for('main.index') }}" class="btn btn-back">← Zurück zur Übersicht</a>
+        <div>
+            <a href="{{ url_for('main.media_edit', item_id=item.id) }}" class="btn btn-edit">Bearbeiten</a>
+            <a href="{{ url_for('main.media_delete', item_id=item.id) }}" 
+               class="btn btn-del"
+               onclick="return confirm('Diesen Eintrag wirklich unwiderruflich löschen?');">Löschen</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

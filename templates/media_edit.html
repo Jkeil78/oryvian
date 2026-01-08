@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bearbeiten: {{ item.title }}</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 30px; background-color: #f4f4f4; }
+        .box-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 600px; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        textarea { height: 100px; resize: vertical; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .btn-cancel { text-decoration: none; color: #6c757d; margin-left: 15px; }
+        .info-txt { font-size: 0.85em; color: #666; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="box-container">
+    <h2>Medium bearbeiten</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Titel des Werkes *</label>
+            <input type="text" name="title" required value="{{ item.title }}">
+        </div>
+
+        <div class="form-group">
+            <label>Kategorie *</label>
+            <select name="category" required>
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Cover-Bild ändern</label>
+            {% if item.image_filename %}
+                <p class="info-txt">Aktuelles Bild vorhanden. Neues hochladen zum Ersetzen.</p>
+            {% endif %}
+            <input type="file" name="image" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label>Autor / Regisseur / Band</label>
+            <input type="text" name="author_artist" value="{{ item.author_artist or '' }}">
+        </div>
+        <div class="form-group">
+            <label>Erscheinungsjahr</label>
+            <input type="number" name="release_year" value="{{ item.release_year or '' }}">
+        </div>
+        <div class="form-group">
+            <label>Barcode / ISBN / EAN</label>
+            <input type="text" name="barcode" value="{{ item.barcode or '' }}">
+        </div>
+
+        <div class="form-group">
+            <label>Standort</label>
+            <select name="location_id">
+                {% for loc in locations %}
+                    <option value="{{ loc.id }}" {% if item.location_id == loc.id %}selected{% endif %}>
+                        {% if loc.parent %}{{ loc.parent.name }} > {% endif %}{{ loc.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Verliehen an (Name)</label>
+            <input type="text" name="lent_to" value="{{ item.lent_to or '' }}" placeholder="Name eingeben, um als 'Verliehen' zu markieren">
+            <p class="info-txt">Feld leeren, um Status auf "Verfügbar" zu setzen.</p>
+        </div>
+
+        <div class="form-group">
+            <label>Beschreibung / Inhalt</label>
+            <textarea name="description">{{ item.description or '' }}</textarea>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button type="submit">Änderungen speichern</button>
+            <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn-cancel">Abbrechen</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
