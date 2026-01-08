@@ -24,10 +24,10 @@
     <nav>
         {% if current_user.is_authenticated %}
             <span>User: <strong>{{ current_user.username }}</strong></span>
-            <a href="{{ url_for('change_password') }}">Passwort ändern</a>
-            <a href="{{ url_for('logout') }}" style="color: #ff9999;">Logout</a>
+            <a href="{{ url_for('main.change_password') }}">Passwort ändern</a>
+            <a href="{{ url_for('main.logout') }}" style="color: #ff9999;">Logout</a>
         {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('main.login') }}">Login</a>
         {% endif %}
     </nav>
 </header>
@@ -52,11 +52,12 @@
                 <hr>
                 <p><strong>Admin-Optionen:</strong></p>
                 <a href="/admin">Zum Admin-Bereich</a>
+                <a href="{{ url_for('main.admin_locations') }}" style="margin-top: 5px; display:inline-block;">Standorte verwalten</a>
             {% endif %}
 
         {% else %}
             <p>Du bist nicht angemeldet. Bitte logge dich ein.</p>
-            <a href="{{ url_for('login') }}"><button>Zum Login</button></a>
+            <a href="{{ url_for('main.login') }}"><button>Zum Login</button></a>
         {% endif %}
     </div>
 
