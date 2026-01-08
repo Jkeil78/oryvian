@@ -5,6 +5,6 @@ services:
       - "5000:5000"
     volumes:
       # Wir mappen die Ordner auf dem Server (links) in den Container (rechts)
-      - /opt/medien_verwaltung/uploads:/app/static/uploads
-      - /opt/medien_verwaltung/medien.db:/app/medien.db
+      - /docker/medien_verwaltung/uploads:/app/static/uploads
+      - /docker/medien_verwaltung/medien.db:/app/medien.db
     restart: always
