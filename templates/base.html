@@ -10,25 +10,44 @@
     <style>
         body { background-color: #f8f9fa; }
         
-        /* Sidebar Styling */
+        /* Sidebar Styling (Desktop & Mobile Drawer) */
         .sidebar {
             min-height: 100vh;
-            background-color: #343a40;
+            background-color: #212529; /* UPDATE: Jetzt exakt wie Mobile (Bootstrap Dark) */
             color: #fff;
         }
         .sidebar .nav-link {
-            color: rgba(255,255,255,.8);
+            color: rgba(255,255,255,.75);
             padding: 12px 20px;
             font-size: 1.05rem;
             display: flex;
             align-items: center;
+            transition: all 0.2s;
         }
-        .sidebar .nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
-        .sidebar .nav-link.active { color: #fff; background: #0d6efd; }
-        .sidebar-header { padding: 20px; background: rgba(0,0,0,0.2); }
+        .sidebar .nav-link:hover { 
+            color: #fff; 
+            background: rgba(255,255,255,0.1); 
+        }
+        .sidebar .nav-link.active { 
+            color: #fff; 
+            background: #0d6efd; 
+            font-weight: 500;
+        }
+        
+        /* Header innerhalb der Sidebar */
+        .sidebar-header { 
+            padding: 20px; 
+            background: rgba(0,0,0,0.25); /* Etwas dunklerer Header-Hintergrund */
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
         
         /* Mobile Navbar Anpassung */
-        .mobile-navbar { background: #343a40; color: white; padding: 10px 15px; }
+        .mobile-navbar { 
+            background-color: #212529; /* UPDATE: Explizit gleicher Farbton */
+            color: white; 
+            padding: 10px 15px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
         
         /* Karten & Content */
         .main-content { padding: 20px; }
@@ -42,27 +61,26 @@
 </head>
 <body>
 
-<nav class="navbar navbar-dark bg-dark d-lg-none mobile-navbar sticky-top">
+<nav class="navbar navbar-dark d-lg-none mobile-navbar sticky-top">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <span class="navbar-brand m-0">MedienApp</span>
+        <span class="navbar-brand m-0 fw-bold">MedienApp</span>
     </div>
 </nav>
 
 <div class="container-fluid">
     <div class="row">
         <nav id="sidebarMenu" class="col-lg-2 d-lg-block sidebar collapse offcanvas-lg offcanvas-start" tabindex="-1">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-white">Menü</h5>
+            <div class="offcanvas-header bg-dark"> <h5 class="offcanvas-title text-white">Menü</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button>
             </div>
             
             <div class="offcanvas-body d-flex flex-column p-0">
                 <div class="sidebar-header d-none d-lg-block">
-                    <h4 class="m-0">MedienApp</h4>
-                    <small class="text-muted">Verwaltung v1.2</small>
+                    <h4 class="m-0 fw-bold">MedienApp</h4>
+                    <small class="text-white-50">Verwaltung v1.3</small>
                 </div>
 
                 <ul class="nav flex-column mt-2">
@@ -79,7 +97,7 @@
 
                     {% if current_user.is_authenticated and current_user.has_role('Admin') %}
                     <li class="nav-item mt-3">
-                        <div class="text-uppercase small text-muted px-3 mb-1">Verwaltung</div>
+                        <div class="text-uppercase small text-white-50 px-3 mb-1 fw-bold" style="font-size: 0.75rem;">Verwaltung</div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if 'admin_locations' in request.endpoint %}active{% endif %}" href="{{ url_for('main.admin_locations') }}">
@@ -94,9 +112,15 @@
                     {% endif %}
 
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item mt-3 border-top border-secondary pt-2">
-                        <div class="text-uppercase small text-muted px-3 mb-1">
-                            <i class="bi bi-person-circle"></i> {{ current_user.username }}
+                    <li class="nav-item mt-4 border-top border-secondary pt-2">
+                        <div class="text-uppercase small text-white-50 px-3 mb-1 fw-bold" style="font-size: 0.75rem;">
+                            Mein Konto
+                        </div>
+                    </li>
+                    <li class="nav-item px-3 mb-2 text-white">
+                        <div class="d-flex align-items-center">
+                             <i class="bi bi-person-circle fs-4 me-2"></i>
+                             <span class="fw-bold">{{ current_user.username }}</span>
                         </div>
                     </li>
                     <li class="nav-item">
@@ -110,8 +134,8 @@
                         </a>
                     </li>
                     {% else %}
-                    <li class="nav-item mt-3">
-                        <a class="nav-link btn btn-primary text-white mx-3 text-center justify-content-center" href="{{ url_for('main.login') }}">Login</a>
+                    <li class="nav-item mt-3 px-3">
+                        <a class="btn btn-primary w-100" href="{{ url_for('main.login') }}">Login</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -120,12 +144,12 @@
 
         <main class="col-lg-10 ms-sm-auto main-content">
             
-            <div class="d-none d-lg-block mb-4 p-3 bg-white rounded shadow-sm">
+            <div class="d-none d-lg-block mb-4 p-3 bg-white rounded shadow-sm border">
                 {% if current_user.is_authenticated %}
-                <form action="{{ url_for('main.index') }}" method="GET" class="d-flex">
+                <form action="{{ url_for('main.index') }}" method="GET" class="d-flex align-items-center">
                     <div class="input-group">
-                        <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
-                        <input type="text" name="q" class="form-control border-0 bg-light" placeholder="Globale Schnellsuche (Titel, ISBN, Autor)..." value="{{ request.args.get('q', '') }}">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Globale Schnellsuche (Titel, ISBN, Autor)..." value="{{ request.args.get('q', '') }}">
                         <button class="btn btn-primary" type="submit">Suchen</button>
                     </div>
                 </form>
