@@ -1,117 +1,85 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Standorte verwalten</title>
-    <style>
-        body { font-family: sans-serif; padding: 2rem; background-color: #f4f4f4; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1, h2 { color: #333; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; }
-        
-        .add-box { background-color: #e9ecef; padding: 1.5rem; border-radius: 5px; margin-bottom: 2rem; }
-        .form-row { display: flex; gap: 10px; align-items: flex-end; }
-        .form-group { display: flex; flex-direction: column; flex-grow: 1; }
-        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        
-        button { padding: 10px 15px; cursor: pointer; border: none; border-radius: 4px; color: white; background-color: #007bff; }
-        .btn-danger { background-color: #dc3545; text-decoration: none; padding: 5px 10px; font-size: 0.9em; display: inline-block; color: white; border-radius: 4px;}
-        .btn-back { background-color: #6c757d; text-decoration: none; display: inline-block; margin-bottom: 1rem; padding: 8px 12px; color: white; border-radius: 4px;}
-        
-        .alert { padding: 10px; margin-bottom: 1rem; border-radius: 4px; }
-        .alert.success { background-color: #d4edda; color: #155724; }
-        .alert.error { background-color: #f8d7da; color: #721c24; }
-        
-        .parent-badge { background-color: #6c757d; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; margin-right: 5px;}
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
-<div class="container">
-    <a href="{{ url_for('main.index') }}" class="btn-back">← Zurück zum Dashboard</a>
-    
-    <h1>Standorte verwalten</h1>
+{% block content %}
+<div class="container-fluid p-0">
+    <h2 class="h4 mb-4">Standorte verwalten</h2>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert {{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <div class="add-box">
-        <h2>Neuen Standort / Regal anlegen</h2>
-        <form method="POST" action="{{ url_for('main.location_create') }}">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Bezeichnung (z.B. "Wohnzimmer" oder "Regal A")</label>
-                    <input type="text" name="name" required placeholder="Name des Ortes">
-                </div>
-                
-                <div class="form-group">
-                    <label>Gehört zu (Optional)</label>
-                    <select name="parent_id">
-                        <option value="">-- Keine (Hauptkategorie) --</option>
-                        {% for loc in locations %}
-                            <option value="{{ loc.id }}">
-                                {% if loc.parent %} {{ loc.parent.name }} > {% endif %}
-                                {{ loc.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div style="flex-grow: 0;">
-                    <button type="submit">Anlegen</button>
+    <div class="row g-4">
+        <div class="col-12 col-md-4 order-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white fw-bold">Neuen Ort anlegen</div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.location_create') }}">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Name (z.B. "Regal A")</label>
+                            <input type="text" name="name" class="form-control" required placeholder="Bezeichnung...">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Gehört zu (Optional)</label>
+                            <select name="parent_id" class="form-select">
+                                <option value="">-- Hauptkategorie --</option>
+                                {% for loc in locations %}
+                                    <option value="{{ loc.id }}">
+                                        {% if loc.parent %} {{ loc.parent.name }} > {% endif %}
+                                        {{ loc.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">Anlegen</button>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
+
+        <div class="col-12 col-md-8 order-md-1">
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name / Hierarchie</th>
+                                <th class="d-none d-sm-table-cell">Parent</th>
+                                <th class="text-end">Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loc in locations %}
+                            <tr>
+                                <td>
+                                    {% if loc.parent %}
+                                        <span class="text-muted ms-3 border-start ps-2">&rdsh;</span>
+                                    {% endif %}
+                                    <span class="fw-bold">{{ loc.name }}</span>
+                                    {% if loc.parent %}
+                                        <div class="d-sm-none small text-muted ms-4">in {{ loc.parent.name }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="d-none d-sm-table-cell">
+                                    {% if loc.parent %}
+                                        <span class="badge bg-secondary">{{ loc.parent.name }}</span>
+                                    {% else %}
+                                        <span class="text-muted small">- Haupt -</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if loc.name != 'Unsortiert' %}
+                                        <a href="{{ url_for('main.location_delete', loc_id=loc.id) }}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Löschen?')">
+                                           <i class="bi bi-trash"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <h2>Vorhandene Standorte</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Hierarchie / Name</th>
-                <th>Übergeordnet</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for loc in locations %}
-            <tr>
-                <td>{{ loc.id }}</td>
-                <td>
-                    {% if loc.parent %} &rdsh; {% endif %}
-                    <strong>{{ loc.name }}</strong>
-                </td>
-                <td>
-                    {% if loc.parent %}
-                        <span class="parent-badge">{{ loc.parent.name }}</span>
-                    {% else %}
-                        <span style="color:#aaa;">- Hauptort -</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if loc.name != 'Unsortiert' %}
-                        <a href="{{ url_for('main.location_delete', loc_id=loc.id) }}" 
-                           class="btn-danger"
-                           onclick="return confirm('Standort wirklich löschen?');">
-                           Löschen
-                        </a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
-
-</body>
-</html>
+{% endblock %}

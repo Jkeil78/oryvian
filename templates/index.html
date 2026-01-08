@@ -1,40 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="h4 mb-0">Medienübersicht <span class="badge bg-secondary fs-6 align-middle">{{ items|length }}</span></h2>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <h2 class="h4 mb-0">Meine Medien <span class="badge bg-secondary fs-6 align-middle">{{ items|length }}</span></h2>
     
-    <div class="btn-group" role="group">
+    <div class="btn-group mt-2 mt-md-0" role="group">
         <button type="button" class="btn btn-outline-primary active" id="btn-view-table" onclick="setView('table')">
-            <i class="bi bi-list"></i> Liste
+            <i class="bi bi-list"></i>
         </button>
         <button type="button" class="btn btn-outline-primary" id="btn-view-grid" onclick="setView('grid')">
-            <i class="bi bi-grid"></i> Kacheln
+            <i class="bi bi-grid"></i>
         </button>
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-body py-2">
-        <form method="GET" class="row g-3 align-items-center">
+<div class="card mb-4 shadow-sm">
+    <div class="card-body py-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-12 d-lg-none mb-2">
+                 <input type="text" name="q" class="form-control" placeholder="Suche..." value="{{ request.args.get('q', '') }}">
+            </div>
             {% if request.args.get('q') %}
-            <input type="hidden" name="q" value="{{ request.args.get('q') }}">
+                <input type="hidden" name="q" value="{{ request.args.get('q') }}" class="d-none d-lg-block">
             {% endif %}
 
-            <div class="col-auto">
-                <label class="col-form-label fw-bold"><i class="bi bi-funnel"></i> Filtern:</label>
+            <div class="col-12 col-md-auto">
+                <span class="fw-bold text-muted"><i class="bi bi-funnel"></i> Filter:</span>
             </div>
-            <div class="col-auto">
+            <div class="col-6 col-md-auto">
                 <select name="category" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Alle Kategorien</option>
+                    <option value="">Kategorie...</option>
                     {% for cat in categories %}
                         <option value="{{ cat }}" {% if request.args.get('category') == cat %}selected{% endif %}>{{ cat }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-auto">
+            <div class="col-6 col-md-auto">
                 <select name="location" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="">Alle Standorte</option>
+                    <option value="">Standort...</option>
                     {% for loc in locations %}
                         <option value="{{ loc.id }}" {% if request.args.get('location')|int == loc.id %}selected{% endif %}>
                             {{ loc.name }}
@@ -42,9 +45,10 @@
                     {% endfor %}
                 </select>
             </div>
+            
             {% if request.args.get('q') or request.args.get('category') or request.args.get('location') %}
-            <div class="col-auto">
-                <a href="{{ url_for('main.index') }}" class="btn btn-sm btn-outline-secondary">Filter zurücksetzen</a>
+            <div class="col-12 col-md-auto ms-auto">
+                <a href="{{ url_for('main.index') }}" class="btn btn-sm btn-outline-secondary w-100">Reset</a>
             </div>
             {% endif %}
         </form>
@@ -53,18 +57,14 @@
 
 {% if items %}
     <div id="view-table">
-        <div class="card">
+        <div class="card shadow-sm border-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 50px;">Img</th>
-                            <th>Titel</th>
-                            <th>Autor / Artist</th>
-                            <th>Kategorie</th>
-                            <th>Standort</th>
-                            <th>Status</th>
-                            <th class="text-end">Aktion</th>
+                            <th style="width: 50px;">Bild</th>
+                            <th>Titel / Info</th>
+                            <th class="d-none d-md-table-cell">Kategorie</th> <th class="d-none d-lg-table-cell">Standort</th>  <th class="text-end"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,35 +74,29 @@
                                 {% if item.image_filename %}
                                     <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" alt="Cover" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">
                                 {% else %}
-                                    <div class="rounded bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                        <i class="bi bi-image text-muted"></i>
+                                    <div class="rounded bg-light d-flex align-items-center justify-content-center text-muted" style="width: 40px; height: 40px;">
+                                        <i class="bi bi-book"></i>
                                     </div>
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="text-decoration-none fw-bold text-dark">
+                                <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="text-decoration-none fw-bold text-dark d-block text-truncate" style="max-width: 200px;">
                                     {{ item.title }}
                                 </a>
-                                <div class="small text-muted">{{ item.inventory_number }}</div>
+                                <div class="small text-muted d-md-none">
+                                    {{ item.category }} &bull; {{ item.location.name if item.location else '?' }}
+                                </div>
+                                <div class="small text-muted d-none d-md-block">{{ item.author_artist or '' }}</div>
                             </td>
-                            <td>{{ item.author_artist or '-' }}</td>
-                            <td><span class="badge bg-light text-dark border">{{ item.category }}</span></td>
-                            <td>
-                                {% if item.location %}
-                                    <small>{{ item.location.name }}</small>
-                                {% else %}
-                                    <span class="text-danger">?</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if item.lent_to %}
-                                    <span class="badge bg-warning text-dark">Verliehen</span>
-                                {% else %}
-                                    <span class="badge bg-success">Da</span>
-                                {% endif %}
+                            <td class="d-none d-md-table-cell"><span class="badge bg-light text-dark border">{{ item.category }}</span></td>
+                            <td class="d-none d-lg-table-cell">
+                                {% if item.location %}{{ item.location.name }}{% endif %}
                             </td>
                             <td class="text-end">
-                                <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                                {% if item.lent_to %}
+                                    <i class="bi bi-circle-fill text-warning small me-2" title="Verliehen"></i>
+                                {% endif %}
+                                <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn btn-sm btn-light text-primary"><i class="bi bi-chevron-right"></i></a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -113,26 +107,25 @@
     </div>
 
     <div id="view-grid" style="display: none;">
-        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
             {% for item in items %}
             <div class="col">
-                <div class="card h-100 position-relative">
+                <div class="card h-100 shadow-sm border-0 position-relative">
                     {% if item.lent_to %}
-                        <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2">Verliehen</span>
+                        <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-1 shadow-sm">Verliehen</span>
                     {% endif %}
                     
                     <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="text-decoration-none text-dark">
                         {% if item.image_filename %}
-                            <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" class="card-img-top img-cover" alt="{{ item.title }}">
+                            <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" class="card-img-top img-cover rounded-top" alt="{{ item.title }}">
                         {% else %}
-                            <div class="avatar-placeholder card-img-top">
-                                <i class="bi bi-book fs-1"></i>
+                            <div class="avatar-placeholder card-img-top rounded-top">
+                                <i class="bi bi-image fs-1"></i>
                             </div>
                         {% endif %}
-                        <div class="card-body">
-                            <h6 class="card-title text-truncate" title="{{ item.title }}">{{ item.title }}</h6>
-                            <p class="card-text small text-muted mb-1">{{ item.author_artist or 'Unbekannt' }}</p>
-                            <span class="badge bg-light text-dark border">{{ item.category }}</span>
+                        <div class="card-body p-2">
+                            <h6 class="card-title text-truncate mb-1" style="font-size: 0.95rem;">{{ item.title }}</h6>
+                            <p class="card-text small text-muted mb-1 text-truncate">{{ item.author_artist or '-' }}</p>
                         </div>
                     </a>
                 </div>
@@ -143,18 +136,12 @@
 
 {% else %}
     <div class="text-center py-5">
-        <i class="bi bi-inbox fs-1 text-muted"></i>
-        <p class="mt-3 text-muted">Keine Medien gefunden.</p>
-        {% if request.args.get('q') %}
-            <a href="{{ url_for('main.index') }}" class="btn btn-primary">Suche zurücksetzen</a>
-        {% else %}
-            <a href="{{ url_for('main.media_create') }}" class="btn btn-primary">Erstes Medium anlegen</a>
-        {% endif %}
+        <p class="text-muted">Keine Medien gefunden.</p>
+        <a href="{{ url_for('main.media_create') }}" class="btn btn-primary">Neues anlegen</a>
     </div>
 {% endif %}
 
 <script>
-    // Einfache Logik zum Umschalten der Ansicht
     function setView(mode) {
         const table = document.getElementById('view-table');
         const grid = document.getElementById('view-grid');
@@ -176,7 +163,6 @@
         }
     }
 
-    // Beim Laden den letzten Status wiederherstellen
     document.addEventListener('DOMContentLoaded', () => {
         const savedMode = localStorage.getItem('viewMode') || 'table';
         setView(savedMode);
