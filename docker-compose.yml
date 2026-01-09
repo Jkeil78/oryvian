@@ -1,9 +1,16 @@
+version: '3.8'
+
 services:
   web:
     build: .
+    container_name: medienverwaltung
     ports:
-      - "5000:5000"
+      # Syntax: "${VARIABLE:-DEFAULT}:CONTAINER_PORT"
+      # Wenn APP_PORT gesetzt ist, nutze ihn. Sonst nimm 5000.
+      - "${APP_PORT:-5000}:5000"
+    
     volumes:
-      - ./data/uploads:/app/static/uploads
-      - ./data/instance:/app/instance
-    restart: always
+      - ${UPLOAD_PATH:-./data/uploads}:/app/static/uploads
+      - ${DB_PATH:-./data/instance}:/app/instance
+    
+    restart: unless-stopped
