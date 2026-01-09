@@ -2,6 +2,7 @@ import os
 import shutil
 import zipfile
 import datetime
+import time
 from flask import current_app
 from extensions import db
 
@@ -11,26 +12,19 @@ def create_backup_zip():
     Gibt den Pfad zur ZIP-Datei zurück.
     """
     # 1. Pfade ermitteln
-    # Wir gehen davon aus, dass die DB SQLite ist und im instance-Ordner oder Root liegt
-    # SQLALCHEMY_DATABASE_URI ist z.B. 'sqlite:///inventory.db' oder 'sqlite:////absolute/path/inventory.db'
     db_uri = current_app.config.get('SQLALCHEMY_DATABASE_URI', '')
     
     if 'sqlite' not in db_uri:
         raise Exception("Backup funktioniert derzeit nur mit SQLite Datenbanken.")
 
-    # Pfad zur DB-Datei extrahieren
     if '///' in db_uri:
         db_path = db_uri.split('///')[1]
     else:
-        # Fallback, falls URI anders aufgebaut ist
         db_path = 'inventory.db'
 
-    # Wenn der Pfad relativ ist, müssen wir ihn absolut machen (relativ zum instance path oder root)
     if not os.path.isabs(db_path):
-        # Versuch 1: Im Instance Folder
         possible_path = os.path.join(current_app.instance_path, db_path)
         if not os.path.exists(possible_path):
-            # Versuch 2: Im App Root
             possible_path = os.path.join(current_app.root_path, db_path)
         db_path = possible_path
 
@@ -44,21 +38,17 @@ def create_backup_zip():
     backup_filename = f"backup_inventory_{timestamp}.zip"
     backup_path = os.path.join(current_app.instance_path, backup_filename)
     
-    # Sicherstellen, dass instance folder existiert
     if not os.path.exists(current_app.instance_path):
         os.makedirs(current_app.instance_path)
 
     # 3. Zip erstellen
     with zipfile.ZipFile(backup_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        # Datenbank hinzufügen (als 'database.sqlite' im Zip)
         zipf.write(db_path, arcname='database.sqlite')
         
-        # Uploads hinzufügen
         if os.path.exists(upload_folder):
             for root, dirs, files in os.walk(upload_folder):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    # Relativer Pfad im Zip (z.B. uploads/bild.jpg)
                     arcname = os.path.join('uploads', os.path.relpath(file_path, upload_folder))
                     zipf.write(file_path, arcname=arcname)
     
@@ -67,9 +57,9 @@ def create_backup_zip():
 def restore_backup_zip(zip_filepath):
     """
     Stellt Datenbank und Bilder aus einem ZIP wieder her.
-    ACHTUNG: Überschreibt existierende Daten!
+    Nutzt copyfile statt move, um Docker-Mount-Probleme (Errno 16) zu vermeiden.
     """
-    # 1. Pfade ermitteln (gleiche Logik wie oben)
+    # 1. Pfade ermitteln
     db_uri = current_app.config.get('SQLALCHEMY_DATABASE_URI', '')
     if 'sqlite' not in db_uri:
         raise Exception("Restore nur mit SQLite möglich.")
@@ -79,12 +69,8 @@ def restore_backup_zip(zip_filepath):
     else:
         db_file_name = 'inventory.db'
 
-    # Ziel-Pfad der DB bestimmen
-    # Wir nehmen an, sie liegt dort, wo Flask sie erwartet (instance oder root)
-    # Am sichersten: current_app.instance_path nutzen, wenn es ein relativer Pfad ist
     if not os.path.isabs(db_file_name):
          target_db_path = os.path.join(current_app.instance_path, db_file_name)
-         # Fallback Check: Wenn sie im Root liegt
          if not os.path.exists(target_db_path) and os.path.exists(os.path.join(current_app.root_path, db_file_name)):
              target_db_path = os.path.join(current_app.root_path, db_file_name)
     else:
@@ -92,49 +78,60 @@ def restore_backup_zip(zip_filepath):
 
     upload_folder = current_app.config['UPLOAD_FOLDER']
 
-    # 2. Verbindungen trennen (Wichtig bei SQLite, um File Lock Fehler zu vermeiden)
+    # 2. Verbindungen trennen
+    # Wir versuchen, die Verbindung zur DB zu schließen
     db.session.remove()
     db.engine.dispose()
+    
+    # Kurze Pause, um dem OS Zeit zu geben, File-Locks zu lösen
+    time.sleep(0.5)
 
     # 3. Zip prüfen und entpacken
     with zipfile.ZipFile(zip_filepath, 'r') as zipf:
-        # Checken ob database.sqlite drin ist
         if 'database.sqlite' not in zipf.namelist():
             raise Exception("Ungültiges Backup-Archiv: 'database.sqlite' fehlt.")
         
-        # A) Datenbank extrahieren
-        # Wir extrahieren sie temporär und verschieben sie dann
+        # Temp Folder erstellen
         temp_extract_path = os.path.join(current_app.instance_path, 'temp_restore')
         if os.path.exists(temp_extract_path):
             shutil.rmtree(temp_extract_path)
         os.makedirs(temp_extract_path)
         
+        # Datenbank temporär entpacken
         zipf.extract('database.sqlite', temp_extract_path)
-        
-        # Die extrahierte DB an den echten Ort verschieben (überschreiben)
         extracted_db = os.path.join(temp_extract_path, 'database.sqlite')
         
-        # Backup der aktuellen DB machen (Safety First)
+        # A) Datenbank wiederherstellen
+        # WICHTIG: shutil.copyfile statt shutil.move verwenden!
+        # move löscht die Zieldatei (was bei Mounts verboten ist), copyfile überschreibt den Inhalt.
+        
+        # Backup der aktuellen DB (falls möglich)
         if os.path.exists(target_db_path):
-            shutil.move(target_db_path, target_db_path + ".bak")
-            
-        shutil.move(extracted_db, target_db_path)
+            try:
+                shutil.copyfile(target_db_path, target_db_path + ".bak")
+            except OSError:
+                print("Warnung: Konnte kein .bak der Datenbank erstellen (vielleicht auch gelockt/readonly).")
+
+        # Neue DB drüberschreiben
+        try:
+            shutil.copyfile(extracted_db, target_db_path)
+        except OSError as e:
+            # Falls immer noch "Busy", ist die DB wahrscheinlich noch von einem Thread gelockt
+            raise Exception(f"Datenbankdatei ist gesperrt. Bitte Server neu starten und erneut versuchen. Fehler: {e}")
 
         # B) Bilder extrahieren
-        # Ordner uploads leeren (optional, um "tote" Bilder zu löschen) oder überschreiben/ergänzen
-        # Wir entscheiden uns für: Ergänzen/Überschreiben
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
             
         for member in zipf.namelist():
             if member.startswith('uploads/'):
-                # Pfad strippen (uploads/ wegnehmen)
                 filename = os.path.basename(member)
-                if not filename: continue # Ordner überspringen
+                if not filename: continue 
                 
                 source = zipf.open(member)
-                target = open(os.path.join(upload_folder, filename), "wb")
-                with source, target:
+                target_path = os.path.join(upload_folder, filename)
+                
+                with source, open(target_path, "wb") as target:
                     shutil.copyfileobj(source, target)
 
         # Temp aufräumen
