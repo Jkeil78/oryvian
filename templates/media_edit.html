@@ -156,7 +156,7 @@
             </div>
             <div class="modal-body bg-light">
                 <div class="row g-3" id="image-grid">
-                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -195,7 +195,9 @@ async function discogsMatch() {
         if(data.success) {
             // 1. Metadaten
             if(data.year) document.getElementById('year').value = data.year;
-            if(data.category) document.getElementById('category').value = data.category;
+            
+            // HIER WURDE DIE KATEGORIE ÜBERSCHRIEBEN - ENTFERNT!
+            // if(data.category) document.getElementById('category').value = data.category; 
 
             // 2. Bilder Handling
             if(data.images && data.images.length > 0) {
