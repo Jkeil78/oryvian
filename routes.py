@@ -225,6 +225,92 @@ def api_lookup(barcode):
 
     return jsonify(data)
 
+# -- NEUE API ROUTE: DISCOGS TEXT SUCHE --
+
+@main.route('/api/search_discogs')
+@login_required
+def api_search_discogs():
+    artist = request.args.get('artist', '').strip()
+    title = request.args.get('title', '').strip()
+    
+    if not artist or not title:
+        return jsonify({"success": False, "message": "Bitte Interpret und Titel angeben."})
+
+    discogs_token = get_config_value('discogs_token')
+    if not discogs_token:
+        return jsonify({"success": False, "message": "Kein Discogs-Token in den Einstellungen."})
+
+    data = {
+        "success": False,
+        "image_url": "",
+        "year": "",
+        "tracks": [],
+        "category": ""
+    }
+
+    print(f"DEBUG: Discogs Text-Suche: {artist} - {title}")
+
+    try:
+        headers = {
+            "User-Agent": "HomeInventoryApp/1.0",
+            "Authorization": f"Discogs token={discogs_token}"
+        }
+        url = "https://api.discogs.com/database/search"
+        # Wir suchen nach 'release', um genaue Tracklisten zu bekommen
+        params = {
+            "artist": artist,
+            "release_title": title,
+            "type": "release", 
+            "per_page": 1 
+        }
+
+        res = requests.get(url, headers=headers, params=params, timeout=5)
+        
+        if res.status_code == 200:
+            d_json = res.json()
+            results = d_json.get("results", [])
+            
+            if results:
+                item = results[0]
+                data["success"] = True
+                data["year"] = item.get("year", "")
+                
+                # Cover
+                img_url = item.get("cover_image", "") or item.get("thumb", "")
+                if img_url: data["image_url"] = img_url
+                
+                # Format (CD/Vinyl)
+                formats = item.get("format", [])
+                if "Vinyl" in formats: data["category"] = "Vinyl/LP"
+                elif "CD" in formats: data["category"] = "CD"
+                
+                # Details laden für Tracks
+                resource_url = item.get("resource_url")
+                if resource_url:
+                    det_res = requests.get(resource_url, headers=headers, timeout=5)
+                    if det_res.status_code == 200:
+                        det_data = det_res.json()
+                        tracklist = det_data.get("tracklist", [])
+                        tracks_clean = []
+                        for t in tracklist:
+                            if t.get("type_") == "heading": continue
+                            tracks_clean.append({
+                                "position": t.get("position", ""),
+                                "title": t.get("title", ""),
+                                "duration": t.get("duration", "")
+                            })
+                        data["tracks"] = tracks_clean
+            else:
+                return jsonify({"success": False, "message": "Nichts gefunden bei Discogs."})
+        else:
+            return jsonify({"success": False, "message": f"Discogs API Fehler: {res.status_code}"})
+
+    except Exception as e:
+        print(f"DEBUG Error: {e}")
+        return jsonify({"success": False, "message": str(e)})
+
+    return jsonify(data)
+
 
 # -- QR-CODE --
 @main.route('/qrcode_image/<inventory_number>')
