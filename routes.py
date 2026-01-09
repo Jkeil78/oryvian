@@ -213,7 +213,7 @@ def api_spotify_search():
 
         # 2. Fallback: Textsuche
         if artist and title:
-            q = f"artist:{artist} album:{title}"
+            q = f'artist:"{artist}" album:"{title}"'
             res = requests.get("https://api.spotify.com/v1/search", headers=headers, params={"q": q, "type": "album", "limit": 1}, timeout=5)
             if res.status_code == 200:
                 items = res.json().get("albums", {}).get("items", [])
