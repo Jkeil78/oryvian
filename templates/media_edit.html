@@ -9,171 +9,137 @@
                 <h4 class="mb-0 fw-bold text-primary">
                     <i class="bi bi-pencil-square me-2"></i>Medium bearbeiten
                 </h4>
-                <a href="{{ url_for('main.media_delete', item_id=item.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Wirklich unwiderruflich löschen?');">
+                <a href="{{ url_for('main.media_delete', item_id=item.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Wirklich löschen?');">
                     <i class="bi bi-trash"></i> Löschen
                 </a>
             </div>
             
             <div class="card-body p-4">
                 <form method="POST" enctype="multipart/form-data">
-                    
+                    <input type="hidden" name="overwrite_tracks" id="overwrite_tracks" value="no">
+
                     <div class="row g-4">
                         <div class="col-lg-8">
                             
-                            <div class="alert alert-light border mb-3 d-flex align-items-center" role="alert">
-                                <i class="bi bi-info-circle fs-4 me-3 text-info"></i>
-                                <div>
-                                    <small class="text-muted d-block">Japan-Import oder kein Barcode?</small>
-                                    <button type="button" class="btn btn-sm btn-outline-info mt-1" onclick="discogsMatch()">
-                                        <i class="bi bi-disc"></i> Daten via Discogs (Autor & Titel) abgleichen
+                            <div class="alert alert-light border mb-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <i class="bi bi-disc text-info me-2"></i>
+                                        <strong>Discogs Import</strong><br>
+                                        <small class="text-muted">Sucht nach Titel & Autor. Importiert Bilder & Tracks.</small>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-info text-white" onclick="discogsMatch()">
+                                        <span id="spin-discogs" class="spinner-border spinner-border-sm d-none"></span>
+                                        Suchen & Abgleichen
                                     </button>
                                 </div>
                             </div>
 
                             <div class="row g-3">
                                 <div class="col-12">
-                                    <label for="title" class="form-label fw-bold">Titel *</label>
-                                    <input type="text" id="title" name="title" class="form-control form-control-lg" value="{{ item.title }}" required>
+                                    <label class="form-label fw-bold">Titel *</label>
+                                    <input type="text" id="title" name="title" class="form-control fw-bold" value="{{ item.title }}" required>
                                 </div>
-
                                 <div class="col-md-6">
-                                    <label for="author" class="form-label">Autor / Artist</label>
+                                    <label class="form-label">Autor / Artist</label>
                                     <input type="text" id="author" name="author_artist" class="form-control" value="{{ item.author_artist or '' }}">
                                 </div>
-
                                 <div class="col-md-6">
-                                    <label for="year" class="form-label">Erscheinungsjahr</label>
+                                    <label class="form-label">Jahr</label>
                                     <input type="number" id="year" name="release_year" class="form-control" value="{{ item.release_year or '' }}">
                                 </div>
-
                                 <div class="col-md-6">
-                                    <label for="category" class="form-label fw-bold">Kategorie</label>
+                                    <label class="form-label">Kategorie</label>
                                     <select name="category" id="category" class="form-select">
                                         {% for cat in categories %}
                                             <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>{{ cat }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-
                                 <div class="col-md-6">
-                                    <label for="location_id" class="form-label">Standort</label>
+                                    <label class="form-label">Standort</label>
                                     <select name="location_id" class="form-select">
                                         {% for loc in locations %}
-                                            <option value="{{ loc.id }}" {% if item.location_id == loc.id %}selected{% endif %}>
-                                                {{ loc.full_path }}
-                                            </option>
+                                            <option value="{{ loc.id }}" {% if item.location_id == loc.id %}selected{% endif %}>{{ loc.full_path }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-
                                 <div class="col-12">
-                                    <label for="description" class="form-label">Beschreibung</label>
-                                    <textarea id="description" name="description" class="form-control" rows="4">{{ item.description or '' }}</textarea>
+                                    <label class="form-label">Beschreibung</label>
+                                    <textarea name="description" class="form-control" rows="3">{{ item.description or '' }}</textarea>
                                 </div>
-
                                 <div class="col-md-6">
-                                    <label class="form-label text-muted small">Barcode / ISBN</label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text"><i class="bi bi-upc"></i></span>
-                                        <input type="text" name="barcode" class="form-control" value="{{ item.barcode or '' }}">
-                                    </div>
+                                    <label class="form-label small text-muted">Barcode</label>
+                                    <input type="text" name="barcode" class="form-control form-control-sm" value="{{ item.barcode or '' }}">
                                 </div>
-                            </div>
-                            
-                            <div class="mt-4 p-3 bg-light rounded border">
-                                <label for="lent_to" class="form-label fw-bold text-warning-emphasis">
-                                    <i class="bi bi-arrow-right-circle me-1"></i>Verliehen an
-                                </label>
-                                <div class="input-group">
-                                    <input type="text" id="lent_to" name="lent_to" class="form-control" value="{{ item.lent_to or '' }}" placeholder="Name der Person...">
-                                    {% if item.lent_to %}
-                                        <span class="input-group-text bg-white text-muted">seit {{ item.lent_at.strftime('%d.%m.%Y') if item.lent_at else '' }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="form-text small">Leer lassen, wenn das Medium zurückgegeben wurde.</div>
                             </div>
 
+                            <div id="import-tracks-area" class="mt-4 p-3 border rounded bg-light" style="display: none;">
+                                <h6 class="text-success fw-bold"><i class="bi bi-download me-2"></i>Neue Tracks aus Discogs Import</h6>
+                                <p class="small text-muted mb-2">Beim Speichern werden die <strong>alten Tracks gelöscht</strong> und diese hier hinzugefügt!</p>
+                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                    <table class="table table-sm bg-white table-bordered">
+                                        <thead class="table-light"><tr><th>#</th><th>Titel</th><th>Zeit</th></tr></thead>
+                                        <tbody id="import-tracks-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="col-lg-4">
                             <div class="card bg-light border-0">
                                 <div class="card-body">
                                     <label class="form-label fw-bold">Cover-Bild</label>
-                                    <input type="file" name="image" class="form-control mb-2" accept="image/*" onchange="previewFile()">
+                                    <input type="file" name="image" class="form-control mb-2" onchange="previewFile()">
                                     <input type="hidden" id="remote_image_url" name="remote_image_url">
                                     
-                                    <div class="text-center mt-3 p-2 bg-white rounded border" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-                                        {% if item.image_filename %}
-                                            <img id="preview" src="{{ url_for('static', filename='uploads/' + item.image_filename) }}" class="img-fluid rounded" style="max-height: 250px;">
-                                        {% else %}
-                                            <img id="preview" src="" class="img-fluid rounded" style="display: none; max-height: 250px;">
-                                            <span id="preview-placeholder" class="text-muted">
-                                                <i class="bi bi-image fs-1 d-block mb-2"></i>Kein Bild
-                                            </span>
-                                        {% endif %}
+                                    <div class="text-center mt-3 p-2 bg-white rounded border d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                                        <img id="preview" src="{{ url_for('static', filename='uploads/' + item.image_filename) if item.image_filename else '' }}" 
+                                             class="img-fluid rounded" style="max-height: 250px; display: {{ 'block' if item.image_filename else 'none' }};">
+                                        <span id="preview-placeholder" class="text-muted" style="display: {{ 'none' if item.image_filename else 'block' }};">
+                                            Kein Bild
+                                        </span>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="mt-3 p-3 bg-light border rounded">
+                                <label class="form-label small fw-bold">Verliehen an:</label>
+                                <input type="text" name="lent_to" class="form-control form-control-sm" value="{{ item.lent_to or '' }}" placeholder="Name...">
+                            </div>
 
-                            <div class="mt-3 text-center">
-                                <img src="{{ url_for('main.qrcode_image', inventory_number=item.inventory_number) }}" class="img-thumbnail" style="width: 100px;">
-                                <div class="small text-muted mt-1">{{ item.inventory_number }}</div>
+                            <div class="mt-3 text-center opacity-50">
+                                <img src="{{ url_for('main.qrcode_image', inventory_number=item.inventory_number) }}" width="80">
+                                <div class="small mt-1">{{ item.inventory_number }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
-                        <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn btn-outline-secondary px-4">Abbrechen</a>
-                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-2"></i>Änderungen speichern</button>
+                    <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                        <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn btn-outline-secondary">Abbrechen</a>
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-2"></i>Speichern</button>
                     </div>
-
                 </form>
 
-                <div class="mt-5 pt-4 border-top">
-                    <h5 class="mb-3"><i class="bi bi-music-note-list me-2"></i>Trackliste</h5>
-                    
+                <div class="mt-5 pt-4 border-top" id="existing-tracks-area">
+                    <h5 class="mb-3">Aktuelle Trackliste</h5>
                     {% if item.tracks.count() > 0 %}
-                    <div class="table-responsive mb-3">
-                        <table class="table table-sm table-striped align-middle">
-                            <thead>
-                                <tr>
-                                    <th style="width: 60px;">Pos</th>
-                                    <th>Titel</th>
-                                    <th style="width: 100px;">Dauer</th>
-                                    <th style="width: 50px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for track in item.tracks %}
-                                <tr>
-                                    <td><span class="badge bg-light text-dark border">{{ track.position }}</span></td>
-                                    <td>{{ track.title }}</td>
-                                    <td>{{ track.duration or '-' }}</td>
-                                    <td class="text-end">
-                                        <a href="{{ url_for('main.track_delete', track_id=track.id) }}" class="text-danger" title="Löschen" onclick="return confirm('Track löschen?');"><i class="bi bi-x-lg"></i></a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table table-sm table-striped">
+                        <thead><tr><th width="50">#</th><th>Titel</th><th width="80">Dauer</th><th width="30"></th></tr></thead>
+                        <tbody>
+                            {% for track in item.tracks %}
+                            <tr>
+                                <td>{{ track.position }}</td>
+                                <td>{{ track.title }}</td>
+                                <td>{{ track.duration or '' }}</td>
+                                <td><a href="{{ url_for('main.track_delete', track_id=track.id) }}" class="text-danger"><i class="bi bi-x"></i></a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                        <p class="text-muted small">Keine Tracks vorhanden.</p>
                     {% endif %}
-                    
-                    <form action="{{ url_for('main.track_add', item_id=item.id) }}" method="POST" class="row g-2 align-items-center bg-light p-2 rounded">
-                        <div class="col-auto"><small class="fw-bold text-muted">NEU:</small></div>
-                        <div class="col-2">
-                            <input type="number" name="position" class="form-control form-control-sm" placeholder="Pos" required>
-                        </div>
-                        <div class="col">
-                            <input type="text" name="title" class="form-control form-control-sm" placeholder="Titel Name" required>
-                        </div>
-                        <div class="col-2">
-                            <input type="text" name="duration" class="form-control form-control-sm" placeholder="Zeit">
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-plus"></i></button>
-                        </div>
-                    </form>
                 </div>
 
             </div>
@@ -181,85 +147,132 @@
     </div>
 </div>
 
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bild auswählen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <div class="row g-3" id="image-grid">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function previewFile() {
-    const preview = document.getElementById('preview');
-    const placeholder = document.getElementById('preview-placeholder');
     const file = document.querySelector('input[type=file]').files[0];
     const reader = new FileReader();
-
-    reader.addEventListener("load", function () {
-        preview.src = reader.result;
-        preview.style.display = 'block';
-        if(placeholder) placeholder.style.display = 'none';
-    }, false);
-
-    if (file) {
-        reader.readAsDataURL(file);
+    reader.onload = function(e) {
+        document.getElementById('preview').src = e.target.result;
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('preview-placeholder').style.display = 'none';
     }
+    if(file) reader.readAsDataURL(file);
 }
+
+// Global für Tracks
+let foundTracks = [];
 
 async function discogsMatch() {
     const artist = document.getElementById('author').value;
     const title = document.getElementById('title').value;
+    const spinner = document.getElementById('spin-discogs');
+    
+    if(!artist || !title) { alert("Bitte Titel und Autor eingeben."); return; }
 
-    if(!artist || !title) {
-        alert("Bitte erst Titel und Autor eingeben, um bei Discogs zu suchen.");
-        return;
-    }
-
-    if(!confirm(`Bei Discogs nach "${title}" von "${artist}" suchen?\nBestehende leere Felder werden gefüllt, das Bild wird aktualisiert.`)) {
-        return;
-    }
+    spinner.classList.remove('d-none');
 
     try {
-        const response = await fetch(`/api/search_discogs?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`);
-        const data = await response.json();
+        const res = await fetch(`/api/search_discogs?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`);
+        const data = await res.json();
+        
+        spinner.classList.add('d-none');
 
-        if (data.success) {
-            let infoMsg = "Gefunden!\n";
-            
-            // Jahr füllen
-            if(data.year) {
-                document.getElementById('year').value = data.year;
-                infoMsg += "- Jahr aktualisiert\n";
-            }
-            
-            // Kategorie (Format)
-            if(data.category) {
-                const catSelect = document.getElementById('category');
-                catSelect.value = data.category;
-                infoMsg += "- Kategorie erkannt: " + data.category + "\n";
+        if(data.success) {
+            // 1. Metadaten
+            if(data.year) document.getElementById('year').value = data.year;
+            if(data.category) document.getElementById('category').value = data.category;
+
+            // 2. Bilder Handling
+            if(data.images && data.images.length > 0) {
+                // Modal öffnen
+                const grid = document.getElementById('image-grid');
+                grid.innerHTML = '';
+                data.images.forEach(url => {
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-4 col-lg-3';
+                    col.innerHTML = `
+                        <div class="card h-100 shadow-sm cursor-pointer image-card" onclick="selectImage('${url}')">
+                            <img src="${url}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                        </div>
+                    `;
+                    grid.appendChild(col);
+                });
+                
+                // Styles für Hover
+                const style = document.createElement('style');
+                style.innerHTML = `.image-card:hover { border: 2px solid #0d6efd; transform: scale(1.02); transition: 0.2s; cursor: pointer; }`;
+                document.head.appendChild(style);
+
+                const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            } else if (data.image_url) {
+                // Fallback wenn nur 1 Bild
+                selectImage(data.image_url);
             }
 
-            // Bild
-            if(data.image_url) {
-                document.getElementById('remote_image_url').value = data.image_url;
-                const preview = document.getElementById('preview');
-                const placeholder = document.getElementById('preview-placeholder');
-                preview.src = data.image_url;
-                preview.style.display = 'block';
-                if(placeholder) placeholder.style.display = 'none';
-                infoMsg += "- Cover Bild gefunden\n";
-            }
-            
-            // Tracks Hinweis
+            // 3. Tracks Handling
             if(data.tracks && data.tracks.length > 0) {
-                infoMsg += `- ${data.tracks.length} Tracks gefunden. (Werden beim Speichern leider hier im Edit-Mode noch nicht automatisch hinzugefügt - Feature für V2.0)`;
-                // HINWEIS: Im Edit-Mode ist das direkte Hinzufügen von Tracks komplizierter, 
-                // da sie in der Datenbank hängen. Man müsste sie per JS anzeigen und beim Speichern posten.
-                // Für diesen Schritt belassen wir es beim Metadaten-Abgleich.
-            }
+                const tbody = document.getElementById('import-tracks-body');
+                tbody.innerHTML = '';
+                
+                data.tracks.forEach(t => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><input type="text" name="track_position" value="${t.position}" class="form-control form-control-sm text-center" style="width:50px;"></td>
+                            <td><input type="text" name="track_title" value="${t.title}" class="form-control form-control-sm"></td>
+                            <td><input type="text" name="track_duration" value="${t.duration}" class="form-control form-control-sm"></td>
+                        </tr>
+                    `;
+                });
 
-            alert(infoMsg);
+                // UI Umschalten
+                document.getElementById('import-tracks-area').style.display = 'block';
+                document.getElementById('existing-tracks-area').style.opacity = '0.5';
+                document.getElementById('overwrite_tracks').value = 'yes';
+                
+                // Kurzes Feedback, falls keine Bilder dabei waren
+                if(!data.images || data.images.length === 0) {
+                    alert(`Discogs hat ${data.tracks.length} Tracks gefunden, aber keine Bilder.`);
+                }
+            } else {
+                alert("Daten gefunden, aber keine Trackliste.");
+            }
 
         } else {
-            alert(data.message || "Nichts Passendes gefunden.");
+            alert(data.message || "Nichts gefunden.");
         }
     } catch(e) {
         console.error(e);
+        spinner.classList.add('d-none');
         alert("Fehler bei der Verbindung.");
     }
+}
+
+function selectImage(url) {
+    document.getElementById('remote_image_url').value = url;
+    document.getElementById('preview').src = url;
+    document.getElementById('preview').style.display = 'block';
+    document.getElementById('preview-placeholder').style.display = 'none';
+    
+    // Modal schließen falls offen
+    const modalEl = document.getElementById('imageModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if(modal) modal.hide();
 }
 </script>
 {% endblock %}
