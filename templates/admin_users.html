@@ -1,115 +1,128 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Benutzerverwaltung</title>
-    <style>
-        body { font-family: sans-serif; padding: 2rem; background-color: #f4f4f4; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1, h2 { color: #333; }
-        
-        /* Tabellen Styling */
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; }
-        
-        /* Formular Styling */
-        .add-user-box { background-color: #e9ecef; padding: 1.5rem; border-radius: 5px; margin-bottom: 2rem; }
-        .form-row { display: flex; gap: 10px; align-items: flex-end; }
-        .form-group { display: flex; flex-direction: column; }
-        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        
-        /* Buttons & Alerts */
-        button { padding: 10px 15px; cursor: pointer; border: none; border-radius: 4px; color: white; }
-        .btn-primary { background-color: #007bff; }
-        .btn-danger { background-color: #dc3545; text-decoration: none; padding: 5px 10px; font-size: 0.9em; display: inline-block; }
-        .btn-back { background-color: #6c757d; text-decoration: none; display: inline-block; margin-bottom: 1rem; }
-        
-        .alert { padding: 10px; margin-bottom: 1rem; border-radius: 4px; }
-        .alert.success { background-color: #d4edda; color: #155724; }
-        .alert.error { background-color: #f8d7da; color: #721c24; }
-        .alert.info { background-color: #cce5ff; color: #004085; }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
-<div class="container">
-    <a href="/" class="btn-back button">← Zurück zum Dashboard</a>
-    
-    <h1>Benutzerverwaltung</h1>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert {{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <div class="add-user-box">
-        <h2>Neuen Benutzer anlegen</h2>
-        <form method="POST" action="{{ url_for('main.user_create') }}">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Benutzername</label>
-                    <input type="text" name="username" required placeholder="z.B. maxmuster">
-                </div>
-                <div class="form-group">
-                    <label>Passwort</label>
-                    <input type="password" name="password" required placeholder="******">
-                </div>
-                <div class="form-group">
-                    <label>Rolle</label>
-                    <select name="role_id">
-                        {% for role in roles %}
-                            <option value="{{ role.id }}">{{ role.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn-primary">Anlegen</button>
-                </div>
-            </div>
-        </form>
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h3 class="fw-bold text-primary">
+            <i class="bi bi-shield-lock-fill me-2"></i>Verwaltung
+        </h3>
+        <p class="text-muted">Benutzerkonten und Zugriffsberechtigungen verwalten.</p>
     </div>
-
-    <h2>Vorhandene Benutzer</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Benutzername</th>
-                <th>Rolle</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
-                <td>
-                    <span style="font-weight: bold; color: {{ '#007bff' if user.role.name == 'Admin' else '#28a745' }};">
-                        {{ user.role.name }}
-                    </span>
-                </td>
-                <td>
-                    {% if user.id != current_user.id %}
-                        <a href="{{ url_for('main.user_delete', user_id=user.id) }}" 
-                           class="btn-danger"
-                           onclick="return confirm('Benutzer {{ user.username }} wirklich löschen?');">
-                           Löschen
-                        </a>
-                    {% else %}
-                        <span style="color: #6c757d; font-size: 0.9em;">(Du selbst)</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 
-</body>
-</html>
+<div class="row g-4">
+    
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-people me-2"></i>Registrierte Benutzer</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Benutzername</th>
+                                <th>Rolle</th>
+                                <th class="text-end pe-4">Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="ps-4 text-muted small">#{{ user.id }}</td>
+                                <td class="fw-bold">
+                                    {{ user.username }}
+                                    {% if user.id == current_user.id %}
+                                        <span class="badge bg-light text-dark border ms-2">Du</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.role.name == 'Admin' %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                            <i class="bi bi-shield-fill me-1"></i>Admin
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
+                                            <i class="bi bi-person me-1"></i>User
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4">
+                                    {% if user.id != current_user.id %}
+                                        <a href="{{ url_for('main.user_delete', user_id=user.id) }}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Benutzer {{ user.username }} wirklich löschen?');">
+                                            <i class="bi bi-trash"></i> Löschen
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-light text-muted" disabled>
+                                            <i class="bi bi-lock"></i>
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 bg-light">
+            <div class="card-header bg-transparent border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-success">
+                    <i class="bi bi-person-plus-fill me-2"></i>Neu anlegen
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('main.user_create') }}" method="POST">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Benutzername</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-person"></i></span>
+                            <input type="text" name="username" class="form-control border-start-0" required placeholder="Name eingeben...">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Passwort</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-key"></i></span>
+                            <input type="password" name="password" class="form-control border-start-0" required placeholder="******">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Rolle</label>
+                        <select name="role_id" class="form-select">
+                            {% for role in roles %}
+                                <option value="{{ role.id }}">{{ role.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text small">Admins haben vollen Zugriff auf Einstellungen & Backups.</div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-lg me-2"></i>Benutzer erstellen
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="alert alert-info d-flex align-items-center mt-3 shadow-sm border-0" role="alert">
+            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+            <div>
+                <small>Passwörter werden verschlüsselt gespeichert. Ein Zurücksetzen ist nur durch Löschen und Neuanlegen möglich.</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
