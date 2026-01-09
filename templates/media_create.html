@@ -1,114 +1,163 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medium anlegen</title>
-    <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 30px; background-color: #f4f4f4; }
-        .box-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 600px; }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        textarea { height: 100px; resize: vertical; }
-        
-        button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #218838; }
-        .btn-cancel { text-decoration: none; color: #6c757d; margin-left: 15px; }
+{% extends "base.html" %}
 
-        /* Input Group für Barcode + Button */
-        .input-group { display: flex; gap: 10px; }
-        .btn-search { background-color: #17a2b8; padding: 8px 15px; font-size: 14px; white-space: nowrap; }
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
         
-        .loading { opacity: 0.5; pointer-events: none; }
-        .cover-preview { margin-top: 10px; max-height: 150px; display: none; border: 1px solid #ddd; padding: 2px; }
-
-        /* NEU: Styling für die Trackliste */
-        #tracks-section { display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
-        .track-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-        .track-table th { text-align: left; padding: 5px; border-bottom: 2px solid #ddd; }
-        .track-table td { padding: 5px; border-bottom: 1px solid #eee; }
-        .track-input { border: 1px solid #ddd; padding: 4px; width: 100%; }
-    </style>
-</head>
-<body>
-
-<div class="box-container">
-    <h2>Neues Medium erfassen</h2>
-    
-    <form method="POST" enctype="multipart/form-data">
-        
-        <div class="form-group">
-            <label>Barcode / ISBN (Scanner)</label>
-            <div class="input-group">
-                <input type="text" id="barcode" name="barcode" placeholder="Hier scannen..." autofocus>
-                <button type="button" class="btn-search" onclick="lookupBarcode()">Online Suchen</button>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-3">
+                <h4 class="mb-0 fw-bold text-primary">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Neues Medium erfassen
+                </h4>
             </div>
-            <small style="color: #666;">Scanne ISBN (Bücher) oder EAN (Musik/Filme).</small>
-        </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data" id="createForm">
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Barcode / ISBN Scanner</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light"><i class="bi bi-upc-scan"></i></span>
+                                <input type="text" id="barcode" name="barcode" class="form-control" placeholder="Barcode scannen oder tippen..." autofocus>
+                                <button type="button" class="btn btn-info text-white px-4" id="btn-search" onclick="lookupBarcode()">
+                                    <span id="search-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    <span id="search-text"><i class="bi bi-cloud-download me-2"></i>Daten abrufen</span>
+                                </button>
+                            </div>
+                            <div class="form-text">Unterstützt Buch-ISBNs (Google/OpenLibrary) und EAN/UPC (Discogs).</div>
+                        </div>
+                    </div>
 
-        <div class="form-group">
-            <label>Titel des Werkes *</label>
-            <input type="text" id="title" name="title" required placeholder="z.B. Harry Potter">
-        </div>
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="title" class="form-label fw-bold">Titel des Werkes *</label>
+                                    <input type="text" id="title" name="title" class="form-control form-control-lg" required placeholder="z.B. Album Titel oder Buchname">
+                                </div>
 
-        <div class="form-group">
-            <label>Kategorie *</label>
-            <select name="category" id="category" required>
-                {% for cat in categories %}
-                    <option value="{{ cat }}">{{ cat }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label>Cover-Bild</label>
-            <input type="file" name="image" accept="image/*">
-            <input type="hidden" id="remote_image_url" name="remote_image_url">
-            <img id="preview" class="cover-preview">
-        </div>
+                                <div class="col-md-6">
+                                    <label for="author" class="form-label">Autor / Artist / Regisseur</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                        <input type="text" id="author" name="author_artist" class="form-control">
+                                    </div>
+                                </div>
 
-        <div class="form-group">
-            <label>Autor / Regisseur / Band</label>
-            <input type="text" id="author" name="author_artist">
-        </div>
+                                <div class="col-md-6">
+                                    <label for="year" class="form-label">Erscheinungsjahr</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-calendar-event"></i></span>
+                                        <input type="number" id="year" name="release_year" class="form-control" placeholder="JJJJ">
+                                    </div>
+                                </div>
 
-        <div class="form-group">
-            <label>Erscheinungsjahr</label>
-            <input type="number" id="year" name="release_year" placeholder="z.B. 1999">
-        </div>
+                                <div class="col-md-6">
+                                    <label for="category" class="form-label fw-bold">Kategorie *</label>
+                                    <select name="category" id="category" class="form-select" required>
+                                        {% for cat in categories %}
+                                            <option value="{{ cat }}">{{ cat }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
-        <div class="form-group">
-            <label>Standort</label>
-            <select name="location_id" class="form-control">
-             {% for loc in locations %}
-                <option value="{{ loc.id }}" {% if item is defined and item.location_id == loc.id %}selected{% endif %}>
-                    {{ loc.full_path }}
-                </option>
-             {% endfor %}
-         </select>        
-        </div>
+                                <div class="col-md-6">
+                                    <label for="location_id" class="form-label">Standort</label>
+                                    <select name="location_id" id="location_id" class="form-select">
+                                        {% for loc in locations %}
+                                            <option value="{{ loc.id }}">
+                                                {{ loc.full_path }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
-        <div class="form-group">
-            <label>Beschreibung / Inhalt</label>
-            <textarea id="description" name="description"></textarea>
-        </div>
-        
-        <div id="tracks-section">
-            <label>Erkannte Titel (Tracks)</label>
-            <div id="tracks-container">
-                </div>
-            <small style="color: #666;">Titel können vor dem Speichern bearbeitet werden.</small>
-        </div>
+                                <div class="col-12">
+                                    <label for="description" class="form-label">Beschreibung / Inhalt</label>
+                                    <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                                </div>
+                            </div>
+                        </div>
 
-        <div style="margin-top: 20px;">
-            <button type="submit">Speichern</button>
-            <a href="{{ url_for('main.index') }}" class="btn-cancel">Abbrechen</a>
+                        <div class="col-lg-4">
+                            <div class="card bg-light border-0 h-100">
+                                <div class="card-body">
+                                    <label class="form-label fw-bold">Cover-Bild</label>
+                                    
+                                    <input type="file" name="image" class="form-control mb-2" accept="image/*" onchange="previewFile()">
+                                    <input type="hidden" id="remote_image_url" name="remote_image_url">
+                                    
+                                    <div class="text-center mt-3 p-2 bg-white rounded border" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                        <img id="preview" src="#" alt="Cover Vorschau" class="img-fluid rounded" style="display: none; max-height: 250px;">
+                                        <span id="preview-placeholder" class="text-muted">
+                                            <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                            Kein Bild ausgewählt
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tracks-section" class="mt-4 pt-3 border-top" style="display: none;">
+                        <h5 class="mb-3 text-secondary"><i class="bi bi-music-note-list me-2"></i>Erkannte Titel (Tracks)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle" id="tracks-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 80px;">Pos</th>
+                                        <th>Titel</th>
+                                        <th style="width: 100px;">Dauer</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tracks-container">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary px-4">
+                            Abbrechen
+                        </a>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" name="commit_action" value="save_return" class="btn btn-outline-primary px-4">
+                                <i class="bi bi-check-lg me-2"></i>Speichern
+                            </button>
+                            
+                            <button type="submit" name="commit_action" value="save_next" class="btn btn-primary px-4">
+                                <i class="bi bi-plus-square me-2"></i>Speichern & Weiter
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
 
 <script>
+// Bild Vorschau für manuellen Upload
+function previewFile() {
+    const preview = document.getElementById('preview');
+    const placeholder = document.getElementById('preview-placeholder');
+    const file = document.querySelector('input[type=file]').files[0];
+    const reader = new FileReader();
+
+    reader.addEventListener("load", function () {
+        preview.src = reader.result;
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+    }, false);
+
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+}
+
 async function lookupBarcode() {
     const barcodeInput = document.getElementById('barcode');
     const barcode = barcodeInput.value.trim();
@@ -118,94 +167,102 @@ async function lookupBarcode() {
         return;
     }
 
-    // UI Feedback
-    const btn = document.querySelector('.btn-search');
-    const originalText = btn.innerText;
-    btn.innerText = "Suche...";
-    document.body.classList.add('loading');
+    // UI Loading State
+    const btn = document.getElementById('btn-search');
+    const spinner = document.getElementById('search-spinner');
+    const btnText = document.getElementById('search-text');
+    
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    btnText.textContent = " Suche läuft...";
 
     try {
         const response = await fetch('/api/lookup/' + barcode);
         const data = await response.json();
 
         if (data.success) {
-            // 1. Basis-Felder füllen
-            if(data.title) document.getElementById('title').value = data.title;
-            if(data.author) document.getElementById('author').value = data.author;
-            if(data.year) document.getElementById('year').value = data.year;
-            if(data.description) document.getElementById('description').value = data.description;
-            
-            // 2. Kategorie automatisch setzen (falls API eine liefert)
+            // Felder füllen mit kleiner Animation (Highlight)
+            const fill = (id, val) => {
+                const el = document.getElementById(id);
+                if(val && el) {
+                    el.value = val;
+                    el.classList.add('bg-light'); // Visuelles Feedback
+                    setTimeout(() => el.classList.remove('bg-light'), 500);
+                }
+            };
+
+            fill('title', data.title);
+            fill('author', data.author);
+            fill('year', data.year);
+            fill('description', data.description);
+
+            // Kategorie
             const catSelect = document.getElementById('category');
             if (data.category && data.category !== "") {
-                // Versuchen, den Wert direkt zu setzen
                 catSelect.value = data.category;
             } else {
-                // Fallback: Wenn nichts kommt, nehmen wir an es ist ein Buch (wie bisher)
                 catSelect.value = "Buch"; 
             }
 
-            // 3. Cover Bild Handling
+            // Cover Bild
             if (data.image_url) {
                 document.getElementById('remote_image_url').value = data.image_url;
                 const imgPreview = document.getElementById('preview');
+                const placeholder = document.getElementById('preview-placeholder');
+                
                 imgPreview.src = data.image_url;
                 imgPreview.style.display = 'block';
+                placeholder.style.display = 'none';
             }
 
-            // 4. Tracks (Titelliste) verarbeiten
+            // Tracks
             const trackSection = document.getElementById('tracks-section');
             const trackContainer = document.getElementById('tracks-container');
-            trackContainer.innerHTML = ''; // Vorher leeren
+            trackContainer.innerHTML = ''; 
 
             if (data.tracks && data.tracks.length > 0) {
-                trackSection.style.display = 'block'; // Anzeigen
-                
-                let html = '<table class="track-table"><thead><tr><th width="10%">Pos</th><th>Titel</th><th width="15%">Dauer</th></tr></thead><tbody>';
+                trackSection.style.display = 'block';
                 
                 data.tracks.forEach((track) => {
-                    html += `
+                    const row = `
                         <tr>
                             <td>
-                                <input type="text" name="track_position" value="${track.position}" class="track-input" style="text-align:center;">
+                                <input type="text" name="track_position" value="${track.position}" class="form-control form-control-sm text-center">
                             </td>
                             <td>
-                                <input type="text" name="track_title" value="${track.title}" class="track-input">
+                                <input type="text" name="track_title" value="${track.title}" class="form-control form-control-sm fw-bold">
                             </td>
                             <td>
-                                <input type="text" name="track_duration" value="${track.duration}" class="track-input" style="text-align:center;">
+                                <input type="text" name="track_duration" value="${track.duration}" class="form-control form-control-sm text-end">
                             </td>
                         </tr>
                     `;
+                    trackContainer.insertAdjacentHTML('beforeend', row);
                 });
-                
-                html += '</tbody></table>';
-                trackContainer.innerHTML = html;
             } else {
-                // Keine Tracks gefunden -> Bereich ausblenden
                 trackSection.style.display = 'none';
             }
 
         } else {
-            alert("Keine Daten für diesen Code gefunden.");
+            alert("Keine Daten gefunden. Bitte manuell eingeben.");
         }
     } catch (error) {
         console.error('Fehler:', error);
-        alert("Fehler bei der Verbindung zur API.");
+        alert("Verbindungsfehler zur API.");
     } finally {
-        btn.innerText = originalText;
-        document.body.classList.remove('loading');
+        // Reset UI
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+        btnText.innerHTML = '<i class="bi bi-cloud-download me-2"></i>Daten abrufen';
     }
 }
 
-// Enter-Taste im Barcode Feld löst Suche aus statt Submit
+// Enter-Taste im Barcode Feld
 document.getElementById('barcode').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
-        e.preventDefault(); // Kein Formular Submit
+        e.preventDefault(); 
         lookupBarcode();
     }
 });
 </script>
-
-</body>
-</html>
+{% endblock %}

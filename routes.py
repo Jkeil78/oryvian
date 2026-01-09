@@ -445,7 +445,10 @@ def media_create():
             db.session.commit()
 
         flash(f'Medium "{title}" angelegt.', 'success')
-        return redirect(url_for('main.index'))
+        if request.form.get('commit_action') == 'save_next':
+            return redirect(url_for('main.media_create'))
+        else:
+            return redirect(url_for('main.index'))
 
     locations = sorted(Location.query.all(), key=lambda x: x.full_path)
     categories = ["Buch", "Film (DVD/BluRay)", "CD", "Vinyl/LP", "Videospiel", "Sonstiges"]
