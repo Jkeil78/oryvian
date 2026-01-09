@@ -11,15 +11,14 @@
         body { background-color: #f8f9fa; }
         
         /* -------------------------------------------------- */
-        /* SIDEBAR DESIGN (Gilt für Desktop & Mobile gleich)  */
+        /* SIDEBAR DESIGN (Modern & Clean)                    */
         /* -------------------------------------------------- */
         
-        /* Das ist der Container für die Sidebar */
         #sidebarMenu {
-            background-color: #212529 !important; /* Erzwingt Dunkelgrau (Bootstrap Dark) */
+            background-color: #212529 !important; /* Dark Mode Background */
         }
 
-        /* Desktop: Sidebar soll mindestens so hoch sein wie der Bildschirm */
+        /* Desktop: Sidebar volle Höhe */
         @media (min-width: 992px) {
             .sidebar {
                 min-height: 100vh;
@@ -29,13 +28,22 @@
 
         /* Die Links in der Sidebar */
         .sidebar .nav-link {
-            color: rgba(255,255,255,.75); /* Hellgrau */
-            padding: 12px 20px;
-            font-size: 1.05rem;
+            color: #adb5bd; /* Helles Grau, nicht hart weiß */
+            padding: 10px 15px; /* Kompakteres Padding */
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            transition: all 0.2s;
-            border-radius: 0;
+            transition: all 0.2s ease;
+            border-radius: 6px; /* Leichte Rundung sieht moderner aus */
+            margin-bottom: 2px;
+        }
+
+        /* WICHTIG: Feste Breite für Icons -> Sorgt für perfekte Text-Ausrichtung */
+        .sidebar .nav-link i {
+            width: 25px; 
+            text-align: center;
+            margin-right: 10px;
+            font-size: 1.1rem;
         }
 
         /* Hover Effekt */
@@ -51,17 +59,23 @@
             font-weight: 500;
         }
 
+        /* Roter Logout Button Hover */
+        .sidebar .nav-link.text-danger:hover {
+            background-color: rgba(220, 53, 69, 0.2) !important;
+            color: #ff6b6b !important;
+        }
+
         /* Überschriften im Menü (z.B. VERWALTUNG) */
         .sidebar-heading {
             font-size: .75rem;
             text-transform: uppercase;
             letter-spacing: .05em;
-            color: rgba(255, 255, 255, .5);
-            padding: 1rem 1.25rem .5rem; /* Oben, Rechts/Links, Unten */
+            color: #6c757d;
+            padding: 1.5rem 1rem .5rem; /* Mehr Abstand nach oben */
             font-weight: bold;
         }
         
-        /* Mobile Navbar (Oben sichtbar auf Handy) */
+        /* Mobile Navbar */
         .mobile-navbar { 
             background-color: #212529; 
             border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -73,7 +87,7 @@
             .main-content { padding: 10px; } 
         }
         
-        /* Bilder Hilfsklassen */
+        /* Bilder Hilfsklassen für Cards */
         .avatar-placeholder { width: 100%; height: 180px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; color: #adb5bd; }
         .img-cover { object-fit: cover; height: 180px; width: 100%; }
     </style>
@@ -102,70 +116,81 @@
             <div class="offcanvas-body d-flex flex-column p-0">
                 
                 <div class="d-none d-lg-block p-4 border-bottom border-secondary" style="background: rgba(255,255,255,0.05);">
-                    <h4 class="m-0 text-white fw-bold">MedienApp</h4>
-                    <small class="text-white-50">Verwaltung v1.4</small>
+                    <a href="{{ url_for('main.index') }}" class="text-white text-decoration-none">
+                        <h4 class="m-0 fw-bold">MedienApp</h4>
+                        <small class="text-white-50">Verwaltung v1.5</small>
+                    </a>
                 </div>
 
-                <ul class="nav flex-column mt-2">
+                <ul class="nav flex-column mt-3 px-2">
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">
-                            <i class="bi bi-grid-fill me-2"></i> Dashboard
+                            <i class="bi bi-grid-fill"></i>
+                            Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'main.media_create' %}active{% endif %}" href="{{ url_for('main.media_create') }}">
-                            <i class="bi bi-plus-circle me-2"></i> Neues Medium
+                        <a class="nav-link {% if 'media_create' in request.endpoint %}active{% endif %}" href="{{ url_for('main.media_create') }}">
+                            <i class="bi bi-plus-circle"></i>
+                            Neues Medium
                         </a>
                     </li>
 
                     {% if current_user.is_authenticated and current_user.has_role('Admin') %}
-                    <li class="nav-item mt-3">
                         <div class="sidebar-heading">Verwaltung</div>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'admin_locations' in request.endpoint %}active{% endif %}" href="{{ url_for('main.admin_locations') }}">
-                            <i class="bi bi-geo-alt me-2"></i> Standorte
-                        </a>
-                    </li>
-                   <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.settings') }}">Einstellungen</a>
-                    </li>
-<li class="nav-item">
-        <a class="nav-link" href="{{ url_for('main.admin_backup') }}">
-            <i class="bi bi-archive"></i> Backup
-        </a>
-    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'admin_users' in request.endpoint %}active{% endif %}" href="{{ url_for('main.admin_users') }}">
-                            <i class="bi bi-people me-2"></i> Benutzer
-                        </a>
-                    </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'admin_locations' in request.endpoint %}active{% endif %}" href="{{ url_for('main.admin_locations') }}">
+                                <i class="bi bi-geo-alt"></i>
+                                Standorte
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'settings' in request.endpoint %}active{% endif %}" href="{{ url_for('main.settings') }}">
+                                <i class="bi bi-gear"></i>
+                                Einstellungen
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'backup' in request.endpoint %}active{% endif %}" href="{{ url_for('main.admin_backup') }}">
+                                <i class="bi bi-archive"></i>
+                                Backup
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'admin_users' in request.endpoint %}active{% endif %}" href="{{ url_for('main.admin_users') }}">
+                                <i class="bi bi-people"></i>
+                                Benutzer
+                            </a>
+                        </li>
                     {% endif %}
 
                     {% if current_user.is_authenticated %}
-
-                    <li class="nav-item mt-4 pt-2 border-top border-secondary">
                         <div class="sidebar-heading">Mein Konto</div>
-                    </li>
-                    <li class="nav-item px-3 mb-2 text-white d-flex align-items-center">
-                         <i class="bi bi-person-circle fs-4 me-2 text-white-50"></i>
-                         <span class="fw-bold">{{ current_user.username }}</span>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'change_password' in request.endpoint %}active{% endif %}" href="{{ url_for('main.change_password') }}">
-                            <i class="bi bi-key me-2"></i> Passwort ändern
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="{{ url_for('main.logout') }}">
-                            <i class="bi bi-box-arrow-right me-2"></i> Logout
-                        </a>
-                    </li>
+                        
+                        <li class="nav-item">
+                            <span class="nav-link text-white-50" style="cursor: default;">
+                                <i class="bi bi-person-circle"></i>
+                                {{ current_user.username }}
+                            </span>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'change_password' in request.endpoint %}active{% endif %}" href="{{ url_for('main.change_password') }}">
+                                <i class="bi bi-key"></i>
+                                Passwort ändern
+                            </a>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-danger" href="{{ url_for('main.logout') }}">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Logout
+                            </a>
+                        </li>
                     {% else %}
-                    <li class="nav-item mt-3 px-3">
-                        <a class="btn btn-primary w-100" href="{{ url_for('main.login') }}">Login</a>
-                    </li>
+                        <li class="nav-item mt-4 px-2">
+                            <a class="btn btn-primary w-100" href="{{ url_for('main.login') }}">Login</a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
@@ -182,6 +207,8 @@
                         <button class="btn btn-primary" type="submit">Suchen</button>
                     </div>
                 </form>
+                {% else %}
+                    <span class="text-muted">Bitte einloggen.</span>
                 {% endif %}
             </div>
 
