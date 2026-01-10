@@ -190,10 +190,9 @@ def api_search_discogs():
 def api_spotify_search():
     artist = request.args.get('artist', '').strip()
     title = request.args.get('title', '').strip()
-    barcode = request.args.get('barcode', '').strip()
     
-    if (not artist or not title) and not barcode:
-        return jsonify({"success": False, "message": "Missing search criteria"})
+    if not artist or not title:
+        return jsonify({"success": False, "message": "Missing artist or title"})
         
     token = get_spotify_access_token()
     if not token:
@@ -211,32 +210,19 @@ def api_spotify_search():
                                 params={"q": q_param, "type": "album", "limit": 1, "market": "DE"}, 
                                 timeout=5)
 
-        # 1. Suche via Barcode (UPC/EAN) - sehr präzise
-        if barcode:
-            clean_code = ''.join(c for c in barcode if c.isdigit())
-            # Wir testen UPC und EAN Prefix
-            for prefix in ['upc', 'ean']:
-                res = do_search(f"{prefix}:{clean_code}")
-                if res.status_code == 200:
-                    items = res.json().get("albums", {}).get("items", [])
-                    if items:
-                        return jsonify({"success": True, "spotify_id": items[0].get("id")})
-
-        # 2. Fallback: Textsuche
-        if artist and title:
-            # Versuch 1: Strikt mit Feldern
-            res = do_search(f'artist:"{artist}" album:"{title}"')
-            if res.status_code == 200:
-                items = res.json().get("albums", {}).get("items", [])
-                if items:
-                    return jsonify({"success": True, "spotify_id": items[0].get("id")})
-            
-            # Versuch 2: Locker (Einfach String concat) - findet auch "Remastered" etc.
-            res = do_search(f"{artist} {title}")
-            if res.status_code == 200:
-                items = res.json().get("albums", {}).get("items", [])
-                if items:
-                    return jsonify({"success": True, "spotify_id": items[0].get("id")})
+        # Versuch 1: Strikt mit Feldern
+        res = do_search(f'artist:"{artist}" album:"{title}"')
+        if res.status_code == 200:
+            items = res.json().get("albums", {}).get("items", [])
+            if items:
+                return jsonify({"success": True, "spotify_id": items[0].get("id")})
+        
+        # Versuch 2: Locker (Einfach String concat) - findet auch "Remastered" etc.
+        res = do_search(f"{artist} {title}")
+        if res.status_code == 200:
+            items = res.json().get("albums", {}).get("items", [])
+            if items:
+                return jsonify({"success": True, "spotify_id": items[0].get("id")})
 
     except Exception as e:
         print(f"Spotify Search Error: {e}")

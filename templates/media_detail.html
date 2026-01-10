@@ -220,11 +220,9 @@
 document.addEventListener("DOMContentLoaded", function() {
     const artist = {{ item.author_artist|tojson }};
     const title = {{ item.title|tojson }};
-    const barcode = {{ item.barcode|tojson }};
     
-    if((artist && title) || barcode) {
-        let url = `/api/spotify/search?artist=${encodeURIComponent(artist || '')}&title=${encodeURIComponent(title || '')}`;
-        if(barcode) url += `&barcode=${encodeURIComponent(barcode)}`;
+    if(artist && title) {
+        let url = `/api/spotify/search?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`;
 
         fetch(url)
         .then(r => r.json())
