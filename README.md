@@ -1,42 +1,42 @@
-# Medienverwaltung v1.7.0
+# Media Management v1.7.0
 
-Eine webbasierte Anwendung zur Verwaltung Ihrer physischen Mediensammlung (CDs, Vinyl, Bücher, Filme, Videospiele). 
-Das System bietet Integrationen zu Discogs, Spotify und Google Books, um Metadaten und Cover automatisch zu laden.
+A web-based application for managing your physical media collection (CDs, Vinyl, Books, Movies, Video Games).
+The system offers integrations with Discogs, Spotify, and Google Books to automatically load metadata and covers.
 
-## Funktionen
+## Features
 
-*   **Inventarisierung**: Erfassen von Medien mit Barcode-Scanner Unterstützung oder manueller Eingabe.
-*   **Automatische Metadaten**:
-    *   **Musik**: Suche via Discogs API (Cover, Tracklisten, Jahr).
-    *   **Bücher**: Suche via Google Books, OpenLibrary und Amazon (Cover, Autor, Beschreibung).
-*   **Spotify Integration**: Vorschau-Player für CDs und Vinyls direkt in der Detailansicht.
-*   **Standort-Verwaltung**: Hierarchische Lagerorte (z.B. Wohnzimmer > Regal A > Fach 1).
-*   **Verleih-Status**: Markieren von verliehenen Gegenständen inkl. PDF-Export und Druckansicht.
-*   **QR-Codes**: Generierung von QR-Codes für jedes Item zum schnellen Scannen.
-*   **Backup & Restore**: Vollständige Sicherung der Datenbank und Bilder als ZIP-Datei.
-*   **Benutzerverwaltung**: Rollenbasierter Zugriff (Admin/User).
+*   **Inventory**: Capture media with barcode scanner support or manual entry.
+*   **Automatic Metadata**:
+    *   **Music**: Search via Discogs API (Cover, Tracklists, Year).
+    *   **Books**: Search via Google Books, OpenLibrary, and Amazon (Cover, Author, Description).
+*   **Spotify Integration**: Preview player for CDs and Vinyls directly in the detail view.
+*   **Location Management**: Hierarchical storage locations (e.g., Living Room > Shelf A > Compartment 1).
+*   **Lending Status**: Mark lent items including PDF export and print view.
+*   **QR Codes**: Generation of QR codes for each item for quick scanning.
+*   **Backup & Restore**: Complete backup of the database and images as a ZIP file.
+*   **User Management**: Role-based access (Admin/User).
 
-## Installation mit Docker (Empfohlen)
+## Installation with Docker (Recommended)
 
-Die Anwendung ist für den Betrieb mit Docker Compose optimiert.
+The application is optimized for operation with Docker Compose.
 
-### 1. Vorbereitung
+### 1. Preparation
 
-Stellen Sie sicher, dass Docker und Docker Compose installiert sind.
-Erstellen Sie eine `docker-compose.yml` (oder nutzen Sie die beiliegende) und starten Sie den Container.
+Ensure that Docker and Docker Compose are installed.
+Create a `docker-compose.yml` (or use the enclosed one) and start the container.
 
-### 2. Konfiguration (Environment Variablen)
+### 2. Configuration (Environment Variables)
 
-Die Konfiguration erfolgt über Umgebungsvariablen in der `docker-compose.yml` oder einer `.env` Datei.
+Configuration is done via environment variables in the `docker-compose.yml` or a `.env` file.
 
-| Variable | Standard | Beschreibung |
+| Variable | Default | Description |
 | :--- | :--- | :--- |
-| `APP_PORT` | `5000` | Der Port, auf dem die Web-Oberfläche erreichbar ist (Host-Port). |
-| `UPLOAD_PATH` | `./data/uploads` | Lokaler Pfad für hochgeladene Bilder (Cover). |
-| `DB_PATH` | `./data/instance` | Lokaler Pfad für die SQLite Datenbank. |
-| `SECRET_KEY` | `dev-key...` | Sicherheitsschlüssel für Sessions (sollte geändert werden). |
+| `APP_PORT` | `5000` | The port on which the web interface is accessible (Host Port). |
+| `UPLOAD_PATH` | `./data/uploads` | Local path for uploaded images (Covers). |
+| `DB_PATH` | `./data/instance` | Local path for the SQLite database. |
+| `SECRET_KEY` | `dev-key...` | Security key for sessions (should be changed). |
 
-**Beispiel `docker-compose.yml`:**
+**Example `docker-compose.yml`:**
 
 ```yaml
 version: '3.8'
@@ -47,68 +47,12 @@ services:
     container_name: medienverwaltung
     ports:
       # Format: "HOST_PORT:CONTAINER_PORT"
-      # Ändern Sie den ersten Wert, um den Port anzupassen (z.B. "8080:5000")
+      # Change the first value to adjust the port (e.g., "8080:5000")
       - "${APP_PORT:-5000}:5000"
     
     volumes:
-      # Persistente Datenhaltung
+      # Persistent data storage
       - ${UPLOAD_PATH:-./data/uploads}:/app/static/uploads
       - ${DB_PATH:-./data/instance}:/app/instance
     
     restart: unless-stopped
-```
-
-### 3. Starten
-
-```bash
-docker-compose up -d
-```
-
-Die Anwendung ist nun unter `http://localhost:5000` (oder dem konfigurierten Port) erreichbar.
-
-## Erster Login
-
-Beim ersten Start wird automatisch ein Administrator-Konto angelegt.
-
-*   **Benutzername:** `admin`
-*   **Passwort:** `admin123`
-
-> **Wichtig:** Bitte ändern Sie das Passwort sofort nach dem ersten Login unter "Profil".
-
-## Einrichtung externer Dienste
-
-Um alle Funktionen nutzen zu können, sollten API-Schlüssel in den **Einstellungen** hinterlegt werden:
-
-1.  **Discogs (für Musik-Metadaten):**
-    *   Erstellen Sie einen Account auf Discogs.
-    *   Generieren Sie einen "Personal Access Token" unter Developer Settings.
-    *   Tragen Sie diesen in den Einstellungen ein.
-
-2.  **Spotify (für Player-Integration):**
-    *   Erstellen Sie eine App im Spotify Developer Dashboard.
-    *   Kopieren Sie "Client ID" und "Client Secret".
-    *   Tragen Sie diese in den Einstellungen ein.
-
-## Backup
-
-Im Admin-Bereich können Sie jederzeit ein vollständiges Backup herunterladen. Dieses enthält die SQLite-Datenbank sowie alle Bilder. Zum Wiederherstellen laden Sie die ZIP-Datei einfach wieder hoch.
-
-## Changelog
-
-### v1.7.0
-*   **Feature:** Zentrale Einstellungsseite (`/settings`) vereint API-, Benutzer-, Standort- und Backup-Verwaltung.
-*   **Feature:** Massen-Verschieben von Medien in andere Standorte (Bulk Move).
-*   **Security:** Passwörter werden nun sicher gehasht (PBKDF2/SHA256). Automatische Migration beim Login.
-*   **Security:** Löschen und Verschieben von Items ist nun auf Administratoren beschränkt.
-*   **UI:** Neues SVG-Logo und aufgeräumte Menüleiste.
-
-### v1.6.0
-*   **Feature:** Verleih-Übersicht (`/lent`) mit PDF-Export Funktion für einzelne Personen oder alle Items.
-*   **Feature:** Erweiterte Spotify-Integration (Play-Button, intelligente Suche via `difflib` für bessere Trefferquote).
-*   **Feature:** Globale Suche findet nun auch Track-Titel und Ausleiher-Namen.
-*   **UX:** Optimierte mobile Ansicht für die Erfassungsmaske (kompakteres Layout).
-*   **UX:** "Smart Location": Der zuletzt gewählte Standort wird bei der Erfassung neuer Items gemerkt.
-
-### v1.5.0
-*   Initiale Docker-Version mit Discogs & Google Books Support.
-*   Backup/Restore System implementiert.
