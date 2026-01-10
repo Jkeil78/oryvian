@@ -117,6 +117,7 @@
 </div>
 
 {% if items %}
+    {% if current_user.has_role('Admin') %}
     <form action="{{ url_for('main.bulk_move') }}" method="POST">
         
         <div class="card mb-3 shadow-sm border-0 bg-light">
@@ -137,6 +138,7 @@
                 </button>
             </div>
         </div>
+    {% endif %}
 
     <div id="view-table">
         <div class="card shadow-sm border-0">
@@ -144,7 +146,9 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
+                            {% if current_user.has_role('Admin') %}
                             <th style="width: 30px;"></th>
+                            {% endif %}
                             <th style="width: 60px;">Bild</th>
                             <th>Titel / Info</th>
                             <th class="d-none d-md-table-cell">Kategorie</th> 
@@ -155,9 +159,11 @@
                     <tbody>
                         {% for item in items %}
                         <tr>
+                            {% if current_user.has_role('Admin') %}
                             <td>
                                 <input type="checkbox" name="item_ids" value="{{ item.id }}" class="form-check-input item-checkbox">
                             </td>
+                            {% endif %}
                             <td>
                                 <div class="ratio ratio-1x1 rounded overflow-hidden" style="width: 40px;">
                                     {% if item.image_filename %}
@@ -204,7 +210,9 @@
                     
                     <div class="position-absolute top-0 start-0 w-100 p-2 d-flex justify-content-between pointer-events-none" style="z-index: 5;">
                         <div class="d-flex gap-2 align-items-center">
+                            {% if current_user.has_role('Admin') %}
                             <input type="checkbox" name="item_ids" value="{{ item.id }}" class="form-check-input item-checkbox shadow-sm mt-0" style="pointer-events: auto; cursor: pointer;">
+                            {% endif %}
                             <span class="badge bg-white text-dark shadow-sm border opacity-75">{{ item.category }}</span>
                         </div>
                         {% if item.lent_to %}
@@ -235,7 +243,9 @@
             {% endfor %}
         </div>
     </div>
+    {% if current_user.has_role('Admin') %}
     </form>
+    {% endif %}
 
     {% if pagination and pagination.pages > 1 %}
     <div class="d-flex justify-content-center mt-5">

@@ -16,11 +16,13 @@
             <a href="{{ url_for('main.media_edit', item_id=item.id) }}" class="btn btn-primary">
                 <i class="bi bi-pencil"></i> Bearbeiten
             </a>
+            {% if current_user.has_role('Admin') %}
             <a href="{{ url_for('main.media_delete', item_id=item.id) }}" 
                class="btn btn-danger" 
                onclick="return confirm('Diesen Eintrag wirklich unwiderruflich löschen?');">
                 <i class="bi bi-trash"></i> Löschen
             </a>
+            {% endif %}
         </div>
     </div>
 

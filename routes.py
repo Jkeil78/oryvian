@@ -684,6 +684,9 @@ def media_edit(item_id):
 @main.route('/media/delete/<int:item_id>')
 @login_required
 def media_delete(item_id):
+    if not current_user.has_role('Admin'):
+        flash('Keine Berechtigung.', 'error')
+        return redirect(url_for('main.index'))
     item = MediaItem.query.get_or_404(item_id)
     db.session.delete(item)
     db.session.commit()
@@ -692,6 +695,10 @@ def media_delete(item_id):
 @main.route('/media/bulk_move', methods=['POST'])
 @login_required
 def bulk_move():
+    if not current_user.has_role('Admin'):
+        flash('Keine Berechtigung.', 'error')
+        return redirect(url_for('main.index'))
+
     item_ids = request.form.getlist('item_ids')
     target_location_id = request.form.get('target_location_id')
     

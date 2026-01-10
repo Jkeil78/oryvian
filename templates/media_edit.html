@@ -9,9 +9,11 @@
                 <h4 class="mb-0 fw-bold text-primary">
                     <i class="bi bi-pencil-square me-2"></i>Medium bearbeiten
                 </h4>
+                {% if current_user.has_role('Admin') %}
                 <a href="{{ url_for('main.media_delete', item_id=item.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Wirklich löschen?');">
                     <i class="bi bi-trash"></i> Löschen
                 </a>
+                {% endif %}
             </div>
             
             <div class="card-body p-4">
@@ -58,11 +60,16 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Standort</label>
+                                    {% if current_user.has_role('Admin') %}
                                     <select name="location_id" class="form-select">
                                         {% for loc in locations %}
                                             <option value="{{ loc.id }}" {% if item.location_id == loc.id %}selected{% endif %}>{{ loc.full_path }}</option>
                                         {% endfor %}
                                     </select>
+                                    {% else %}
+                                        <input type="text" class="form-control" value="{{ item.location.full_path if item.location else 'Unsortiert' }}" disabled>
+                                        <input type="hidden" name="location_id" value="{{ item.location_id }}">
+                                    {% endif %}
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Beschreibung</label>
