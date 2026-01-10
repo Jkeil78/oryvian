@@ -17,12 +17,15 @@
                     <div class="row mb-4">
                         <div class="col-md-12">
                             <label class="form-label fw-bold">Barcode / ISBN Scanner</label>
-                            <div class="input-group input-group-lg">
+                            <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-upc-scan"></i></span>
-                                <input type="text" id="barcode" name="barcode" class="form-control" placeholder="Barcode scannen oder tippen..." autofocus>
-                                <button type="button" class="btn btn-info text-white px-4" id="btn-search" onclick="lookupBarcode()">
+                                <input type="text" id="barcode" name="barcode" class="form-control" placeholder="Barcode..." autofocus>
+                                <button type="button" class="btn btn-info text-white" id="btn-search" onclick="lookupBarcode()">
                                     <span id="search-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                    <span id="search-text"><i class="bi bi-cloud-download me-2"></i>Daten abrufen</span>
+                                    <span id="search-text">
+                                        <i class="bi bi-cloud-download"></i>
+                                        <span class="d-none d-sm-inline ms-2">Daten abrufen</span>
+                                    </span>
                                 </button>
                             </div>
                             <div class="form-text">Unterstützt Buch-ISBNs (Google/OpenLibrary) und EAN/UPC (Discogs).</div>
@@ -66,7 +69,7 @@
                                     <label for="location_id" class="form-label">Standort</label>
                                     <select name="location_id" id="location_id" class="form-select">
                                         {% for loc in locations %}
-                                            <option value="{{ loc.id }}">
+                                            <option value="{{ loc.id }}" {% if loc.id == default_location_id %}selected{% endif %}>
                                                 {{ loc.full_path }}
                                             </option>
                                         {% endfor %}
@@ -253,7 +256,7 @@ async function lookupBarcode() {
         // Reset UI
         btn.disabled = false;
         spinner.classList.add('d-none');
-        btnText.innerHTML = '<i class="bi bi-cloud-download me-2"></i>Daten abrufen';
+        btnText.innerHTML = '<i class="bi bi-cloud-download"></i><span class="d-none d-sm-inline ms-2">Daten abrufen</span>';
     }
 }
 

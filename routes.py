@@ -603,6 +603,11 @@ def media_create():
             fn = download_remote_image(url) # Hier greift jetzt auch die Amazon 1x1 Prüfung
         
         ry = request.form.get('release_year')
+        
+        # Standort merken (für Massenerfassung im gleichen Raum)
+        loc_id = int(request.form.get('location_id') or 1)
+        session['last_location_id'] = loc_id
+
         item = MediaItem(
             inventory_number=generate_inventory_number(),
             title=request.form.get('title'),
@@ -611,7 +616,7 @@ def media_create():
             author_artist=request.form.get('author_artist'),
             release_year=int(ry) if ry else None,
             description=request.form.get('description'),
-            location_id=int(request.form.get('location_id') or 1),
+            location_id=loc_id,
             image_filename=fn,
             user_id=current_user.id
         )
@@ -633,7 +638,8 @@ def media_create():
         if request.form.get('commit_action') == 'save_next': return redirect(url_for('main.media_create'))
         return redirect(url_for('main.index'))
 
-    return render_template('media_create.html', locations=sorted(Location.query.all(), key=lambda x: x.full_path), categories=["Buch", "Film (DVD/BluRay)", "CD", "Vinyl/LP", "Videospiel", "Sonstiges"])
+    default_location_id = session.get('last_location_id', 1)
+    return render_template('media_create.html', locations=sorted(Location.query.all(), key=lambda x: x.full_path), categories=["Buch", "Film (DVD/BluRay)", "CD", "Vinyl/LP", "Videospiel", "Sonstiges"], default_location_id=default_location_id)
 
 @main.route('/media/edit/<int:item_id>', methods=['GET', 'POST'])
 @login_required
