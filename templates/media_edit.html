@@ -97,15 +97,27 @@
                             <div class="card bg-light border-0">
                                 <div class="card-body">
                                     <label class="form-label fw-bold">Cover-Bild</label>
-                                    <input type="file" name="image" class="form-control mb-2" onchange="previewFile()">
+                                    <input type="file" id="imageInput" name="image" class="d-none" accept="image/*" onchange="previewFile()">
                                     <input type="hidden" id="remote_image_url" name="remote_image_url">
                                     
-                                    <div class="text-center mt-3 p-2 bg-white rounded border d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                                    <div class="position-relative mt-2 bg-white rounded border d-flex align-items-center justify-content-center overflow-hidden group-hover-container" 
+                                         style="min-height: 250px; cursor: pointer;"
+                                         onclick="document.getElementById('imageInput').click();">
+                                        
                                         <img id="preview" src="{{ url_for('static', filename='uploads/' + item.image_filename) if item.image_filename else '' }}" 
-                                             class="img-fluid rounded" style="max-height: 250px; display: {{ 'block' if item.image_filename else 'none' }};">
-                                        <span id="preview-placeholder" class="text-muted" style="display: {{ 'none' if item.image_filename else 'block' }};">
-                                            Kein Bild
+                                             class="img-fluid" style="max-height: 250px; width: 100%; object-fit: contain; display: {{ 'block' if item.image_filename else 'none' }};">
+                                        
+                                        <span id="preview-placeholder" class="text-muted text-center p-3" style="display: {{ 'none' if item.image_filename else 'block' }};">
+                                            <i class="bi bi-cloud-upload fs-1 d-block mb-2"></i>
+                                            Klicken oder STRG+V<br>
+                                            <small class="text-muted">zum Ändern</small>
                                         </span>
+                                        
+                                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 opacity-0 hover-overlay transition-all">
+                                            <span class="btn btn-light rounded-circle p-3 shadow">
+                                                <i class="bi bi-pencil-fill fs-5"></i>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -170,13 +182,38 @@
 </div>
 
 <script>
+// Paste Support (STRG+V)
+document.addEventListener('paste', function(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf("image") !== -1) {
+            const blob = items[i].getAsFile();
+            const file = new File([blob], "pasted_image.png", { type: blob.type });
+            
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            const fileInput = document.getElementById('imageInput');
+            fileInput.files = dataTransfer.files;
+            
+            // Trigger change event manually
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+            
+            // Clear remote url if pasted
+            document.getElementById('remote_image_url').value = '';
+        }
+    }
+});
+
 function previewFile() {
-    const file = document.querySelector('input[type=file]').files[0];
+    const file = document.getElementById('imageInput').files[0];
     const reader = new FileReader();
     reader.onload = function(e) {
         document.getElementById('preview').src = e.target.result;
         document.getElementById('preview').style.display = 'block';
         document.getElementById('preview-placeholder').style.display = 'none';
+        document.getElementById('remote_image_url').value = '';
     }
     if(file) reader.readAsDataURL(file);
 }
@@ -284,4 +321,9 @@ function selectImage(url) {
     if(modal) modal.hide();
 }
 </script>
+
+<style>
+.hover-overlay { transition: opacity 0.2s ease-in-out; }
+.group-hover-container:hover .hover-overlay { opacity: 1 !important; }
+</style>
 {% endblock %}

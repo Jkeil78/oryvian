@@ -88,15 +88,26 @@
                                 <div class="card-body">
                                     <label class="form-label fw-bold">Cover-Bild</label>
                                     
-                                    <input type="file" name="image" class="form-control mb-2" accept="image/*" onchange="previewFile()">
+                                    <input type="file" id="imageInput" name="image" class="d-none" accept="image/*" onchange="previewFile()">
                                     <input type="hidden" id="remote_image_url" name="remote_image_url">
                                     
-                                    <div class="text-center mt-3 p-2 bg-white rounded border" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-                                        <img id="preview" src="#" alt="Cover Vorschau" class="img-fluid rounded" style="display: none; max-height: 250px;">
-                                        <span id="preview-placeholder" class="text-muted">
-                                            <i class="bi bi-image fs-1 d-block mb-2"></i>
-                                            Kein Bild ausgewählt
+                                    <div class="position-relative mt-2 bg-white rounded border d-flex align-items-center justify-content-center overflow-hidden group-hover-container" 
+                                         style="min-height: 250px; cursor: pointer;"
+                                         onclick="document.getElementById('imageInput').click();">
+                                        
+                                        <img id="preview" src="#" alt="Cover Vorschau" class="img-fluid" style="display: none; max-height: 250px; width: 100%; object-fit: contain;">
+                                        
+                                        <span id="preview-placeholder" class="text-muted text-center p-3">
+                                            <i class="bi bi-cloud-upload fs-1 d-block mb-2"></i>
+                                            Klicken oder STRG+V<br>
+                                            <small class="text-muted">zum Einfügen</small>
                                         </span>
+
+                                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 opacity-0 hover-overlay transition-all">
+                                            <span class="btn btn-light rounded-circle p-3 shadow">
+                                                <i class="bi bi-pencil-fill fs-5"></i>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -143,17 +154,42 @@
 </div>
 
 <script>
+// Paste Support (STRG+V)
+document.addEventListener('paste', function(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf("image") !== -1) {
+            const blob = items[i].getAsFile();
+            const file = new File([blob], "pasted_image.png", { type: blob.type });
+            
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            const fileInput = document.getElementById('imageInput');
+            fileInput.files = dataTransfer.files;
+            
+            // Trigger change event manually to update preview
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+            
+            // Clear remote url if pasted
+            document.getElementById('remote_image_url').value = '';
+        }
+    }
+});
+
 // Bild Vorschau für manuellen Upload
 function previewFile() {
     const preview = document.getElementById('preview');
     const placeholder = document.getElementById('preview-placeholder');
-    const file = document.querySelector('input[type=file]').files[0];
+    const file = document.getElementById('imageInput').files[0];
     const reader = new FileReader();
 
     reader.addEventListener("load", function () {
         preview.src = reader.result;
         preview.style.display = 'block';
         placeholder.style.display = 'none';
+        document.getElementById('remote_image_url').value = ''; // Reset remote URL on manual upload
     }, false);
 
     if (file) {
@@ -268,4 +304,9 @@ document.getElementById('barcode').addEventListener('keypress', function (e) {
     }
 });
 </script>
+
+<style>
+.hover-overlay { transition: opacity 0.2s ease-in-out; }
+.group-hover-container:hover .hover-overlay { opacity: 1 !important; }
+</style>
 {% endblock %}
