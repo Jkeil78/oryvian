@@ -421,7 +421,8 @@ def index():
             MediaItem.author_artist.ilike(s),
             MediaItem.inventory_number.ilike(s),
             MediaItem.barcode.ilike(s),
-            MediaItem.lent_to.ilike(s) # Auch nach Entleiher suchen!
+            MediaItem.lent_to.ilike(s), # Auch nach Entleiher suchen!
+            MediaItem.tracks.any(Track.title.ilike(s)) # Suche in Tracks
         ))
     
     if cat: 
