@@ -135,6 +135,11 @@
                             Neues Medium
                         </a>
                     </li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('main.lent_overview') }}">
+        <i class="bi bi-person-exclamation"></i> Verliehen
+    </a>
+</li>
 
                     {% if current_user.is_authenticated and current_user.has_role('Admin') %}
                         <div class="sidebar-heading">Verwaltung</div>
