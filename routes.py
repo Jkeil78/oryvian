@@ -5,6 +5,7 @@ import re
 import io      
 import qrcode
 import base64
+import difflib
 import time
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify, send_file, session
@@ -207,22 +208,53 @@ def api_spotify_search():
             print(f"DEBUG: Spotify Search Q='{q_param}'")
             return requests.get("https://api.spotify.com/v1/search", 
                                 headers=headers, 
-                                params={"q": q_param, "type": "album", "limit": 1, "market": "DE"}, 
+                                params={"q": q_param, "type": "album", "limit": 5, "market": "DE"}, 
                                 timeout=5)
+
+        def find_best_match(items):
+            if not items: return None
+            target_artist = artist.lower()
+            target_title = title.lower()
+            
+            for item in items:
+                # 1. Artist Check
+                sp_artists = [a.get('name', '').lower() for a in item.get('artists', [])]
+                artist_match = False
+                for sp_a in sp_artists:
+                    # Exakter Substring oder hohe Ähnlichkeit (Ratio > 0.6)
+                    if target_artist in sp_a or sp_a in target_artist:
+                        artist_match = True
+                        break
+                    if difflib.SequenceMatcher(None, target_artist, sp_a).ratio() > 0.6:
+                        artist_match = True
+                        break
+                
+                if not artist_match: continue
+
+                # 2. Title Check
+                sp_album = item.get('name', '').lower()
+                if target_title in sp_album or sp_album in target_title:
+                    return item.get('id')
+                if difflib.SequenceMatcher(None, target_title, sp_album).ratio() > 0.6:
+                    return item.get('id')
+            
+            return None
 
         # Versuch 1: Strikt mit Feldern
         res = do_search(f'artist:"{artist}" album:"{title}"')
         if res.status_code == 200:
             items = res.json().get("albums", {}).get("items", [])
-            if items:
-                return jsonify({"success": True, "spotify_id": items[0].get("id")})
+            match_id = find_best_match(items)
+            if match_id:
+                return jsonify({"success": True, "spotify_id": match_id})
         
         # Versuch 2: Locker (Einfach String concat) - findet auch "Remastered" etc.
         res = do_search(f"{artist} {title}")
         if res.status_code == 200:
             items = res.json().get("albums", {}).get("items", [])
-            if items:
-                return jsonify({"success": True, "spotify_id": items[0].get("id")})
+            match_id = find_best_match(items)
+            if match_id:
+                return jsonify({"success": True, "spotify_id": match_id})
 
     except Exception as e:
         print(f"Spotify Search Error: {e}")
