@@ -195,6 +195,7 @@ TRANSLATIONS = {
         'signature_borrower': 'Signature Borrower',
         'system': 'System',
         'format': 'Format',
+        'show_filters_options': 'Show Filters & Options',
     },
     'de': {
         'app_name': 'MedienApp',
@@ -392,6 +393,7 @@ TRANSLATIONS = {
         'signature_borrower': 'Unterschrift Ausleiher',
         'system': 'System',
         'format': 'Format',
+        'show_filters_options': 'Filter & Optionen anzeigen',
     },
     'es': {
         'app_name': 'MediaApp',
@@ -589,6 +591,7 @@ TRANSLATIONS = {
         'signature_borrower': 'Firma Prestatario',
         'system': 'Sistema',
         'format': 'Formato',
+        'show_filters_options': 'Mostrar filtros y opciones',
     },
     'fr': {
         'app_name': 'MediaApp',
@@ -786,5 +789,6 @@ TRANSLATIONS = {
         'signature_borrower': 'Signature Emprunteur',
         'system': 'Système',
         'format': 'Format',
+        'show_filters_options': 'Afficher les filtres et options',
     }
 }
