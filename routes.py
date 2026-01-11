@@ -405,6 +405,12 @@ def index():
     if active_args:
         # New filter active -> Save
         session['filter_state'] = active_args
+        
+        # Save sorting preference to User
+        if 'sort_field' in active_args or 'sort_order' in active_args:
+            if 'sort_field' in active_args: current_user.sort_field = active_args['sort_field']
+            if 'sort_order' in active_args: current_user.sort_order = active_args['sort_order']
+            db.session.commit()
     elif 'filter_state' in session and not request.args:
         # No URL params, but session exists -> Restore
         return redirect(url_for('main.index', **session['filter_state']))
@@ -419,8 +425,12 @@ def index():
     # Read page (do not save in session, otherwise you always land on page X)
     page = request.args.get('page', 1, type=int)
     
-    sort_field = request.args.get('sort_field', 'added') # default: Added
-    sort_order = request.args.get('sort_order', 'desc')  # default: Descending
+    # Defaults from User
+    default_sort_field = current_user.sort_field or 'added'
+    default_sort_order = current_user.sort_order or 'desc'
+    
+    sort_field = request.args.get('sort_field', default_sort_field) 
+    sort_order = request.args.get('sort_order', default_sort_order)
 
     query = MediaItem.query
 

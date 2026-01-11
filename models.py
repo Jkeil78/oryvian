@@ -21,6 +21,8 @@ class User(UserMixin, db.Model):
     items_created = db.relationship('MediaItem', backref='creator_user', lazy='dynamic')
     language = db.Column(db.String(10), default='en')
     theme = db.Column(db.String(20), default='cerulean')
+    sort_field = db.Column(db.String(50), default='added')
+    sort_order = db.Column(db.String(10), default='desc')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

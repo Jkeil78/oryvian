@@ -73,6 +73,18 @@ if __name__ == '__main__':
                     with db.engine.connect() as conn:
                         conn.execute(text("ALTER TABLE user ADD COLUMN theme VARCHAR(20) DEFAULT 'cerulean'"))
                         conn.commit()
+
+                if 'sort_field' not in columns:
+                    print("DEBUG: Applying migration - Adding 'sort_field' column to 'user' table")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE user ADD COLUMN sort_field VARCHAR(50) DEFAULT 'added'"))
+                        conn.commit()
+
+                if 'sort_order' not in columns:
+                    print("DEBUG: Applying migration - Adding 'sort_order' column to 'user' table")
+                    with db.engine.connect() as conn:
+                        conn.execute(text("ALTER TABLE user ADD COLUMN sort_order VARCHAR(10) DEFAULT 'desc'"))
+                        conn.commit()
         except Exception as e:
             print(f"DEBUG: Migration warning: {e}")
         
