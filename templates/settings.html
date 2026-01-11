@@ -54,6 +54,17 @@
                                     <option value="fr" {% if current_user.language == 'fr' %}selected{% endif %}>Français</option>
                                 </select>
                             </div>
+
+                            <h5 class="mb-3 mt-4">Design</h5>
+                            <div class="mb-3">
+                                <select name="theme" class="form-select" onchange="setTheme(this.value)">
+                                    <option value="zephyr" {% if current_user.theme == 'zephyr' %}selected{% endif %}>Zephyr (Modern)</option>
+                                    <option value="flatly" {% if current_user.theme == 'flatly' %}selected{% endif %}>Flatly (Clean)</option>
+                                    <option value="materia" {% if current_user.theme == 'materia' %}selected{% endif %}>Materia (Google)</option>
+                                    <option value="quartz" {% if current_user.theme == 'quartz' %}selected{% endif %}>Quartz (Dark)</option>
+                                    <option value="morph" {% if current_user.theme == 'morph' %}selected{% endif %}>Morph (Soft)</option>
+                                </select>
+                            </div>
                             
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-primary">

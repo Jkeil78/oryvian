@@ -4,32 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedienVerwaltung</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link id="theme-css" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/zephyr/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%230d6efd' viewBox='0 0 16 16'%3E%3Cpath d='M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z'/%3E%3Cpath d='M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z'/%3E%3C/svg%3E">
     
     <style>
-        body { background-color: #f8f9fa; }
+        body { background-color: var(--bs-body-bg); }
         
         /* -------------------------------------------------- */
         /* SIDEBAR DESIGN (Modern & Clean)                    */
         /* -------------------------------------------------- */
         
         #sidebarMenu {
-            background-color: #212529 !important; /* Dark Mode Background */
+            background-color: var(--bs-tertiary-bg); 
+            border-right: 1px solid var(--bs-border-color);
         }
 
         /* Desktop: Sidebar volle Höhe */
         @media (min-width: 992px) {
             .sidebar {
                 min-height: 100vh;
-                box-shadow: inset -1px 0 0 rgba(255, 255, 255, .1);
             }
         }
 
         /* Die Links in der Sidebar */
         .sidebar .nav-link {
-            color: #adb5bd; /* Helles Grau, nicht hart weiß */
+            color: var(--bs-body-color);
+            opacity: 0.8;
             padding: 10px 15px; /* Kompakteres Padding */
             font-size: 1rem;
             display: flex;
@@ -49,8 +50,9 @@
 
         /* Hover Effekt */
         .sidebar .nav-link:hover { 
-            color: #fff; 
-            background: rgba(255,255,255,0.1); 
+            color: var(--bs-primary); 
+            background: var(--bs-secondary-bg);
+            opacity: 1;
         }
 
         /* Aktiver Link (Blau) */
@@ -58,6 +60,7 @@
             color: #fff; 
             background: #0d6efd; 
             font-weight: 500;
+            opacity: 1;
         }
 
         /* Roter Logout Button Hover */
@@ -71,15 +74,15 @@
             font-size: .75rem;
             text-transform: uppercase;
             letter-spacing: .05em;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
             padding: 1.5rem 1rem .5rem; /* Mehr Abstand nach oben */
             font-weight: bold;
         }
         
         /* Mobile Navbar */
         .mobile-navbar { 
-            background-color: #212529; 
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background-color: var(--bs-tertiary-bg); 
+            border-bottom: 1px solid var(--bs-border-color);
         }
         
         /* Content Bereich */
@@ -92,10 +95,22 @@
         .avatar-placeholder { width: 100%; height: 180px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; color: #adb5bd; }
         .img-cover { object-fit: cover; height: 180px; width: 100%; }
     </style>
+    <script>
+        // Theme Init
+        (function() {
+            // Server-side theme preference takes precedence if user is logged in
+            let savedTheme = '{{ current_user.theme if current_user.is_authenticated else "" }}';
+            if (!savedTheme) {
+                savedTheme = localStorage.getItem('appTheme') || 'zephyr';
+            }
+            const link = document.getElementById('theme-css');
+            link.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${savedTheme}/bootstrap.min.css`;
+        })();
+    </script>
 </head>
 <body>
 
-<nav class="navbar navbar-dark d-lg-none mobile-navbar sticky-top">
+<nav class="navbar navbar-light d-lg-none mobile-navbar sticky-top">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
             <span class="navbar-toggler-icon"></span>
@@ -107,19 +122,19 @@
 <div class="container-fluid">
     <div class="row">
         
-        <nav id="sidebarMenu" class="col-lg-2 d-lg-block bg-dark sidebar collapse offcanvas-lg offcanvas-start" tabindex="-1">
+        <nav id="sidebarMenu" class="col-lg-2 d-lg-block sidebar collapse offcanvas-lg offcanvas-start" tabindex="-1">
             
-            <div class="offcanvas-header border-bottom border-secondary">
-                <h5 class="offcanvas-title text-white">Menü</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button>
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title">Menü</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button>
             </div>
             
             <div class="offcanvas-body d-flex flex-column p-0">
                 
-                <div class="d-none d-lg-block p-4 border-bottom border-secondary" style="background: rgba(255,255,255,0.05);">
-                    <a href="{{ url_for('main.index') }}" class="text-white text-decoration-none">
+                <div class="d-none d-lg-block p-4 border-bottom">
+                    <a href="{{ url_for('main.index') }}" class="text-decoration-none text-reset">
                         <h4 class="m-0 fw-bold"><i class="bi bi-collection-play-fill me-2"></i>MedienApp</h4>
-                        <small class="text-white-50">v0.7.1</small>
+                        <small class="text-muted">v0.7.1</small>
                     </a>
                 </div>
 
@@ -157,7 +172,7 @@
                         <div class="sidebar-heading">{{ _('my_account') }}</div>
                         
                         <li class="nav-item">
-                            <span class="nav-link text-white-50" style="cursor: default;">
+                            <span class="nav-link text-muted" style="cursor: default;">
                                 <i class="bi bi-person-circle"></i>
                                 {{ current_user.username }}
                             </span>
@@ -217,5 +232,19 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function setTheme(theme) {
+        // Update local storage for immediate feedback and fallback
+        localStorage.setItem('appTheme', theme);
+        document.getElementById('theme-css').href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${theme}/bootstrap.min.css`;
+    }
+    
+    // Set select value
+    document.addEventListener('DOMContentLoaded', () => {
+        const saved = '{{ current_user.theme if current_user.is_authenticated else "" }}' || localStorage.getItem('appTheme') || 'zephyr';
+        const sel = document.querySelector('select[onchange^="setTheme"]');
+        if(sel) sel.value = saved;
+    });
+</script>
 </body>
 </html>

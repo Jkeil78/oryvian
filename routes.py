@@ -531,10 +531,16 @@ def settings():
     active_tab = request.args.get('tab', 'system')
     
     if request.method == 'POST':
-        if 'language' in request.form:
+        # System Settings (Language & Theme)
+        if 'language' in request.form or 'theme' in request.form:
             lang = request.form.get('language')
             if lang in ['en', 'de', 'es', 'fr']:
                 current_user.language = lang
+            
+            theme = request.form.get('theme')
+            if theme in ['zephyr', 'flatly', 'materia', 'quartz', 'morph']:
+                current_user.theme = theme
+                
                 db.session.commit()
             flash(get_text('settings_saved'), 'success')
             return redirect(url_for('main.settings', tab='system'))
