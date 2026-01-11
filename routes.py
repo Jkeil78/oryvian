@@ -15,6 +15,7 @@ from extensions import db
 from models import User, Role, Location, MediaItem, Collection, Track, AppSetting
 from sqlalchemy import or_
 from backup_utils import create_backup_zip, restore_backup_zip
+from translations import TRANSLATIONS
 
 main = Blueprint('main', __name__)
 
@@ -132,6 +133,16 @@ def generate_inventory_number():
     unique = str(uuid.uuid4())[:8].upper()
     return f"INV-{year}-{unique}"
 
+def get_text(key):
+    lang = 'en'
+    if current_user.is_authenticated and current_user.language:
+        lang = current_user.language
+    return TRANSLATIONS.get(lang, TRANSLATIONS['en']).get(key, key)
+
+@main.context_processor
+def inject_get_text():
+    return dict(_=get_text)
+
 # -- API: DISCOGS TEXT SEARCH --
 @main.route('/api/search_discogs')
 @login_required
@@ -141,7 +152,7 @@ def api_search_discogs():
     
     discogs_token = get_config_value('discogs_token')
     if not discogs_token:
-        return jsonify({"success": False, "message": "Kein Token."})
+        return jsonify({"success": False, "message": get_text("flash_no_permission")})
 
     data = {"success": False, "images": [], "tracks": [], "year": "", "category": ""}
 
@@ -503,7 +514,7 @@ def login():
         if user and user.check_password(request.form.get('password')):
             login_user(user)
             return redirect(url_for('main.index'))
-        flash('Login fehlgeschlagen.', 'error')
+        flash(get_text('flash_login_failed'), 'error')
     return render_template('login.html')
 
 @main.route('/logout')
@@ -520,10 +531,14 @@ def settings():
     active_tab = request.args.get('tab', 'api')
     
     if request.method == 'POST':
+        lang = request.form.get('language')
+        if lang in ['en', 'de', 'es', 'fr']:
+            current_user.language = lang
+            db.session.commit()
         set_config_value('discogs_token', request.form.get('discogs_token', '').strip())
         set_config_value('spotify_client_id', request.form.get('spotify_client_id', '').strip())
         set_config_value('spotify_client_secret', request.form.get('spotify_client_secret', '').strip())
-        flash('Einstellungen gespeichert.', 'success')
+        flash(get_text('settings_saved'), 'success')
         return redirect(url_for('main.settings', tab='api'))
         
     return render_template('settings.html',
@@ -542,12 +557,12 @@ def change_password():
         curr = request.form.get('current_password')
         new = request.form.get('new_password')
         conf = request.form.get('confirm_password')
-        if not current_user.check_password(curr): flash('Passwort falsch.', 'error')
-        elif new != conf: flash('Passwörter ungleich.', 'error')
+        if not current_user.check_password(curr): flash(get_text('password_wrong'), 'error')
+        elif new != conf: flash(get_text('passwords_mismatch'), 'error')
         else:
             current_user.set_password(new)
             db.session.commit()
-            flash('Gespeichert.', 'success')
+            flash(get_text('flash_saved'), 'success')
             return redirect(url_for('main.index'))
     return render_template('change_password.html')
 
@@ -573,13 +588,13 @@ def admin_restore():
         f.save(p)
         try:
             restore_backup_zip(p)
-            flash('Restore erfolgreich. Bitte neu einloggen.', 'success')
+            flash(get_text('flash_backup_restore'), 'success')
             if os.path.exists(p): os.remove(p)
             return redirect(url_for('main.index'))
         except Exception as e:
             flash(f'Error: {e}', 'error')
             return redirect(url_for('main.settings', tab='backup'))
-    flash('Ungültige Datei.', 'error')
+    flash(get_text('flash_invalid_file'), 'error')
     return redirect(url_for('main.settings', tab='backup'))
 
 # -- MEDIA --
@@ -635,7 +650,7 @@ def media_create():
                 db.session.add(Track(media_item_id=item.id, title=t, position=p, duration=dur[i]))
         db.session.commit()
 
-        flash('Erstellt.', 'success')
+        flash(get_text('flash_created'), 'success')
         if request.form.get('commit_action') == 'save_next': return redirect(url_for('main.media_create'))
         return redirect(url_for('main.index'))
 
@@ -677,7 +692,7 @@ def media_edit(item_id):
                     db.session.add(Track(media_item_id=item.id, title=t, position=p, duration=dur[i]))
 
         db.session.commit()
-        flash('Gespeichert.', 'success')
+        flash(get_text('flash_saved'), 'success')
         return redirect(url_for('main.media_detail', item_id=item.id))
 
     return render_template('media_edit.html', item=item, locations=sorted(Location.query.all(), key=lambda x: x.full_path), categories=["Buch", "Film (DVD/BluRay)", "CD", "Vinyl/LP", "Videospiel", "Sonstiges"])
@@ -686,7 +701,7 @@ def media_edit(item_id):
 @login_required
 def media_delete(item_id):
     if not current_user.has_role('Admin'):
-        flash('Keine Berechtigung.', 'error')
+        flash(get_text('flash_no_permission'), 'error')
         return redirect(url_for('main.index'))
     item = MediaItem.query.get_or_404(item_id)
     db.session.delete(item)
@@ -697,29 +712,29 @@ def media_delete(item_id):
 @login_required
 def bulk_move():
     if not current_user.has_role('Admin'):
-        flash('Keine Berechtigung.', 'error')
+        flash(get_text('flash_no_permission'), 'error')
         return redirect(url_for('main.index'))
 
     item_ids = request.form.getlist('item_ids')
     target_location_id = request.form.get('target_location_id')
     
     if not item_ids:
-        flash('Keine Items ausgewählt.', 'warning')
+        flash(get_text('no_selection'), 'warning')
         return redirect(url_for('main.index'))
         
     if not target_location_id:
-        flash('Kein Zielort ausgewählt.', 'warning')
+        flash(get_text('no_target'), 'warning')
         return redirect(url_for('main.index'))
 
     try:
         target_loc = Location.query.get(int(target_location_id))
         if not target_loc:
-            flash('Ungültiger Zielort.', 'error')
+            flash(get_text('invalid_target'), 'error')
             return redirect(url_for('main.index'))
             
         count = MediaItem.query.filter(MediaItem.id.in_(item_ids)).update({MediaItem.location_id: target_loc.id}, synchronize_session=False)
         db.session.commit()
-        flash(f'{count} Items erfolgreich nach "{target_loc.full_path}" verschoben.', 'success')
+        flash(f'{count} {get_text("item_moved")}', 'success')
         
     except Exception as e:
         db.session.rollback()
@@ -734,6 +749,7 @@ def track_add(item_id):
     if t:
         db.session.add(Track(media_item_id=item_id, title=t, position=request.form.get('position', 0), duration=request.form.get('duration')))
         db.session.commit()
+        flash(get_text('track_added'), 'success')
     return redirect(url_for('main.media_detail', item_id=item_id))
 
 @main.route('/track/delete/<int:track_id>')
@@ -743,6 +759,7 @@ def track_delete(track_id):
     mid = t.media_item_id
     db.session.delete(t)
     db.session.commit()
+    flash(get_text('track_deleted'), 'success')
     return redirect(url_for('main.media_detail', item_id=mid))
 
 # -- LENT OVERVIEW --
@@ -793,7 +810,7 @@ def location_edit(loc_id):
         loc.name = request.form.get('name')
         pid = request.form.get('parent_id')
         if pid:
-            if int(pid) == loc.id: flash('Fehler.', 'error')
+            if int(pid) == loc.id: flash(get_text('flash_error'), 'error')
             else: loc.parent_id = int(pid)
         else: loc.parent_id = None
         db.session.commit()

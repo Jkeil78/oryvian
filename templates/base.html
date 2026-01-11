@@ -127,34 +127,34 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">
                             <i class="bi bi-grid-fill"></i>
-                            Dashboard
+                            {{ _('dashboard') }}
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if 'media_create' in request.endpoint %}active{% endif %}" href="{{ url_for('main.media_create') }}">
                             <i class="bi bi-plus-circle"></i>
-                            Neues Medium
+                            {{ _('new_item') }}
                         </a>
                     </li>
 <li class="nav-item">
     <a class="nav-link" href="{{ url_for('main.lent_overview') }}">
-        <i class="bi bi-person-exclamation"></i> Verliehen
+        <i class="bi bi-person-exclamation"></i> {{ _('lent_items') }}
     </a>
 </li>
 
                     {% if current_user.is_authenticated and current_user.has_role('Admin') %}
-                        <div class="sidebar-heading">Verwaltung</div>
+                        <div class="sidebar-heading">{{ _('administration') }}</div>
                         
                         <li class="nav-item">
                             <a class="nav-link {% if 'settings' in request.endpoint %}active{% endif %}" href="{{ url_for('main.settings') }}">
                                 <i class="bi bi-gear"></i>
-                                Einstellungen
+                                {{ _('settings') }}
                             </a>
                         </li>
                     {% endif %}
 
                     {% if current_user.is_authenticated %}
-                        <div class="sidebar-heading">Mein Konto</div>
+                        <div class="sidebar-heading">{{ _('my_account') }}</div>
                         
                         <li class="nav-item">
                             <span class="nav-link text-white-50" style="cursor: default;">
@@ -166,18 +166,18 @@
                         <li class="nav-item">
                             <a class="nav-link {% if 'change_password' in request.endpoint %}active{% endif %}" href="{{ url_for('main.change_password') }}">
                                 <i class="bi bi-key"></i>
-                                Passwort ändern
+                                {{ _('change_password') }}
                             </a>
                         </li>
                         <li class="nav-item mt-2">
                             <a class="nav-link text-danger" href="{{ url_for('main.logout') }}">
                                 <i class="bi bi-box-arrow-right"></i>
-                                Logout
+                                {{ _('logout') }}
                             </a>
                         </li>
                     {% else %}
                         <li class="nav-item mt-4 px-2">
-                            <a class="btn btn-primary w-100" href="{{ url_for('main.login') }}">Login</a>
+                            <a class="btn btn-primary w-100" href="{{ url_for('main.login') }}">{{ _('login') }}</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -191,12 +191,12 @@
                 <form action="{{ url_for('main.index') }}" method="GET" class="d-flex align-items-center">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="Globale Schnellsuche (Titel, ISBN, Autor)..." value="{{ request.args.get('q', '') }}">
-                        <button class="btn btn-primary" type="submit">Suchen</button>
+                        <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="{{ _('search_placeholder') }}" value="{{ request.args.get('q', '') }}">
+                        <button class="btn btn-primary" type="submit">{{ _('search') }}</button>
                     </div>
                 </form>
                 {% else %}
-                    <span class="text-muted">Bitte einloggen.</span>
+                    <span class="text-muted">{{ _('please_login') }}</span>
                 {% endif %}
             </div>
 

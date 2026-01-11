@@ -7,11 +7,11 @@
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                 <h4 class="mb-0 fw-bold text-primary">
-                    <i class="bi bi-pencil-square me-2"></i>Medium bearbeiten
+                    <i class="bi bi-pencil-square me-2"></i>{{ _('edit_media') }}
                 </h4>
                 {% if current_user.has_role('Admin') %}
-                <a href="{{ url_for('main.media_delete', item_id=item.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Wirklich löschen?');">
-                    <i class="bi bi-trash"></i> Löschen
+                <a href="{{ url_for('main.media_delete', item_id=item.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('{{ _('delete_confirm') }}');">
+                    <i class="bi bi-trash"></i> {{ _('delete') }}
                 </a>
                 {% endif %}
             </div>
@@ -27,12 +27,12 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
                                         <i class="bi bi-disc text-info me-2"></i>
-                                        <strong>Discogs Import</strong><br>
-                                        <small class="text-muted">Sucht nach Titel & Autor. Importiert Bilder & Tracks.</small>
+                                        <strong>{{ _('discogs_import') }}</strong><br>
+                                        <small class="text-muted">{{ _('discogs_hint') }}</small>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-info text-white" onclick="discogsMatch()">
                                         <span id="spin-discogs" class="spinner-border spinner-border-sm d-none"></span>
-                                        Suchen & Abgleichen
+                                        {{ _('discogs_search') }}
                                     </button>
                                 </div>
                             </div>
@@ -40,18 +40,18 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label fw-bold">Titel *</label>
-                                    <input type="text" id="title" name="title" class="form-control fw-bold" value="{{ item.title }}" required>
+                                    <input type="text" id="title" name="title" class="form-control fw-bold" value="{{ item.title }}" required placeholder="{{ _('title') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Autor / Artist</label>
+                                    <label class="form-label">{{ _('author_artist') }}</label>
                                     <input type="text" id="author" name="author_artist" class="form-control" value="{{ item.author_artist or '' }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Jahr</label>
+                                    <label class="form-label">{{ _('release_year') }}</label>
                                     <input type="number" id="year" name="release_year" class="form-control" value="{{ item.release_year or '' }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Kategorie</label>
+                                    <label class="form-label">{{ _('category') }}</label>
                                     <select name="category" id="category" class="form-select">
                                         {% for cat in categories %}
                                             <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>{{ cat }}</option>
@@ -59,7 +59,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Standort</label>
+                                    <label class="form-label">{{ _('location') }}</label>
                                     {% if current_user.has_role('Admin') %}
                                     <select name="location_id" class="form-select">
                                         {% for loc in locations %}
@@ -67,12 +67,12 @@
                                         {% endfor %}
                                     </select>
                                     {% else %}
-                                        <input type="text" class="form-control" value="{{ item.location.full_path if item.location else 'Unsortiert' }}" disabled>
+                                        <input type="text" class="form-control" value="{{ item.location.full_path if item.location else _('unsorted') }}" disabled>
                                         <input type="hidden" name="location_id" value="{{ item.location_id }}">
                                     {% endif %}
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Beschreibung</label>
+                                    <label class="form-label">{{ _('description') }}</label>
                                     <textarea name="description" class="form-control" rows="3">{{ item.description or '' }}</textarea>
                                 </div>
                                 <div class="col-md-6">
@@ -82,11 +82,11 @@
                             </div>
 
                             <div id="import-tracks-area" class="mt-4 p-3 border rounded bg-light" style="display: none;">
-                                <h6 class="text-success fw-bold"><i class="bi bi-download me-2"></i>Neue Tracks aus Discogs Import</h6>
-                                <p class="small text-muted mb-2">Beim Speichern werden die <strong>alten Tracks gelöscht</strong> und diese hier hinzugefügt!</p>
+                                <h6 class="text-success fw-bold"><i class="bi bi-download me-2"></i>{{ _('new_tracks_import') }}</h6>
+                                <p class="small text-muted mb-2">{{ _('overwrite_warning') }}</p>
                                 <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                                     <table class="table table-sm bg-white table-bordered">
-                                        <thead class="table-light"><tr><th>#</th><th>Titel</th><th>Zeit</th></tr></thead>
+                                        <thead class="table-light"><tr><th>#</th><th>{{ _('title') }}</th><th>{{ _('duration') }}</th></tr></thead>
                                         <tbody id="import-tracks-body"></tbody>
                                     </table>
                                 </div>
@@ -96,7 +96,7 @@
                         <div class="col-lg-4">
                             <div class="card bg-light border-0">
                                 <div class="card-body">
-                                    <label class="form-label fw-bold">Cover-Bild</label>
+                                    <label class="form-label fw-bold">{{ _('cover_image') }}</label>
                                     <input type="file" id="imageInput" name="image" class="d-none" accept="image/*" onchange="previewFile()">
                                     <input type="hidden" id="remote_image_url" name="remote_image_url">
                                     
@@ -109,8 +109,8 @@
                                         
                                         <span id="preview-placeholder" class="text-muted text-center p-3" style="display: {{ 'none' if item.image_filename else 'block' }};">
                                             <i class="bi bi-cloud-upload fs-1 d-block mb-2"></i>
-                                            Klicken oder STRG+V<br>
-                                            <small class="text-muted">zum Ändern</small>
+                                            {{ _('click_paste') }}<br>
+                                            <small class="text-muted">{{ _('to_change') }}</small>
                                         </span>
                                         
                                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 opacity-0 hover-overlay transition-all">
@@ -123,7 +123,7 @@
                             </div>
                             
                             <div class="mt-3 p-3 bg-light border rounded">
-                                <label class="form-label small fw-bold">Verliehen an:</label>
+                                <label class="form-label small fw-bold">{{ _('lent_to') }}:</label>
                                 <input type="text" name="lent_to" class="form-control form-control-sm" value="{{ item.lent_to or '' }}" placeholder="Name...">
                             </div>
 
@@ -135,16 +135,16 @@
                     </div>
 
                     <div class="d-flex justify-content-between mt-4 pt-3 border-top">
-                        <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn btn-outline-secondary">Abbrechen</a>
-                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-2"></i>Speichern</button>
+                        <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn btn-outline-secondary">{{ _('cancel') }}</a>
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-2"></i>{{ _('save') }}</button>
                     </div>
                 </form>
 
                 <div class="mt-5 pt-4 border-top" id="existing-tracks-area">
-                    <h5 class="mb-3">Aktuelle Trackliste</h5>
+                    <h5 class="mb-3">{{ _('current_tracklist') }}</h5>
                     {% if item.tracks.count() > 0 %}
                     <table class="table table-sm table-striped">
-                        <thead><tr><th width="50">#</th><th>Titel</th><th width="80">Dauer</th><th width="30"></th></tr></thead>
+                        <thead><tr><th width="50">#</th><th>{{ _('title') }}</th><th width="80">{{ _('duration') }}</th><th width="30"></th></tr></thead>
                         <tbody>
                             {% for track in item.tracks %}
                             <tr>
@@ -157,7 +157,7 @@
                         </tbody>
                     </table>
                     {% else %}
-                        <p class="text-muted small">Keine Tracks vorhanden.</p>
+                        <p class="text-muted small">{{ _('no_tracks') }}</p>
                     {% endif %}
                 </div>
 
@@ -170,7 +170,7 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Bild auswählen</h5>
+                <h5 class="modal-title">{{ _('image_select') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body bg-light">

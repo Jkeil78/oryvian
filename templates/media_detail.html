@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Zurück zur Übersicht
+            <i class="bi bi-arrow-left"></i> {{ _('back_overview') }}
         </a>
         <div>
             {% if spotify_enabled and item.category in ['CD', 'Vinyl/LP'] %}
@@ -14,13 +14,13 @@
             </a>
             {% endif %}
             <a href="{{ url_for('main.media_edit', item_id=item.id) }}" class="btn btn-primary">
-                <i class="bi bi-pencil"></i> Bearbeiten
+                <i class="bi bi-pencil"></i> {{ _('edit') }}
             </a>
             {% if current_user.has_role('Admin') %}
             <a href="{{ url_for('main.media_delete', item_id=item.id) }}" 
                class="btn btn-danger" 
-               onclick="return confirm('Diesen Eintrag wirklich unwiderruflich löschen?');">
-                <i class="bi bi-trash"></i> Löschen
+               onclick="return confirm('{{ _('delete_confirm') }}');">
+                <i class="bi bi-trash"></i> {{ _('delete') }}
             </a>
             {% endif %}
         </div>
@@ -46,7 +46,7 @@
                 <hr>
                 
                 <div class="mb-3">
-                    <small class="text-uppercase text-muted fw-bold d-block mb-1">Inventar #</small>
+                    <small class="text-uppercase text-muted fw-bold d-block mb-1">{{ _('inventory_num') }}</small>
                     <span class="fs-5 font-monospace">{{ item.inventory_number }}</span>
                 </div>
                 
@@ -55,7 +55,7 @@
                          alt="QR Code" 
                          class="img-thumbnail"
                          style="width: 140px; height: 140px;">
-                    <div class="small text-muted mt-1">Scan mich</div>
+                    <div class="small text-muted mt-1">{{ _('scan_me') }}</div>
                 </div>
             </div>
         </div>
@@ -74,11 +74,11 @@
                         <div>
                             {% if item.lent_to %}
                                 <span class="badge bg-warning text-dark fs-6">
-                                    <i class="bi bi-person-exclamation"></i> Verliehen
+                                    <i class="bi bi-person-exclamation"></i> {{ _('status_lent') }}
                                 </span>
                             {% else %}
                                 <span class="badge bg-success fs-6">
-                                    <i class="bi bi-check-circle"></i> Verfügbar
+                                    <i class="bi bi-check-circle"></i> {{ _('status_available') }}
                                 </span>
                             {% endif %}
                         </div>
@@ -87,12 +87,12 @@
 
                 <div class="card-body">
                     <div class="row mb-3">
-                        <label class="col-sm-3 fw-bold text-muted">Autor / Künstler</label>
+                        <label class="col-sm-3 fw-bold text-muted">{{ _('author_artist') }}</label>
                         <div class="col-sm-9 fs-5">{{ item.author_artist or '-' }}</div>
                     </div>
 
                     <div class="row mb-3">
-                        <label class="col-sm-3 fw-bold text-muted">Standort</label>
+                        <label class="col-sm-3 fw-bold text-muted">{{ _('location') }}</label>
                         <div class="col-sm-9">
                             {% if item.location %}
                                 <span class="d-inline-block px-2 py-1 bg-light border rounded">
@@ -100,20 +100,20 @@
                                     {{ item.location.full_path }}
                                 </span>
                             {% else %}
-                                <span class="text-muted fst-italic">Unsortiert</span>
+                                <span class="text-muted fst-italic">{{ _('unsorted') }}</span>
                             {% endif %}
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <label class="col-sm-3 fw-bold text-muted">Status-Details</label>
+                        <label class="col-sm-3 fw-bold text-muted">{{ _('status_details') }}</label>
                         <div class="col-sm-9">
                             {% if item.lent_to %}
                                 <div class="alert alert-warning py-2 mb-0 d-inline-block">
-                                    <strong>Verliehen an:</strong> {{ item.lent_to }}<br>
-                                    <small>seit dem {{ item.lent_at.strftime('%d.%m.%Y') }}</small>
+                                    <strong>{{ _('lent_to') }}:</strong> {{ item.lent_to }}<br>
+                                    <small>{{ _('since') }} {{ item.lent_at.strftime('%d.%m.%Y') }}</small>
                                 </div>
                             {% else %}
-                                <span class="text-success">Im Bestand</span>
+                                <span class="text-success">{{ _('in_stock') }}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label class="col-sm-3 fw-bold text-muted">Erfasst von</label>
+                        <label class="col-sm-3 fw-bold text-muted">{{ _('created_by') }}</label>
                         <div class="col-sm-9">
                             <i class="bi bi-person"></i> {{ item.creator_user.username }} 
                             <span class="text-muted ms-2 small">({{ item.created_at.strftime('%d.%m.%Y') }})</span>
@@ -133,7 +133,7 @@
 
                     {% if item.description %}
                     <hr>
-                    <h5 class="h6 fw-bold mb-2">Beschreibung / Inhalt</h5>
+                    <h5 class="h6 fw-bold mb-2">{{ _('description') }}</h5>
                     <div class="bg-light p-3 rounded text-secondary">
                         {{ item.description }}
                     </div>
@@ -149,8 +149,8 @@
                     {% if item.category in ['CD', 'Vinyl/LP'] %}
                         <hr class="mt-5 border-secondary">
                         <div class="d-flex align-items-center mb-3">
-                            <h5 class="h5 fw-bold mb-0 me-3"><i class="bi bi-music-note-list"></i> Trackliste</h5>
-                            <span class="badge bg-light text-dark border">{{ tracks|length }} Titel</span>
+                            <h5 class="h5 fw-bold mb-0 me-3"><i class="bi bi-music-note-list"></i> {{ _('tracklist') }}</h5>
+                            <span class="badge bg-light text-dark border">{{ tracks|length }} {{ _('tracks') }}</span>
                         </div>
                         
                         <div class="card border-0 bg-light">
@@ -161,8 +161,8 @@
                                         <thead class="table-secondary">
                                             <tr>
                                                 <th style="width:60px" class="text-center">#</th>
-                                                <th>Titel</th>
-                                                <th style="width:100px">Dauer</th>
+                                                <th>{{ _('title') }}</th>
+                                                <th style="width:100px">{{ _('duration') }}</th>
                                                 <th style="width:50px"></th>
                                             </tr>
                                         </thead>
@@ -175,8 +175,8 @@
                                                 <td class="text-end">
                                                     <a href="{{ url_for('main.track_delete', track_id=track.id) }}" 
                                                        class="text-danger" 
-                                                       title="Track löschen"
-                                                       onclick="return confirm('Track löschen?')">
+                                                       title="{{ _('delete') }}"
+                                                       onclick="return confirm('{{ _('really_delete_track') }}')">
                                                         <i class="bi bi-x-circle-fill"></i>
                                                     </a>
                                                 </td>
@@ -186,24 +186,24 @@
                                     </table>
                                 </div>
                                 {% else %}
-                                    <div class="p-3 text-center text-muted fst-italic">Noch keine Tracks eingetragen.</div>
+                                    <div class="p-3 text-center text-muted fst-italic">{{ _('no_tracks') }}</div>
                                 {% endif %}
 
                                 <div class="p-3 border-top">
                                     <form action="{{ url_for('main.track_add', item_id=item.id) }}" method="POST" class="row g-2 align-items-center">
-                                        <div class="col-auto text-muted small fw-bold">NEUER TRACK:</div>
+                                        <div class="col-auto text-muted small fw-bold">{{ _('new_track') }}:</div>
                                         <div class="col-auto">
                                             <input type="number" name="position" class="form-control form-control-sm text-center" placeholder="#" value="{{ tracks|length + 1 }}" style="width: 50px;">
                                         </div>
                                         <div class="col">
-                                            <input type="text" name="title" class="form-control form-control-sm" placeholder="Titel Name" required>
+                                            <input type="text" name="title" class="form-control form-control-sm" placeholder="{{ _('track_title') }}" required>
                                         </div>
                                         <div class="col-auto">
-                                            <input type="text" name="duration" class="form-control form-control-sm" placeholder="Zeit (3:45)" style="width: 80px;">
+                                            <input type="text" name="duration" class="form-control form-control-sm" placeholder="{{ _('track_time') }}" style="width: 80px;">
                                         </div>
                                         <div class="col-auto">
                                             <button type="submit" class="btn btn-sm btn-success">
-                                                <i class="bi bi-plus-lg"></i> Hinzufügen
+                                                <i class="bi bi-plus-lg"></i> {{ _('add_track') }}
                                             </button>
                                         </div>
                                     </form>

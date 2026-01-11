@@ -3,10 +3,10 @@
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center gap-3">
-        <h2 class="h4 mb-0">Meine Medien</h2>
+        <h2 class="h4 mb-0">{{ _('my_media') }}</h2>
         <span class="badge bg-secondary rounded-pill">
             {% if pagination %}
-                {{ pagination.total }} gesamt
+                {{ pagination.total }} {{ _('total') }}
             {% else %}
                 {{ items|length }}
             {% endif %}
@@ -14,10 +14,10 @@
     </div>
     
     <div class="btn-group mt-2 mt-md-0" role="group">
-        <button type="button" class="btn btn-outline-primary active" id="btn-view-table" onclick="setView('table')">
+        <button type="button" class="btn btn-outline-primary active" id="btn-view-table" onclick="setView('table')" title="{{ _('view_table') }}">
             <i class="bi bi-list"></i>
         </button>
-        <button type="button" class="btn btn-outline-primary" id="btn-view-grid" onclick="setView('grid')">
+        <button type="button" class="btn btn-outline-primary" id="btn-view-grid" onclick="setView('grid')" title="{{ _('view_grid') }}">
             <i class="bi bi-grid"></i>
         </button>
     </div>
@@ -33,13 +33,13 @@
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
                         <input type="text" name="q" class="form-control border-start-0 bg-light" 
-                               placeholder="Suche..." value="{{ filters.q }}">
+                               placeholder="{{ _('search') }}..." value="{{ filters.q }}">
                     </div>
                 </div>
 
                 <div class="col-md-2">
                     <select name="category" class="form-select bg-light" onchange="this.form.submit()">
-                        <option value="">Alle Kategorien</option>
+                        <option value="">{{ _('filter_category') }}</option>
                         {% for cat in categories %}
                             <option value="{{ cat }}" {% if filters.category == cat %}selected{% endif %}>{{ cat }}</option>
                         {% endfor %}
@@ -48,7 +48,7 @@
 
                 <div class="col-md-3">
                     <select name="location" class="form-select bg-light" onchange="this.form.submit()">
-                        <option value="">Alle Standorte</option>
+                        <option value="">{{ _('filter_location') }}</option>
                         {% for loc in locations %}
                             <option value="{{ loc.id }}" {% if filters.location|int == loc.id %}selected{% endif %}>{{ loc.full_path }}</option>
                         {% endfor %}
@@ -57,18 +57,18 @@
 
                 <div class="col-md-2">
                     <select name="lent" class="form-select bg-light" onchange="this.form.submit()">
-                        <option value="" {% if filters.lent == '' %}selected{% endif %}>Alle Status</option>
-                        <option value="no" {% if filters.lent == 'no' %}selected{% endif %}>✅ Verfügbar</option>
-                        <option value="yes" {% if filters.lent == 'yes' %}selected{% endif %}>🔴 Verliehen</option>
+                        <option value="" {% if filters.lent == '' %}selected{% endif %}>{{ _('filter_status') }}</option>
+                        <option value="no" {% if filters.lent == 'no' %}selected{% endif %}>{{ _('status_available') }}</option>
+                        <option value="yes" {% if filters.lent == 'yes' %}selected{% endif %}>{{ _('status_lent') }}</option>
                     </select>
                 </div>
 
                 <div class="col-md-2">
-                    <select name="limit" class="form-select bg-light" onchange="this.form.submit()" title="Anzahl pro Seite">
-                        <option value="20" {% if filters.limit == '20' or not filters.limit %}selected{% endif %}>20 pro Seite</option>
-                        <option value="50" {% if filters.limit == '50' %}selected{% endif %}>50 pro Seite</option>
-                        <option value="100" {% if filters.limit == '100' %}selected{% endif %}>100 pro Seite</option>
-                        <option value="all" {% if filters.limit == 'all' %}selected{% endif %}>Alle anzeigen</option>
+                    <select name="limit" class="form-select bg-light" onchange="this.form.submit()" title="{{ _('per_page') }}">
+                        <option value="20" {% if filters.limit == '20' or not filters.limit %}selected{% endif %}>20 {{ _('per_page') }}</option>
+                        <option value="50" {% if filters.limit == '50' %}selected{% endif %}>50 {{ _('per_page') }}</option>
+                        <option value="100" {% if filters.limit == '100' %}selected{% endif %}>100 {{ _('per_page') }}</option>
+                        <option value="all" {% if filters.limit == 'all' %}selected{% endif %}>{{ _('show_all') }}</option>
                     </select>
                 </div>
             </div>
@@ -77,33 +77,33 @@
                 
                 <div class="col-auto d-flex align-items-center">
                     <i class="bi bi-arrow-down-up text-muted me-2"></i>
-                    <small class="fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">Sortierung:</small>
+                    <small class="fw-bold text-muted text-uppercase" style="font-size: 0.75rem;">{{ _('sort_by') }}:</small>
                 </div>
 
                 <div class="col-auto">
                     <select name="sort_field" class="form-select form-select-sm border-0 bg-white" onchange="this.form.submit()">
-                        <option value="added" {% if filters.sort_field == 'added' %}selected{% endif %}>Hinzugefügt</option>
-                        <option value="title" {% if filters.sort_field == 'title' %}selected{% endif %}>Titel</option>
-                        <option value="author" {% if filters.sort_field == 'author' %}selected{% endif %}>Autor / Artist</option>
-                        <option value="year" {% if filters.sort_field == 'year' %}selected{% endif %}>Jahr</option>
+                        <option value="added" {% if filters.sort_field == 'added' %}selected{% endif %}>{{ _('sort_added') }}</option>
+                        <option value="title" {% if filters.sort_field == 'title' %}selected{% endif %}>{{ _('sort_title') }}</option>
+                        <option value="author" {% if filters.sort_field == 'author' %}selected{% endif %}>{{ _('sort_author') }}</option>
+                        <option value="year" {% if filters.sort_field == 'year' %}selected{% endif %}>{{ _('sort_year') }}</option>
                     </select>
                 </div>
 
                 <div class="col-auto">
                     <select name="sort_order" class="form-select form-select-sm border-0 bg-white" onchange="this.form.submit()">
-                        <option value="asc" {% if filters.sort_order == 'asc' %}selected{% endif %}>Aufsteigend (A-Z)</option>
-                        <option value="desc" {% if filters.sort_order == 'desc' %}selected{% endif %}>Absteigend (Z-A)</option>
+                        <option value="asc" {% if filters.sort_order == 'asc' %}selected{% endif %}>{{ _('sort_asc') }}</option>
+                        <option value="desc" {% if filters.sort_order == 'desc' %}selected{% endif %}>{{ _('sort_desc') }}</option>
                     </select>
                 </div>
 
                 <div class="col d-flex justify-content-end gap-2">
                     <button class="btn btn-primary btn-sm px-3" type="submit">
-                        <i class="bi bi-funnel-fill me-1"></i>Anwenden
+                        <i class="bi bi-funnel-fill me-1"></i>{{ _('apply') }}
                     </button>
                     
                     {% if filter_active %}
-                        <a href="{{ url_for('main.index', reset=1) }}" class="btn btn-outline-secondary btn-sm" title="Filter zurücksetzen">
-                            <i class="bi bi-x-lg me-1"></i>Reset
+                        <a href="{{ url_for('main.index', reset=1) }}" class="btn btn-outline-secondary btn-sm" title="{{ _('reset') }}">
+                            <i class="bi bi-x-lg me-1"></i>{{ _('reset') }}
                         </a>
                     {% endif %}
                 </div>
@@ -111,7 +111,7 @@
 
         </form>
         {% else %}
-            <div class="text-center text-muted">Bitte einloggen.</div>
+            <div class="text-center text-muted">{{ _('please_login') }}</div>
         {% endif %}
     </div>
 </div>
@@ -124,17 +124,17 @@
             <div class="card-body py-2 d-flex align-items-center gap-2 flex-wrap">
                 <div class="form-check mb-0">
                     <input class="form-check-input" type="checkbox" id="selectAll">
-                    <label class="form-check-label small fw-bold text-uppercase text-muted" for="selectAll">Alle</label>
+                    <label class="form-check-label small fw-bold text-uppercase text-muted" for="selectAll">{{ _('select_all') }}</label>
                 </div>
                 <div class="vr mx-2"></div>
                 <select name="target_location_id" class="form-select form-select-sm" style="max-width: 300px;" required>
-                    <option value="">-- Markierte verschieben nach... --</option>
+                    <option value="">{{ _('move_target') }}</option>
                     {% for loc in locations %}
                         <option value="{{ loc.id }}">{{ loc.full_path }}</option>
                     {% endfor %}
                 </select>
                 <button type="submit" class="btn btn-sm btn-primary text-nowrap">
-                    <i class="bi bi-arrow-right-circle me-1"></i>Verschieben
+                    <i class="bi bi-arrow-right-circle me-1"></i>{{ _('move') }}
                 </button>
             </div>
         </div>
@@ -149,10 +149,10 @@
                             {% if current_user.has_role('Admin') %}
                             <th style="width: 30px;"></th>
                             {% endif %}
-                            <th style="width: 60px;">Bild</th>
-                            <th>Titel / Info</th>
-                            <th class="d-none d-md-table-cell">Kategorie</th> 
-                            <th class="d-none d-lg-table-cell">Standort</th>  
+                            <th style="width: 60px;">{{ _('cover_image') }}</th>
+                            <th>{{ _('title') }} / Info</th>
+                            <th class="d-none d-md-table-cell">{{ _('category') }}</th> 
+                            <th class="d-none d-lg-table-cell">{{ _('location') }}</th>  
                             <th class="text-end"></th>
                         </tr>
                     </thead>
@@ -190,7 +190,7 @@
                             </td>
                             <td class="text-end">
                                 {% if item.lent_to %}
-                                    <i class="bi bi-circle-fill text-warning small me-2" title="Verliehen an {{ item.lent_to }}"></i>
+                                    <i class="bi bi-circle-fill text-warning small me-2" title="{{ _('lent_to') }} {{ item.lent_to }}"></i>
                                 {% endif %}
                                 <a href="{{ url_for('main.media_detail', item_id=item.id) }}" class="btn btn-sm btn-light text-primary"><i class="bi bi-chevron-right"></i></a>
                             </td>
@@ -216,7 +216,7 @@
                             <span class="badge bg-white text-dark shadow-sm border opacity-75">{{ item.category }}</span>
                         </div>
                         {% if item.lent_to %}
-                            <span class="badge bg-warning text-dark shadow-sm">Verliehen</span>
+                            <span class="badge bg-warning text-dark shadow-sm">{{ _('lent') }}</span>
                         {% endif %}
                     </div>
                     
@@ -235,7 +235,7 @@
 
                         <div class="card-body p-3">
                             <h6 class="card-title text-truncate fw-bold mb-1" title="{{ item.title }}">{{ item.title }}</h6>
-                            <p class="card-text small text-muted mb-0 text-truncate">{{ item.author_artist or 'Kein Autor' }}</p>
+                            <p class="card-text small text-muted mb-0 text-truncate">{{ item.author_artist or '' }}</p>
                         </div>
                     </a>
                 </div>
@@ -280,8 +280,8 @@
 {% else %}
     <div class="text-center py-5">
         <div class="mb-3 text-muted opacity-50"><i class="bi bi-inbox fs-1"></i></div>
-        <p class="text-muted">Keine Medien gefunden.</p>
-        <a href="{{ url_for('main.media_create') }}" class="btn btn-primary">Neues anlegen</a>
+        <p class="text-muted">{{ _('no_items') }}</p>
+        <a href="{{ url_for('main.media_create') }}" class="btn btn-primary">{{ _('create_new') }}</a>
     </div>
 {% endif %}
 
