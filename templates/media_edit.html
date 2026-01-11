@@ -54,7 +54,7 @@
                                     <label class="form-label">{{ _('category') }}</label>
                                     <select name="category" id="category" class="form-select">
                                         {% for cat in categories %}
-                                            <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>{{ cat }}</option>
+                                            <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>{{ _(cat) }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
