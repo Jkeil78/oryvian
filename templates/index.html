@@ -184,7 +184,7 @@
                                 </div>
                                 <div class="small text-muted d-none d-md-block">{{ item.author_artist or '' }}</div>
                             </td>
-                            <td class="d-none d-md-table-cell"><span class="badge bg-light text-dark border">{{ _(item.category) }}</span></td>
+                            <td class="d-none d-md-table-cell"><span class="badge bg-light text-body border">{{ _(item.category) }}</span></td>
                             <td class="d-none d-lg-table-cell text-muted small">
                                 {% if item.location %}<i class="bi bi-folder2-open me-1"></i>{{ item.location.full_path }}{% endif %}
                             </td>
@@ -213,7 +213,7 @@
                             {% if current_user.has_role('Admin') %}
                             <input type="checkbox" name="item_ids" value="{{ item.id }}" class="form-check-input item-checkbox shadow-sm mt-0" style="pointer-events: auto; cursor: pointer;">
                             {% endif %}
-                            <span class="badge bg-white text-dark shadow-sm border opacity-75">{{ _(item.category) }}</span>
+                            <span class="badge bg-white bg-opacity-75 text-body shadow-sm border">{{ _(item.category) }}</span>
                         </div>
                         {% if item.lent_to %}
                             <span class="badge bg-warning text-dark shadow-sm">{{ _('lent') }}</span>
