@@ -23,8 +23,15 @@
     </div>
 </div>
 
+<!-- Mobile Toggle Button -->
+<div class="d-md-none mb-3">
+    <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target=".mobile-collapsible" aria-expanded="false">
+        <i class="bi bi-funnel"></i> Filter & Optionen anzeigen
+    </button>
+</div>
+
 <div class="card mb-4 shadow-sm border-0">
-    <div class="card-body bg-white rounded">
+    <div class="card-body bg-white rounded collapse d-md-block mobile-collapsible">
         {% if current_user.is_authenticated %}
         <form action="{{ url_for('main.index') }}" method="GET">
             
@@ -120,7 +127,7 @@
     {% if current_user.has_role('Admin') %}
     <form action="{{ url_for('main.bulk_move') }}" method="POST">
         
-        <div class="card mb-3 shadow-sm border-0 bg-light">
+        <div class="card mb-3 shadow-sm border-0 bg-light collapse d-md-block mobile-collapsible">
             <div class="card-body py-2 d-flex align-items-center gap-2 flex-wrap">
                 <div class="form-check mb-0">
                     <input class="form-check-input" type="checkbox" id="selectAll">
