@@ -201,6 +201,9 @@ TRANSLATIONS = {
         'tmdb_placeholder': 'Insert Key here...',
         'tmdb_hint': 'Required for movie covers and details.',
         'generate_key': 'Generate Key here',
+        'about': 'About',
+        'version': 'Version',
+        'developed_by': 'Developed by',
     },
     'de': {
         'app_name': 'MedienApp',
@@ -404,6 +407,9 @@ TRANSLATIONS = {
         'tmdb_placeholder': 'Key hier einfügen...',
         'tmdb_hint': 'Benötigt für Film-Cover und Details.',
         'generate_key': 'Key hier generieren',
+        'about': 'Über',
+        'version': 'Version',
+        'developed_by': 'Entwickelt von',
     },
     'es': {
         'app_name': 'MediaApp',
@@ -607,6 +613,9 @@ TRANSLATIONS = {
         'tmdb_placeholder': 'Insertar clave aquí...',
         'tmdb_hint': 'Requerido para portadas y detalles de películas.',
         'generate_key': 'Generar clave aquí',
+        'about': 'Acerca de',
+        'version': 'Versión',
+        'developed_by': 'Desarrollado por',
     },
     'fr': {
         'app_name': 'MediaApp',
@@ -810,5 +819,8 @@ TRANSLATIONS = {
         'tmdb_placeholder': 'Insérer la clé ici...',
         'tmdb_hint': 'Requis pour les couvertures et détails des films.',
         'generate_key': 'Générer la clé ici',
+        'about': 'À propos',
+        'version': 'Version',
+        'developed_by': 'Développé par',
     }
 }

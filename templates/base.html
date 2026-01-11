@@ -14,6 +14,41 @@
         /* Bilder Hilfsklassen für Cards */
         .avatar-placeholder { width: 100%; height: 180px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; color: #adb5bd; }
         .img-cover { object-fit: cover; height: 180px; width: 100%; }
+        
+        /* Custom Nav Buttons */
+        @media (min-width: 992px) {
+            .navbar-nav .nav-item { margin-right: 0.5rem; }
+            .nav-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-width: 90px;
+                height: 70px;
+                padding: 0.5rem !important;
+                border-radius: 0.5rem;
+                background-color: rgba(255,255,255,0.1);
+                transition: all 0.2s;
+            }
+            .nav-btn:hover, .nav-btn.active {
+                background-color: rgba(255,255,255,0.25);
+                transform: translateY(-2px);
+                color: #fff !important;
+            }
+            .nav-btn i { font-size: 1.5rem; margin-bottom: 2px; }
+            .nav-btn span { font-size: 0.75rem; font-weight: 500; line-height: 1.2; }
+        }
+        @media (max-width: 991.98px) {
+            .nav-btn {
+                display: flex;
+                align-items: center;
+                padding: 10px 15px !important;
+                border-radius: 8px;
+                margin-bottom: 5px;
+            }
+            .nav-btn i { margin-right: 10px; font-size: 1.2rem; width: 24px; text-align: center; }
+            .nav-btn.active { background-color: rgba(255,255,255,0.15); font-weight: bold; }
+        }
     </style>
     <script>
         // Theme Init
@@ -42,17 +77,29 @@
         <div class="collapse navbar-collapse" id="navbarColor01">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">{{ _('dashboard') }}</a>
+                    <a class="nav-link nav-btn {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">
+                        <i class="bi bi-grid-fill"></i>
+                        <span>{{ _('dashboard') }}</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if 'media_create' in request.endpoint %}active{% endif %}" href="{{ url_for('main.media_create') }}">{{ _('new_item') }}</a>
+                    <a class="nav-link nav-btn {% if 'media_create' in request.endpoint %}active{% endif %}" href="{{ url_for('main.media_create') }}">
+                        <i class="bi bi-plus-square-fill"></i>
+                        <span>{{ _('new_item') }}</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if 'lent' in request.endpoint %}active{% endif %}" href="{{ url_for('main.lent_overview') }}">{{ _('lent_items') }}</a>
+                    <a class="nav-link nav-btn {% if 'lent' in request.endpoint %}active{% endif %}" href="{{ url_for('main.lent_overview') }}">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>{{ _('lent_items') }}</span>
+                    </a>
                 </li>
                 {% if current_user.is_authenticated and current_user.has_role('Admin') %}
                 <li class="nav-item">
-                    <a class="nav-link {% if 'settings' in request.endpoint %}active{% endif %}" href="{{ url_for('main.settings') }}">{{ _('settings') }}</a>
+                    <a class="nav-link nav-btn {% if 'settings' in request.endpoint %}active{% endif %}" href="{{ url_for('main.settings') }}">
+                        <i class="bi bi-gear-fill"></i>
+                        <span>{{ _('settings') }}</span>
+                    </a>
                 </li>
                 {% endif %}
             </ul>
