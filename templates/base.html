@@ -59,7 +59,7 @@
 
             {% if current_user.is_authenticated %}
             <form class="d-flex" action="{{ url_for('main.index') }}" method="GET">
-                <input class="form-control me-sm-2" type="search" name="q" placeholder="{{ _('search') }}" value="{{ request.args.get('q', '') }}">
+                <input class="form-control me-sm-2" type="search" name="q" placeholder="{{ _('search_placeholder') }}" value="{{ request.args.get('q', '') }}">
                 <button class="btn btn-secondary my-2 my-sm-0" type="submit">{{ _('search') }}</button>
             </form>
             
