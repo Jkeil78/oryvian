@@ -606,9 +606,17 @@ def logout():
 def settings():
     if not current_user.has_role('Admin'): return redirect(url_for('main.index'))
     
-    active_tab = request.args.get('tab', 'system')
+    active_tab = request.args.get('tab', 'ownership')
     
     if request.method == 'POST':
+        # Ownership Settings
+        if 'owner_name' in request.form:
+            set_config_value('owner_name', request.form.get('owner_name', '').strip())
+            set_config_value('owner_address', request.form.get('owner_address', '').strip())
+            set_config_value('owner_phone', request.form.get('owner_phone', '').strip())
+            flash(get_text('settings_saved'), 'success')
+            return redirect(url_for('main.settings', tab='ownership'))
+
         # System Settings (Language & Theme)
         if 'language' in request.form or 'theme' in request.form:
             lang = request.form.get('language')
@@ -637,7 +645,10 @@ def settings():
                            locations=sorted(Location.query.all(), key=lambda x: x.full_path),
                            discogs_token=get_config_value('discogs_token', ''),
                            spotify_client_id=get_config_value('spotify_client_id', ''),
-                           spotify_client_secret=get_config_value('spotify_client_secret', ''))
+                           spotify_client_secret=get_config_value('spotify_client_secret', ''),
+                           owner_name=get_config_value('owner_name', ''),
+                           owner_address=get_config_value('owner_address', ''),
+                           owner_phone=get_config_value('owner_phone', ''))
 
 @main.route('/profile/change_password', methods=['GET', 'POST'])
 @login_required

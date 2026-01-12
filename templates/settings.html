@@ -11,6 +11,11 @@
             <div class="card-header bg-white border-bottom">
                 <ul class="nav nav-tabs card-header-tabs" id="settingsTab" role="tablist">
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if active_tab == 'ownership' %}active{% endif %}" id="ownership-tab" data-bs-toggle="tab" data-bs-target="#ownership" type="button" role="tab">
+                            <i class="bi bi-person-badge me-2"></i>{{ _('ownership_labels') }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link {% if active_tab == 'system' %}active{% endif %}" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
                             <i class="bi bi-pc-display-horizontal me-2"></i>{{ _('system') }}
                         </button>
@@ -40,6 +45,36 @@
             
             <div class="card-body p-4">
                 <div class="tab-content" id="settingsTabContent">
+
+                    <!-- TAB: OWNERSHIP -->
+                    <div class="tab-pane fade {% if active_tab == 'ownership' %}show active{% endif %}" id="ownership" role="tabpanel">
+                        <form method="POST" action="{{ url_for('main.settings') }}">
+                            <p class="text-muted">{{ _('ownership_intro') }}</p>
+                            
+                            <div class="mb-3">
+                                <label for="owner_name" class="form-label fw-bold">{{ _('owner_name') }}</label>
+                                <input type="text" class="form-control" id="owner_name" name="owner_name" 
+                                       value="{{ owner_name }}" placeholder="{{ _('owner_name_placeholder') }}">
+                            </div>
+                
+                            <div class="mb-3">
+                                <label for="owner_address" class="form-label fw-bold">{{ _('address') }}</label>
+                                <textarea class="form-control" id="owner_address" name="owner_address" rows="3">{{ owner_address }}</textarea>
+                            </div>
+                
+                            <div class="mb-3">
+                                <label for="owner_phone" class="form-label fw-bold">{{ _('phone_number') }}</label>
+                                <input type="text" class="form-control" id="owner_phone" name="owner_phone" value="{{ owner_phone }}">
+                                <div class="form-text">{{ _('phone_hint') }}</div>
+                            </div>
+                
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-2"></i>{{ _('save_settings') }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                     
                     <!-- TAB: SYSTEM -->
                     <div class="tab-pane fade {% if active_tab == 'system' %}show active{% endif %}" id="system" role="tabpanel">
