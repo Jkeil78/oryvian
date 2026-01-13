@@ -93,6 +93,7 @@
                             <h5 class="mb-3 mt-4">Design</h5>
                             <div class="mb-3">
                                 <select name="theme" class="form-select" onchange="setTheme(this.value)">
+                                    <option value="auto">{{ _('system_default') }}</option>
                                     <option value="cerulean" {% if current_user.theme == 'cerulean' %}selected{% endif %}>Cerulean (Standard)</option>
                                     <option value="zephyr" {% if current_user.theme == 'zephyr' %}selected{% endif %}>Zephyr (Modern)</option>
                                     <option value="flatly" {% if current_user.theme == 'flatly' %}selected{% endif %}>Flatly (Clean)</option>

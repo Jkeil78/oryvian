@@ -624,7 +624,7 @@ def settings():
                 current_user.language = lang
             
             theme = request.form.get('theme')
-            if theme in ['cerulean', 'zephyr', 'flatly', 'materia', 'quartz', 'morph', 'journal', 'pulse', 'yeti', 'darkly', 'cyborg', 'slate', 'solar', 'superhero', 'sandstone', 'united']:
+            if theme in ['auto', 'cerulean', 'zephyr', 'flatly', 'materia', 'quartz', 'morph', 'journal', 'pulse', 'yeti', 'darkly', 'cyborg', 'slate', 'solar', 'superhero', 'sandstone', 'united']:
                 current_user.theme = theme
                 
                 db.session.commit()

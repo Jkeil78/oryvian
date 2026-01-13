@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,13 +53,29 @@
     <script>
         // Theme Init
         (function() {
-            // Server-side theme preference takes precedence if user is logged in
-            let savedTheme = '{{ current_user.theme if current_user.is_authenticated else "" }}';
-            if (!savedTheme) {
-                savedTheme = localStorage.getItem('appTheme') || 'cerulean';
+            let theme;
+            const localTheme = localStorage.getItem('appTheme');
+            const userTheme = '{{ current_user.theme if current_user.is_authenticated else "" }}';
+
+            if (localTheme && localTheme !== 'auto') {
+                theme = localTheme;
+            } else if (userTheme && userTheme !== 'auto') {
+                theme = userTheme;
+            } else {
+                // Fallback to system preference if 'auto' is selected or nothing is set
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'slate' : 'cerulean';
             }
+
+            // Set data-bs-theme attribute on <html> for Bootstrap components
+            const darkThemes = ['quartz', 'darkly', 'cyborg', 'slate', 'solar', 'superhero'];
+            if (darkThemes.includes(theme)) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+
             const link = document.getElementById('theme-css');
-            link.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${savedTheme}/bootstrap.min.css`;
+            link.href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${theme}/bootstrap.min.css`;
         })();
     </script>
 </head>
@@ -150,15 +166,32 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function setTheme(theme) {
-        // Update local storage for immediate feedback and fallback
-        localStorage.setItem('appTheme', theme);
-        document.getElementById('theme-css').href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${theme}/bootstrap.min.css`;
+    function setTheme(selectedTheme) {
+        let themeToApply;
+
+        if (selectedTheme === 'auto') {
+            localStorage.removeItem('appTheme');
+            themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'slate' : 'cerulean';
+        } else {
+            localStorage.setItem('appTheme', selectedTheme);
+            themeToApply = selectedTheme;
+        }
+
+        // Update the data-bs-theme attribute for Bootstrap components
+        const darkThemes = ['quartz', 'darkly', 'cyborg', 'slate', 'solar', 'superhero'];
+        if (darkThemes.includes(themeToApply)) {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-bs-theme', 'light');
+        }
+
+        // Update the stylesheet
+        document.getElementById('theme-css').href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${themeToApply}/bootstrap.min.css`;
     }
     
     // Set select value
     document.addEventListener('DOMContentLoaded', () => {
-        const saved = '{{ current_user.theme if current_user.is_authenticated else "" }}' || localStorage.getItem('appTheme') || 'cerulean';
+        const saved = localStorage.getItem('appTheme') || '{{ current_user.theme if current_user.is_authenticated else "auto" }}' || 'auto';
         const sel = document.querySelector('select[onchange^="setTheme"]');
         if(sel) sel.value = saved;
     });
