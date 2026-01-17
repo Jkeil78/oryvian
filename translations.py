@@ -226,6 +226,10 @@ TRANSLATIONS = {
         'preview_and_print': 'Preview & Print',
         'author_artist': 'Author/Artist',
         'vertical_layout': 'Text below QR (Vertical)',
+        'start_at': 'Start at position',
+        'save_preset': 'Save Preset',
+        'preset_name': 'Preset Name',
+        'delete_preset': 'Delete Preset',
     },
     'de': {
         'app_name': 'MedienApp',
@@ -454,6 +458,10 @@ TRANSLATIONS = {
         'preview_and_print': 'Vorschau & Drucken',
         'author_artist': 'Autor/Künstler',
         'vertical_layout': 'Text unter QR (Vertikal)',
+        'start_at': 'Start bei Position',
+        'save_preset': 'Vorlage speichern',
+        'preset_name': 'Name der Vorlage',
+        'delete_preset': 'Vorlage löschen',
     },
     'es': {
         'app_name': 'MediaApp',

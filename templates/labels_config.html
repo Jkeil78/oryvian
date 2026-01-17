@@ -4,67 +4,109 @@
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h4 class="mb-0"><i class="bi bi-printer me-2"></i>{{ _('label_configuration') }}</h4>
+                <span class="badge bg-white text-primary">{{ item_ids|length }} {{ _('items') }}</span>
             </div>
             <div class="card-body">
-                <form action="{{ url_for('main.labels_print') }}" method="POST" target="_blank">
+                <form id="labelConfigForm" action="{{ url_for('main.labels_print') }}" method="POST" target="_blank">
                     <!-- Hidden IDs -->
                     {% for item_id in item_ids %}
                     <input type="hidden" name="item_ids" value="{{ item_id }}">
                     {% endfor %}
 
-                    <div class="row mb-4">
-                        <div class="col-md-12">
+                    <div class="row mb-4 align-items-end">
+                        <div class="col-md-8">
                             <label class="form-label fw-bold">{{ _('presets') }}</label>
-                            <select class="form-select" id="presetSelect" onchange="applyPreset(this.value)">
-                                <option value="custom">{{ _('custom') }}</option>
-                                <option value="brother_62x29">Brother (62mm x 29mm)</option>
-                                <option value="brother_62x100">Brother (62mm x 100mm)</option>
-                                <option value="avery_3x7">Avery Zweckform 3x7 (70mm x 42.3mm)</option>
-                                <option value="avery_2x8">Avery Zweckform 2x8 (105mm x 37mm)</option>
-                            </select>
+                            <div class="input-group">
+                                <select class="form-select" id="presetSelect" onchange="applyPreset(this.value)">
+                                    <option value="custom">{{ _('custom') }}</option>
+                                    <optgroup label="Standard">
+                                        <option value="brother_62x29">Brother (62mm x 29mm)</option>
+                                        <option value="brother_62x100">Brother (62mm x 100mm)</option>
+                                        <option value="avery_3x7">Avery Zweckform 3x7 (70mm x 42.3mm)</option>
+                                        <option value="avery_2x8">Avery Zweckform 2x8 (105mm x 37mm)</option>
+                                    </optgroup>
+                                    {% if custom_presets %}
+                                    <optgroup label="{{ _('custom') }}" id="customPresetsGroup">
+                                        {% for name, p in custom_presets.items() %}
+                                        <option value="cp_{{ name }}" data-config='{{ p | tojson }}'>{{ name }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                    {% endif %}
+                                </select>
+                                <button class="btn btn-outline-danger" type="button" id="deletePresetBtn"
+                                    onclick="deleteCurrentPreset()" style="display:none">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">{{ _('start_at') }}</label>
+                            <input type="number" name="start_at" id="start_at" class="form-control" value="1" min="1">
                         </div>
                     </div>
 
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label">{{ _('width') }} (mm)</label>
-                            <input type="number" name="width" id="width" class="form-control" value="62" step="0.1">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">{{ _('height') }} (mm)</label>
-                            <input type="number" name="height" id="height" class="form-control" value="29" step="0.1">
-                        </div>
+                    <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
                         <div class="col-md-4">
-                            <label class="form-label">{{ _('margin_top') }} (mm)</label>
-                            <input type="number" name="margin_top" id="margin_top" class="form-control" value="0"
+                            <label class="form-label small fw-bold">{{ _('width') }} (mm)</label>
+                            <input type="number" name="width" id="width" class="form-control form-control-sm" value="62"
                                 step="0.1">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">{{ _('margin_left') }} (mm)</label>
-                            <input type="number" name="margin_left" id="margin_left" class="form-control" value="0"
-                                step="0.1">
+                            <label class="form-label small fw-bold">{{ _('height') }} (mm)</label>
+                            <input type="number" name="height" id="height" class="form-control form-control-sm"
+                                value="29" step="0.1">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">{{ _('padding') }} (mm)</label>
-                            <input type="number" name="padding" id="padding" class="form-control" value="2" step="0.1">
+                            <label class="form-label small fw-bold">{{ _('columns') }}</label>
+                            <input type="number" name="columns" id="columns" class="form-control form-control-sm"
+                                value="1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">{{ _('margin_top') }} (mm)</label>
+                            <input type="number" name="margin_top" id="margin_top" class="form-control form-control-sm"
+                                value="0" step="0.1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">{{ _('margin_left') }} (mm)</label>
+                            <input type="number" name="margin_left" id="margin_left"
+                                class="form-control form-control-sm" value="0" step="0.1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">{{ _('padding') }} (mm)</label>
+                            <input type="number" name="padding" id="padding" class="form-control form-control-sm"
+                                value="2" step="0.1">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">{{ _('columns') }}</label>
-                            <input type="number" name="columns" id="columns" class="form-control" value="1">
+                            <label class="form-label small fw-bold">{{ _('font_size') }} (pt)</label>
+                            <input type="number" name="font_size" id="font_size" class="form-control form-control-sm"
+                                value="10">
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">{{ _('font_size') }} (pt)</label>
-                            <input type="number" name="font_size" id="font_size" class="form-control" value="10">
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check form-switch mb-1">
+                                <input class="form-check-input" type="checkbox" name="vertical_layout"
+                                    id="vertical_layout">
+                                <label class="form-check-label fw-bold text-primary" for="vertical_layout">
+                                    <i class="bi bi-layout-split me-1"></i>{{ _('vertical_layout') }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3 pt-3 border-top">
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="newPresetName" class="form-control"
+                                    placeholder="{{ _('preset_name') }}">
+                                <button class="btn btn-outline-primary" type="button" onclick="saveCurrentAsPreset()">
+                                    <i class="bi bi-save me-1"></i>{{ _('save_preset') }}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <hr>
-
-                    <h5 class="mb-3">{{ _('content') }}</h5>
-                    <div class="row g-3">
-                        <div class="col-12">
+                    <h5 class="mb-3 text-muted border-bottom pb-2">{{ _('content') }}</h5>
+                    <div class="row g-2">
+                        <div class="col-md-6 border-end">
                             <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" name="show_qr" id="show_qr" checked>
                                 <label class="form-check-label" for="show_qr">QR-Code</label>
@@ -83,15 +125,8 @@
                                 <input class="form-check-input" type="checkbox" name="show_id" id="show_id" checked>
                                 <label class="form-check-label" for="show_id">{{ _('inventory_number') }}</label>
                             </div>
-                            <hr class="my-3">
-                            <div class="form-check form-switch mb-4">
-                                <input class="form-check-input" type="checkbox" name="vertical_layout"
-                                    id="vertical_layout">
-                                <label class="form-check-label fw-bold text-primary" for="vertical_layout">
-                                    <i class="bi bi-layout-split me-1"></i>{{ _('vertical_layout') }}
-                                </label>
-                            </div>
-                            <hr class="my-3">
+                        </div>
+                        <div class="col-md-6 ps-3">
                             <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" name="show_owner" id="show_owner">
                                 <label class="form-check-label" for="show_owner">{{ _('owner_name') }}</label>
@@ -107,12 +142,12 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 d-flex justify-content-between">
+                    <div class="mt-5 d-flex justify-content-between">
                         <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left me-1"></i>{{ _('cancel') }}
                         </a>
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="bi bi-eye me-1"></i>{{ _('preview_and_print') }}
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-eye me-2"></i>{{ _('preview_and_print') }}
                         </button>
                     </div>
                 </form>
@@ -128,15 +163,72 @@
         const mt = document.getElementById('margin_top');
         const ml = document.getElementById('margin_left');
         const cols = document.getElementById('columns');
+        const pad = document.getElementById('padding');
+        const fs = document.getElementById('font_size');
+        const vert = document.getElementById('vertical_layout');
+        const delBtn = document.getElementById('deletePresetBtn');
+
+        delBtn.style.display = val.startsWith('cp_') ? 'block' : 'none';
 
         if (val === 'brother_62x29') {
-            w.value = 62; h.value = 29; mt.value = 0; ml.value = 0; cols.value = 1;
+            w.value = 62; h.value = 29; mt.value = 0; ml.value = 0; cols.value = 1; pad.value = 2; fs.value = 10; vert.checked = false;
         } else if (val === 'brother_62x100') {
-            w.value = 62; h.value = 100; mt.value = 0; ml.value = 0; cols.value = 1;
+            w.value = 62; h.value = 100; mt.value = 0; ml.value = 0; cols.value = 1; pad.value = 2; fs.value = 10; vert.checked = false;
         } else if (val === 'avery_3x7') {
-            w.value = 70; h.value = 42.3; mt.value = 0; ml.value = 0; cols.value = 3;
+            w.value = 70; h.value = 42.3; mt.value = 0; ml.value = 0; cols.value = 3; pad.value = 2; fs.value = 10; vert.checked = false;
         } else if (val === 'avery_2x8') {
-            w.value = 105; h.value = 37; mt.value = 0; ml.value = 0; cols.value = 2;
+            w.value = 105; h.value = 37; mt.value = 0; ml.value = 0; cols.value = 2; pad.value = 2; fs.value = 10; vert.checked = false;
+        } else if (val.startsWith('cp_')) {
+            const opt = document.querySelector(`#presetSelect option[value="${val}"]`);
+            const cfg = JSON.parse(opt.dataset.config);
+            w.value = cfg.width; h.value = cfg.height; mt.value = cfg.margin_top; ml.value = cfg.margin_left;
+            cols.value = cfg.columns; pad.value = cfg.padding; fs.value = cfg.font_size;
+            vert.checked = cfg.vertical;
+        }
+    }
+
+    async function saveCurrentAsPreset() {
+        const name = document.getElementById('newPresetName').value.trim();
+        if (!name) { alert("{{ _('preset_name') }}?"); return; }
+
+        const data = {
+            name: name,
+            width: document.getElementById('width').value,
+            height: document.getElementById('height').value,
+            padding: document.getElementById('padding').value,
+            columns: document.getElementById('columns').value,
+            margin_top: document.getElementById('margin_top').value,
+            margin_left: document.getElementById('margin_left').value,
+            font_size: document.getElementById('font_size').value,
+            vertical: document.getElementById('vertical_layout').checked
+        };
+
+        const resp = await fetch("{{ url_for('main.save_label_preset') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (resp.ok) {
+            location.reload();
+        } else {
+            alert("Error saving preset");
+        }
+    }
+
+    async function deleteCurrentPreset() {
+        const sel = document.getElementById('presetSelect');
+        const val = sel.value;
+        if (!val.startsWith('cp_')) return;
+        const name = val.substring(3);
+
+        if (!confirm(`Delete preset "${name}"?`)) return;
+
+        const resp = await fetch(`/labels/delete_preset/${name}`, { method: 'POST' });
+        if (resp.ok) {
+            location.reload();
+        } else {
+            alert("Error deleting preset");
         }
     }
 </script>

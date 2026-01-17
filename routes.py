@@ -945,8 +945,16 @@ def labels_config():
     if not item_ids:
         flash(get_text('no_selection'), 'warning')
         return redirect(url_for('main.index'))
-    
-    return render_template('labels_config.html', item_ids=item_ids)
+
+    # Fetch custom presets
+    import json
+    custom_presets_raw = get_config_value('custom_label_presets', '{}')
+    try:
+        custom_presets = json.loads(custom_presets_raw)
+    except:
+        custom_presets = {}
+
+    return render_template('labels_config.html', item_ids=item_ids, custom_presets=custom_presets)
 
 @main.route('/labels/print', methods=['POST'])
 @login_required
@@ -959,8 +967,10 @@ def labels_print():
     if not item_ids:
         flash(get_text('no_selection'), 'warning')
         return redirect(url_for('main.index'))
-    
-    items = MediaItem.query.filter(MediaItem.id.in_(item_ids)).all()
+
+    # Fetch items and MAINTAIN ORDER of item_ids
+    items_map = {str(item.id): item for item in MediaItem.query.filter(MediaItem.id.in_(item_ids)).all()}
+    items = [items_map[str(iid)] for iid in item_ids if str(iid) in items_map]
     
     try:
         width = float(request.form.get('width', '62'))
@@ -970,18 +980,22 @@ def labels_print():
         columns = int(request.form.get('columns', '1'))
         margin_top = float(request.form.get('margin_top', '0'))
         margin_left = float(request.form.get('margin_left', '0'))
+        start_at = int(request.form.get('start_at', '1'))
     except ValueError:
-        width, height, padding, font_size, columns, margin_top, margin_left = 62.0, 29.0, 2.0, 10.0, 1, 0.0, 0.0
+        width, height, padding, font_size, columns, margin_top, margin_left, start_at = 62.0, 29.0, 2.0, 10.0, 1, 0.0, 0.0, 1
 
-    # Calculate QR size:
+    # Inject empty items for start_at logic
+    if start_at > 1:
+        # We use None as placeholders for empty labels
+        items = [None] * (start_at - 1) + items
+
+    # Calculate QR size
     if 'vertical_layout' in request.form:
-        # If vertical, QR code should leave room for at least 3-4 lines of text below.
         qr_size = (height - (2 * padding)) * 0.5
     else:
-        # If horizontal, QR code can take most of the height.
         qr_size = (height - (2 * padding)) * 0.9
         
-    if qr_size < 5: qr_size = 5 # Minimum size
+    if qr_size < 5: qr_size = 5
 
     config = {
         'width': width,
@@ -999,7 +1013,8 @@ def labels_print():
         'show_address': 'show_address' in request.form,
         'show_phone': 'show_phone' in request.form,
         'vertical_layout': 'vertical_layout' in request.form,
-        'font_size': font_size
+        'font_size': font_size,
+        'start_at': start_at
     }
 
     owner_info = {
@@ -1009,6 +1024,58 @@ def labels_print():
     }
     
     return render_template('labels_print.html', items=items, config=config, owner=owner_info)
+
+@main.route('/labels/save_preset', methods=['POST'])
+@login_required
+def save_label_preset():
+    if not current_user.has_role('Admin'):
+        return jsonify({'success': False, 'message': 'No permission'}), 403
+
+    import json
+    data = request.json
+    name = data.get('name')
+    if not name:
+        return jsonify({'success': False, 'message': 'Name required'}), 400
+
+    custom_presets_raw = get_config_value('custom_label_presets', '{}')
+    try:
+        custom_presets = json.loads(custom_presets_raw)
+    except:
+        custom_presets = {}
+
+    custom_presets[name] = {
+        'width': data.get('width'),
+        'height': data.get('height'),
+        'padding': data.get('padding'),
+        'columns': data.get('columns'),
+        'margin_top': data.get('margin_top'),
+        'margin_left': data.get('margin_left'),
+        'font_size': data.get('font_size'),
+        'vertical': data.get('vertical')
+    }
+
+    set_config_value('custom_label_presets', json.dumps(custom_presets))
+    return jsonify({'success': True})
+
+@main.route('/labels/delete_preset/<name>', methods=['POST'])
+@login_required
+def delete_label_preset(name):
+    if not current_user.has_role('Admin'):
+        return jsonify({'success': False, 'message': 'No permission'}), 403
+
+    import json
+    custom_presets_raw = get_config_value('custom_label_presets', '{}')
+    try:
+        custom_presets = json.loads(custom_presets_raw)
+    except:
+        custom_presets = {}
+
+    if name in custom_presets:
+        del custom_presets[name]
+        set_config_value('custom_label_presets', json.dumps(custom_presets))
+        return jsonify({'success': True})
+    
+    return jsonify({'success': False, 'message': 'Preset not found'}), 404
 
 @main.route('/admin')
 @login_required
