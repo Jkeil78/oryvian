@@ -1,29 +1,50 @@
 <!DOCTYPE html>
 <html lang="de" data-bs-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedienVerwaltung</title>
-    <link id="theme-css" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css" rel="stylesheet">
+    <link id="theme-css" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%230d6efd' viewBox='0 0 16 16'%3E%3Cpath d='M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z'/%3E%3Cpath d='M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z'/%3E%3C/svg%3E">
-    
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%230d6efd' viewBox='0 0 16 16'%3E%3Cpath d='M1 2a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11V1H3z'/%3E%3Ccircle cx='9' cy='8' r='4'/%3E%3Cpath d='M9 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM9 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2z'/%3E%3C/svg%3E">
+
     <style>
-        body { background-color: var(--bs-body-bg); }
-        
+        body {
+            background-color: var(--bs-body-bg);
+        }
+
         /* Bilder Hilfsklassen für Cards */
-        .avatar-placeholder { width: 100%; height: 180px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; color: #adb5bd; }
-        .img-cover { object-fit: cover; height: 180px; width: 100%; }
+        .avatar-placeholder {
+            width: 100%;
+            height: 180px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+        }
+
+        .img-cover {
+            object-fit: cover;
+            height: 180px;
+            width: 100%;
+        }
 
         /* Dark Mode Placeholder Fix */
         [data-bs-theme="dark"] .form-control::placeholder {
             color: var(--bs-secondary-color);
             opacity: 0.6;
         }
-        
+
         /* Custom Nav Buttons */
         @media (min-width: 992px) {
-            .navbar-nav .nav-item { margin-right: 0.5rem; }
+            .navbar-nav .nav-item {
+                margin-right: 0.5rem;
+            }
+
             .nav-btn {
                 display: flex;
                 flex-direction: column;
@@ -33,17 +54,29 @@
                 height: 70px;
                 padding: 0.5rem !important;
                 border-radius: 0.5rem;
-                background-color: rgba(255,255,255,0.1);
+                background-color: rgba(255, 255, 255, 0.1);
                 transition: all 0.2s;
             }
-            .nav-btn:hover, .nav-btn.active {
-                background-color: rgba(255,255,255,0.25);
+
+            .nav-btn:hover,
+            .nav-btn.active {
+                background-color: rgba(255, 255, 255, 0.25);
                 transform: translateY(-2px);
                 color: #fff !important;
             }
-            .nav-btn i { font-size: 1.5rem; margin-bottom: 2px; }
-            .nav-btn span { font-size: 0.75rem; font-weight: 500; line-height: 1.2; }
+
+            .nav-btn i {
+                font-size: 1.5rem;
+                margin-bottom: 2px;
+            }
+
+            .nav-btn span {
+                font-size: 0.75rem;
+                font-weight: 500;
+                line-height: 1.2;
+            }
         }
+
         @media (max-width: 991.98px) {
             .nav-btn {
                 display: flex;
@@ -52,13 +85,23 @@
                 border-radius: 8px;
                 margin-bottom: 5px;
             }
-            .nav-btn i { margin-right: 10px; font-size: 1.2rem; width: 24px; text-align: center; }
-            .nav-btn.active { background-color: rgba(255,255,255,0.15); font-weight: bold; }
+
+            .nav-btn i {
+                margin-right: 10px;
+                font-size: 1.2rem;
+                width: 24px;
+                text-align: center;
+            }
+
+            .nav-btn.active {
+                background-color: rgba(255, 255, 255, 0.15);
+                font-weight: bold;
+            }
         }
     </style>
     <script>
         // Theme Init
-        (function() {
+        (function () {
             let theme;
             const localTheme = localStorage.getItem('appTheme');
             const userTheme = '{{ current_user.theme if current_user.is_authenticated else "" }}';
@@ -85,122 +128,141 @@
         })();
     </script>
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
-            <i class="bi bi-collection-play-fill me-2"></i>{{ _('app_name') }}
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url_for('main.index') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="me-2"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M1 2a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11V1H3z" />
+                    <circle cx="9" cy="8" r="4" />
+                    <path d="M9 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM9 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                </svg>
+                {{ _('app_name') }}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+                aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarColor01">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link nav-btn {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">
-                        <i class="bi bi-grid-fill"></i>
-                        <span>{{ _('dashboard') }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-btn {% if 'media_create' in request.endpoint %}active{% endif %}" href="{{ url_for('main.media_create') }}">
-                        <i class="bi bi-plus-square-fill"></i>
-                        <span>{{ _('new_item') }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-btn {% if 'lent' in request.endpoint %}active{% endif %}" href="{{ url_for('main.lent_overview') }}">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span>{{ _('lent_items') }}</span>
-                    </a>
-                </li>
-                {% if current_user.is_authenticated and current_user.has_role('Admin') %}
-                <li class="nav-item">
-                    <a class="nav-link nav-btn {% if 'settings' in request.endpoint %}active{% endif %}" href="{{ url_for('main.settings') }}">
-                        <i class="bi bi-gear-fill"></i>
-                        <span>{{ _('settings') }}</span>
-                    </a>
-                </li>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-btn {% if request.endpoint == 'main.index' %}active{% endif %}"
+                            href="{{ url_for('main.index') }}">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>{{ _('dashboard') }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-btn {% if 'media_create' in request.endpoint %}active{% endif %}"
+                            href="{{ url_for('main.media_create') }}">
+                            <i class="bi bi-plus-square-fill"></i>
+                            <span>{{ _('new_item') }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-btn {% if 'lent' in request.endpoint %}active{% endif %}"
+                            href="{{ url_for('main.lent_overview') }}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>{{ _('lent_items') }}</span>
+                        </a>
+                    </li>
+                    {% if current_user.is_authenticated and current_user.has_role('Admin') %}
+                    <li class="nav-item">
+                        <a class="nav-link nav-btn {% if 'settings' in request.endpoint %}active{% endif %}"
+                            href="{{ url_for('main.settings') }}">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>{{ _('settings') }}</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                {% if current_user.is_authenticated %}
+                <form class="d-flex" action="{{ url_for('main.index') }}" method="GET">
+                    <input class="form-control me-sm-2" type="search" name="q"
+                        placeholder="{{ _('search_placeholder') }}" value="{{ request.args.get('q', '') }}">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">{{ _('search') }}</button>
+                </form>
+
+                <ul class="navbar-nav ms-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i> {{ current_user.username }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="{{ url_for('main.change_password') }}">{{
+                                _('change_password') }}</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}">{{ _('logout')
+                                }}</a>
+                        </div>
+                    </li>
+                </ul>
+                {% else %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.login') }}">{{ _('login') }}</a>
+                    </li>
+                </ul>
                 {% endif %}
-            </ul>
-
-            {% if current_user.is_authenticated %}
-            <form class="d-flex" action="{{ url_for('main.index') }}" method="GET">
-                <input class="form-control me-sm-2" type="search" name="q" placeholder="{{ _('search_placeholder') }}" value="{{ request.args.get('q', '') }}">
-                <button class="btn btn-secondary my-2 my-sm-0" type="submit">{{ _('search') }}</button>
-            </form>
-            
-            <ul class="navbar-nav ms-3">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="bi bi-person-circle me-1"></i> {{ current_user.username }}
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="{{ url_for('main.change_password') }}">{{ _('change_password') }}</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}">{{ _('logout') }}</a>
-                    </div>
-                </li>
-            </ul>
-            {% else %}
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('main.login') }}">{{ _('login') }}</a>
-                </li>
-            </ul>
-            {% endif %}
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<div class="container mt-4">
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow-sm" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow-sm"
+            role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
         {% endif %}
-    {% endwith %}
+        {% endwith %}
 
-    {% block content %}{% endblock %}
-</div>
+        {% block content %}{% endblock %}
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function setTheme(selectedTheme) {
-        let themeToApply;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function setTheme(selectedTheme) {
+            let themeToApply;
 
-        if (selectedTheme === 'auto') {
-            localStorage.removeItem('appTheme');
-            themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'slate' : 'cerulean';
-        } else {
-            localStorage.setItem('appTheme', selectedTheme);
-            themeToApply = selectedTheme;
+            if (selectedTheme === 'auto') {
+                localStorage.removeItem('appTheme');
+                themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'slate' : 'cerulean';
+            } else {
+                localStorage.setItem('appTheme', selectedTheme);
+                themeToApply = selectedTheme;
+            }
+
+            // Update the data-bs-theme attribute for Bootstrap components
+            const darkThemes = ['quartz', 'darkly', 'cyborg', 'slate', 'solar', 'superhero'];
+            if (darkThemes.includes(themeToApply)) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+
+            // Update the stylesheet
+            document.getElementById('theme-css').href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${themeToApply}/bootstrap.min.css`;
         }
 
-        // Update the data-bs-theme attribute for Bootstrap components
-        const darkThemes = ['quartz', 'darkly', 'cyborg', 'slate', 'solar', 'superhero'];
-        if (darkThemes.includes(themeToApply)) {
-            document.documentElement.setAttribute('data-bs-theme', 'dark');
-        } else {
-            document.documentElement.setAttribute('data-bs-theme', 'light');
-        }
-
-        // Update the stylesheet
-        document.getElementById('theme-css').href = `https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/${themeToApply}/bootstrap.min.css`;
-    }
-    
-    // Set select value
-    document.addEventListener('DOMContentLoaded', () => {
-        const saved = localStorage.getItem('appTheme') || '{{ current_user.theme if current_user.is_authenticated else "auto" }}' || 'auto';
-        const sel = document.querySelector('select[onchange^="setTheme"]');
-        if(sel) sel.value = saved;
-    });
-</script>
+        // Set select value
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('appTheme') || '{{ current_user.theme if current_user.is_authenticated else "auto" }}' || 'auto';
+            const sel = document.querySelector('select[onchange^="setTheme"]');
+            if (sel) sel.value = saved;
+        });
+    </script>
 </body>
+
 </html>

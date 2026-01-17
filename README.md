@@ -122,6 +122,9 @@ In the admin area, you can download a complete backup at any time. It includes t
   * Redesigned bulk action bar with unified button styling and hover effects.
   * Preserved filtering: Active filters and searches are now correctly maintained during pagination.
   * Enhanced sorting: Sorting by "Author" now automatically secondary-sorts by "Title" for series.
+* **Branding**
+  * New abstract Logo: Replaced the play-button themed icon with a custom SVG representing a book and a CD.
+  * Updated Favicon and "About" dialog to reflect the new branding.
 * **Fixes**
   * Robust template rendering: Fixed layout corruption caused by browser-side formatting.
   * Improved text containment: Added automatic wrapping and layout switches to prevent text truncation on small labels.
