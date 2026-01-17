@@ -972,10 +972,19 @@ def labels_print():
         'show_qr': 'show_qr' in request.form,
         'show_title': 'show_title' in request.form,
         'show_id': 'show_id' in request.form,
+        'show_owner': 'show_owner' in request.form,
+        'show_address': 'show_address' in request.form,
+        'show_phone': 'show_phone' in request.form,
         'font_size': request.form.get('font_size', '10')
     }
+
+    owner_info = {
+        'name': get_config_value('owner_name', ''),
+        'address': get_config_value('owner_address', ''),
+        'phone': get_config_value('owner_phone', '')
+    }
     
-    return render_template('labels_print.html', items=items, config=config)
+    return render_template('labels_print.html', items=items, config=config, owner=owner_info)
 
 @main.route('/admin')
 @login_required

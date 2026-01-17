@@ -64,23 +64,32 @@
 
                     <h5 class="mb-3">{{ _('content') }}</h5>
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="form-check form-switch">
+                        <div class="col-12">
+                            <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" name="show_qr" id="show_qr" checked>
                                 <label class="form-check-label" for="show_qr">QR-Code</label>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-check form-switch">
+                            <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" name="show_title" id="show_title"
                                     checked>
                                 <label class="form-check-label" for="show_title">{{ _('title') }}</label>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-check form-switch">
+                            <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" name="show_id" id="show_id" checked>
                                 <label class="form-check-label" for="show_id">{{ _('inventory_number') }}</label>
+                            </div>
+                            <hr class="my-3">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="show_owner" id="show_owner">
+                                <label class="form-check-label" for="show_owner">{{ _('owner_name') }}</label>
+                            </div>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="show_address" id="show_address">
+                                <label class="form-check-label" for="show_address">{{ _('address') }}</label>
+                            </div>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="show_phone" id="show_phone">
+                                <label class="form-check-label" for="show_phone">{{ _('phone_number') }}</label>
                             </div>
                         </div>
                     </div>
