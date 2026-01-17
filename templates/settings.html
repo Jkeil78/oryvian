@@ -11,63 +11,72 @@
             <div class="card-header border-bottom">
                 <ul class="nav nav-tabs card-header-tabs" id="settingsTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if active_tab == 'ownership' %}active{% endif %}" id="ownership-tab" data-bs-toggle="tab" data-bs-target="#ownership" type="button" role="tab">
+                        <button class="nav-link {% if active_tab == 'ownership' %}active{% endif %}" id="ownership-tab"
+                            data-bs-toggle="tab" data-bs-target="#ownership" type="button" role="tab">
                             <i class="bi bi-person-badge me-2"></i>{{ _('ownership_labels') }}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if active_tab == 'system' %}active{% endif %}" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
+                        <button class="nav-link {% if active_tab == 'system' %}active{% endif %}" id="system-tab"
+                            data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
                             <i class="bi bi-pc-display-horizontal me-2"></i>{{ _('system') }}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if active_tab == 'locations' %}active{% endif %}" id="locations-tab" data-bs-toggle="tab" data-bs-target="#locations" type="button" role="tab">
+                        <button class="nav-link {% if active_tab == 'locations' %}active{% endif %}" id="locations-tab"
+                            data-bs-toggle="tab" data-bs-target="#locations" type="button" role="tab">
                             <i class="bi bi-geo-alt me-2"></i>{{ _('locations') }}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if active_tab == 'users' %}active{% endif %}" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                        <button class="nav-link {% if active_tab == 'users' %}active{% endif %}" id="users-tab"
+                            data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
                             <i class="bi bi-people me-2"></i>{{ _('users') }}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if active_tab == 'backup' %}active{% endif %}" id="backup-tab" data-bs-toggle="tab" data-bs-target="#backup" type="button" role="tab">
+                        <button class="nav-link {% if active_tab == 'backup' %}active{% endif %}" id="backup-tab"
+                            data-bs-toggle="tab" data-bs-target="#backup" type="button" role="tab">
                             <i class="bi bi-archive me-2"></i>{{ _('backup') }}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link {% if active_tab == 'api' %}active{% endif %}" id="api-tab" data-bs-toggle="tab" data-bs-target="#api" type="button" role="tab">
+                        <button class="nav-link {% if active_tab == 'api' %}active{% endif %}" id="api-tab"
+                            data-bs-toggle="tab" data-bs-target="#api" type="button" role="tab">
                             <i class="bi bi-cloud-check me-2"></i>{{ _('external_apis') }}
                         </button>
                     </li>
                 </ul>
             </div>
-            
+
             <div class="card-body p-4">
                 <div class="tab-content" id="settingsTabContent">
 
                     <!-- TAB: OWNERSHIP -->
-                    <div class="tab-pane fade {% if active_tab == 'ownership' %}show active{% endif %}" id="ownership" role="tabpanel">
+                    <div class="tab-pane fade {% if active_tab == 'ownership' %}show active{% endif %}" id="ownership"
+                        role="tabpanel">
                         <form method="POST" action="{{ url_for('main.settings') }}">
                             <p class="text-muted">{{ _('ownership_intro') }}</p>
-                            
+
                             <div class="mb-3">
                                 <label for="owner_name" class="form-label fw-bold">{{ _('owner_name') }}</label>
-                                <input type="text" class="form-control" id="owner_name" name="owner_name" 
-                                       value="{{ owner_name }}" placeholder="{{ _('owner_name_placeholder') }}">
+                                <input type="text" class="form-control" id="owner_name" name="owner_name"
+                                    value="{{ owner_name }}" placeholder="{{ _('owner_name_placeholder') }}">
                             </div>
-                
+
                             <div class="mb-3">
                                 <label for="owner_address" class="form-label fw-bold">{{ _('address') }}</label>
-                                <textarea class="form-control" id="owner_address" name="owner_address" rows="3">{{ owner_address }}</textarea>
+                                <textarea class="form-control" id="owner_address" name="owner_address"
+                                    rows="3">{{ owner_address }}</textarea>
                             </div>
-                
+
                             <div class="mb-3">
                                 <label for="owner_phone" class="form-label fw-bold">{{ _('phone_number') }}</label>
-                                <input type="text" class="form-control" id="owner_phone" name="owner_phone" value="{{ owner_phone }}">
+                                <input type="text" class="form-control" id="owner_phone" name="owner_phone"
+                                    value="{{ owner_phone }}">
                                 <div class="form-text">{{ _('phone_hint') }}</div>
                             </div>
-                
+
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-save me-2"></i>{{ _('save_settings') }}
@@ -75,18 +84,23 @@
                             </div>
                         </form>
                     </div>
-                    
+
                     <!-- TAB: SYSTEM -->
-                    <div class="tab-pane fade {% if active_tab == 'system' %}show active{% endif %}" id="system" role="tabpanel">
+                    <div class="tab-pane fade {% if active_tab == 'system' %}show active{% endif %}" id="system"
+                        role="tabpanel">
                         <form method="POST" action="{{ url_for('main.settings') }}">
-                            
+
                             <h5 class="mb-3">{{ _('language') }}</h5>
                             <div class="mb-3">
                                 <select name="language" class="form-select">
-                                    <option value="en" {% if current_user.language == 'en' %}selected{% endif %}>English</option>
-                                    <option value="de" {% if current_user.language == 'de' %}selected{% endif %}>Deutsch</option>
-                                    <option value="es" {% if current_user.language == 'es' %}selected{% endif %}>Español</option>
-                                    <option value="fr" {% if current_user.language == 'fr' %}selected{% endif %}>Français</option>
+                                    <option value="en" {% if current_user.language=='en' %}selected{% endif %}>English
+                                    </option>
+                                    <option value="de" {% if current_user.language=='de' %}selected{% endif %}>Deutsch
+                                    </option>
+                                    <option value="es" {% if current_user.language=='es' %}selected{% endif %}>Español
+                                    </option>
+                                    <option value="fr" {% if current_user.language=='fr' %}selected{% endif %}>Français
+                                    </option>
                                 </select>
                             </div>
 
@@ -94,25 +108,41 @@
                             <div class="mb-3">
                                 <select name="theme" class="form-select" onchange="setTheme(this.value)">
                                     <option value="auto">{{ _('system_default') }}</option>
-                                    <option value="cerulean" {% if current_user.theme == 'cerulean' %}selected{% endif %}>Cerulean (Standard)</option>
-                                    <option value="zephyr" {% if current_user.theme == 'zephyr' %}selected{% endif %}>Zephyr (Modern)</option>
-                                    <option value="flatly" {% if current_user.theme == 'flatly' %}selected{% endif %}>Flatly (Clean)</option>
-                                    <option value="materia" {% if current_user.theme == 'materia' %}selected{% endif %}>Materia (Google)</option>
-                                    <option value="quartz" {% if current_user.theme == 'quartz' %}selected{% endif %}>Quartz (Dark)</option>
-                                    <option value="morph" {% if current_user.theme == 'morph' %}selected{% endif %}>Morph (Soft)</option>
-                                    <option value="journal" {% if current_user.theme == 'journal' %}selected{% endif %}>Journal (Paper)</option>
-                                    <option value="pulse" {% if current_user.theme == 'pulse' %}selected{% endif %}>Pulse (Purple)</option>
-                                    <option value="yeti" {% if current_user.theme == 'yeti' %}selected{% endif %}>Yeti (Flat Blue)</option>
-                                    <option value="darkly" {% if current_user.theme == 'darkly' %}selected{% endif %}>Darkly (Dark)</option>
-                                    <option value="cyborg" {% if current_user.theme == 'cyborg' %}selected{% endif %}>Cyborg (Dark)</option>
-                                    <option value="slate" {% if current_user.theme == 'slate' %}selected{% endif %}>Slate (Dark Grey)</option>
-                                    <option value="solar" {% if current_user.theme == 'solar' %}selected{% endif %}>Solar (Dark Blue)</option>
-                                    <option value="superhero" {% if current_user.theme == 'superhero' %}selected{% endif %}>Superhero (Dark Blue)</option>
-                                    <option value="sandstone" {% if current_user.theme == 'sandstone' %}selected{% endif %}>Sandstone (Grey)</option>
-                                    <option value="united" {% if current_user.theme == 'united' %}selected{% endif %}>United (Orange)</option>
+                                    <option value="cerulean" {% if current_user.theme=='cerulean' %}selected{% endif %}>
+                                        Cerulean (Standard)</option>
+                                    <option value="zephyr" {% if current_user.theme=='zephyr' %}selected{% endif %}>
+                                        Zephyr (Modern)</option>
+                                    <option value="flatly" {% if current_user.theme=='flatly' %}selected{% endif %}>
+                                        Flatly (Clean)</option>
+                                    <option value="materia" {% if current_user.theme=='materia' %}selected{% endif %}>
+                                        Materia (Google)</option>
+                                    <option value="quartz" {% if current_user.theme=='quartz' %}selected{% endif %}>
+                                        Quartz (Dark)</option>
+                                    <option value="morph" {% if current_user.theme=='morph' %}selected{% endif %}>Morph
+                                        (Soft)</option>
+                                    <option value="journal" {% if current_user.theme=='journal' %}selected{% endif %}>
+                                        Journal (Paper)</option>
+                                    <option value="pulse" {% if current_user.theme=='pulse' %}selected{% endif %}>Pulse
+                                        (Purple)</option>
+                                    <option value="yeti" {% if current_user.theme=='yeti' %}selected{% endif %}>Yeti
+                                        (Flat Blue)</option>
+                                    <option value="darkly" {% if current_user.theme=='darkly' %}selected{% endif %}>
+                                        Darkly (Dark)</option>
+                                    <option value="cyborg" {% if current_user.theme=='cyborg' %}selected{% endif %}>
+                                        Cyborg (Dark)</option>
+                                    <option value="slate" {% if current_user.theme=='slate' %}selected{% endif %}>Slate
+                                        (Dark Grey)</option>
+                                    <option value="solar" {% if current_user.theme=='solar' %}selected{% endif %}>Solar
+                                        (Dark Blue)</option>
+                                    <option value="superhero" {% if current_user.theme=='superhero' %}selected{% endif
+                                        %}>Superhero (Dark Blue)</option>
+                                    <option value="sandstone" {% if current_user.theme=='sandstone' %}selected{% endif
+                                        %}>Sandstone (Grey)</option>
+                                    <option value="united" {% if current_user.theme=='united' %}selected{% endif %}>
+                                        United (Orange)</option>
                                 </select>
                             </div>
-                            
+
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-save me-2"></i>{{ _('save_settings') }}
@@ -122,31 +152,36 @@
                     </div>
 
                     <!-- TAB: APIs -->
-                    <div class="tab-pane fade {% if active_tab == 'api' %}show active{% endif %}" id="api" role="tabpanel">
+                    <div class="tab-pane fade {% if active_tab == 'api' %}show active{% endif %}" id="api"
+                        role="tabpanel">
                         <form method="POST" action="{{ url_for('main.settings') }}">
 
                             <h5 class="mb-3">Discogs (Musik-Metadaten)</h5>
                             <div class="mb-3">
                                 <label for="discogs_token" class="form-label">{{ _('personal_token') }}</label>
-                                <input type="text" class="form-control" id="discogs_token" name="discogs_token" 
-                                       value="{{ discogs_token }}" placeholder="Token hier einfügen...">
+                                <input type="text" class="form-control" id="discogs_token" name="discogs_token"
+                                    value="{{ discogs_token }}" placeholder="Token hier einfügen...">
                                 <div class="form-text">
-                                    {{ _('discogs_token_hint') }} <a href="https://www.discogs.com/settings/developers" target="_blank">{{ _('generate_token') }}</a>.
+                                    {{ _('discogs_token_hint') }} <a href="https://www.discogs.com/settings/developers"
+                                        target="_blank">{{ _('generate_token') }}</a>.
                                 </div>
                             </div>
 
                             <hr class="my-4">
-                            
+
                             <h5 class="mb-3">Spotify (Player-Integration)</h5>
                             <div class="mb-3">
                                 <label for="spotify_client_id" class="form-label">{{ _('client_id') }}</label>
-                                <input type="text" class="form-control" id="spotify_client_id" name="spotify_client_id" value="{{ spotify_client_id }}">
+                                <input type="text" class="form-control" id="spotify_client_id" name="spotify_client_id"
+                                    value="{{ spotify_client_id }}">
                             </div>
                             <div class="mb-3">
                                 <label for="spotify_client_secret" class="form-label">{{ _('client_secret') }}</label>
-                                <input type="password" class="form-control" id="spotify_client_secret" name="spotify_client_secret" value="{{ spotify_client_secret }}">
+                                <input type="password" class="form-control" id="spotify_client_secret"
+                                    name="spotify_client_secret" value="{{ spotify_client_secret }}">
                                 <div class="form-text">
-                                    {{ _('spotify_hint') }} <a href="https://developer.spotify.com/dashboard/" target="_blank">{{ _('create_app') }}</a>.
+                                    {{ _('spotify_hint') }} <a href="https://developer.spotify.com/dashboard/"
+                                        target="_blank">{{ _('create_app') }}</a>.
                                 </div>
                             </div>
 
@@ -159,7 +194,8 @@
                     </div>
 
                     <!-- TAB: STANDORTE -->
-                    <div class="tab-pane fade {% if active_tab == 'locations' %}show active{% endif %}" id="locations" role="tabpanel">
+                    <div class="tab-pane fade {% if active_tab == 'locations' %}show active{% endif %}" id="locations"
+                        role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-5 order-md-2">
                                 <div class="card bg-body-secondary border-0">
@@ -168,18 +204,21 @@
                                         <form method="POST" action="{{ url_for('main.location_create') }}">
                                             <div class="mb-3">
                                                 <label class="form-label small text-muted">{{ _('name') }}</label>
-                                                <input type="text" name="name" class="form-control" required placeholder="{{ _('location_name_placeholder') }}">
+                                                <input type="text" name="name" class="form-control" required
+                                                    placeholder="{{ _('location_name_placeholder') }}">
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label small text-muted">{{ _('parent_location') }}</label>
+                                                <label class="form-label small text-muted">{{ _('parent_location')
+                                                    }}</label>
                                                 <select name="parent_id" class="form-select">
                                                     <option value="">{{ _('main_category') }}</option>
                                                     {% for loc in locations %}
-                                                        <option value="{{ loc.id }}">{{ loc.full_path }}</option>
+                                                    <option value="{{ loc.id }}">{{ loc.full_path }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
-                                            <button type="submit" class="btn btn-success w-100">{{ _('location_create_btn') }}</button>
+                                            <button type="submit" class="btn btn-success w-100">{{
+                                                _('location_create_btn') }}</button>
                                         </form>
                                     </div>
                                 </div>
@@ -187,18 +226,30 @@
                             <div class="col-md-7 order-md-1">
                                 <div class="table-responsive border rounded">
                                     <table class="table table-hover align-middle mb-0">
-                                        <thead><tr><th>{{ _('hierarchy') }}</th><th class="text-end">{{ _('action') }}</th></tr></thead>
+                                        <thead>
+                                            <tr>
+                                                <th>{{ _('hierarchy') }}</th>
+                                                <th class="text-end">{{ _('action') }}</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             {% for loc in locations %}
                                             <tr>
                                                 <td>
-                                                    {% if loc.parent %}<i class="bi bi-arrow-return-right text-muted me-2"></i>{% else %}<i class="bi bi-folder-fill text-warning me-2"></i>{% endif %}
+                                                    {% if loc.parent %}<i
+                                                        class="bi bi-arrow-return-right text-muted me-2"></i>{% else
+                                                    %}<i class="bi bi-folder-fill text-warning me-2"></i>{% endif %}
                                                     {{ loc.full_path }}
                                                 </td>
                                                 <td class="text-end">
                                                     {% if loc.name != 'Unsortiert' %}
-                                                        <a href="{{ url_for('main.location_edit', loc_id=loc.id) }}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-                                                        <a href="{{ url_for('main.location_delete', loc_id=loc.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('{{ _('really_delete_location') }}')"><i class="bi bi-trash"></i></a>
+                                                    <a href="{{ url_for('main.location_edit', loc_id=loc.id) }}"
+                                                        class="btn btn-sm btn-outline-primary me-1"><i
+                                                            class="bi bi-pencil"></i></a>
+                                                    <a href="{{ url_for('main.location_delete', loc_id=loc.id) }}"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        onclick="return confirm('{{ _('really_delete_location') }}')"><i
+                                                            class="bi bi-trash"></i></a>
                                                     {% endif %}
                                                 </td>
                                             </tr>
@@ -211,20 +262,35 @@
                     </div>
 
                     <!-- TAB: BENUTZER -->
-                    <div class="tab-pane fade {% if active_tab == 'users' %}show active{% endif %}" id="users" role="tabpanel">
+                    <div class="tab-pane fade {% if active_tab == 'users' %}show active{% endif %}" id="users"
+                        role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-8">
                                 <div class="table-responsive border rounded">
                                     <table class="table table-hover align-middle mb-0">
-                                        <thead><tr><th class="ps-3">{{ _('username') }}</th><th>{{ _('role') }}</th><th class="text-end pe-3">{{ _('action') }}</th></tr></thead>
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-3">{{ _('username') }}</th>
+                                                <th>{{ _('role') }}</th>
+                                                <th class="text-end pe-3">{{ _('action') }}</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             {% for user in users %}
                                             <tr>
-                                                <td class="ps-3 fw-bold">{{ user.username }} {% if user.id == current_user.id %}<span class="badge bg-light text-dark border ms-1">{{ _('user_you') }}</span>{% endif %}</td>
-                                                <td><span class="badge {% if user.role.name == 'Admin' %}bg-danger-subtle text-danger{% else %}bg-info-subtle text-info-emphasis{% endif %}">{{ user.role.name }}</span></td>
+                                                <td class="ps-3 fw-bold">{{ user.username }} {% if user.id ==
+                                                    current_user.id %}<span
+                                                        class="badge bg-light text-dark border ms-1">{{ _('user_you')
+                                                        }}</span>{% endif %}</td>
+                                                <td><span
+                                                        class="badge {% if user.role.name == 'Admin' %}bg-danger-subtle text-danger{% else %}bg-info-subtle text-info-emphasis{% endif %}">{{
+                                                        user.role.name }}</span></td>
                                                 <td class="text-end pe-3">
                                                     {% if user.id != current_user.id %}
-                                                        <a href="{{ url_for('main.user_delete', user_id=user.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('{{ _('really_delete_user') }}')"><i class="bi bi-trash"></i></a>
+                                                    <a href="{{ url_for('main.user_delete', user_id=user.id) }}"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        onclick="return confirm('{{ _('really_delete_user') }}')"><i
+                                                            class="bi bi-trash"></i></a>
                                                     {% endif %}
                                                 </td>
                                             </tr>
@@ -239,19 +305,23 @@
                                         <h6 class="fw-bold mb-3">{{ _('create_user') }}</h6>
                                         <form action="{{ url_for('main.user_create') }}" method="POST">
                                             <div class="mb-2">
-                                                <input type="text" name="username" class="form-control form-control-sm" required placeholder="{{ _('username') }}">
+                                                <input type="text" name="username" class="form-control form-control-sm"
+                                                    required placeholder="{{ _('username') }}">
                                             </div>
                                             <div class="mb-2">
-                                                <input type="password" name="password" class="form-control form-control-sm" required placeholder="{{ _('password') }}">
+                                                <input type="password" name="password"
+                                                    class="form-control form-control-sm" required
+                                                    placeholder="{{ _('password') }}">
                                             </div>
                                             <div class="mb-3">
                                                 <select name="role_id" class="form-select form-select-sm">
                                                     {% for role in roles %}
-                                                        <option value="{{ role.id }}">{{ role.name }}</option>
+                                                    <option value="{{ role.id }}">{{ role.name }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
-                                            <button type="submit" class="btn btn-sm btn-success w-100">{{ _('create_user_btn') }}</button>
+                                            <button type="submit" class="btn btn-sm btn-success w-100">{{
+                                                _('create_user_btn') }}</button>
                                         </form>
                                     </div>
                                 </div>
@@ -263,21 +333,29 @@
                     </div>
 
                     <!-- TAB: BACKUP -->
-                    <div class="tab-pane fade {% if active_tab == 'backup' %}show active{% endif %}" id="backup" role="tabpanel">
+                    <div class="tab-pane fade {% if active_tab == 'backup' %}show active{% endif %}" id="backup"
+                        role="tabpanel">
                         <div class="alert alert-info border-0 shadow-sm">
-                            <h5 class="alert-heading h6 fw-bold"><i class="bi bi-download me-2"></i>{{ _('create_backup') }}</h5>
+                            <h5 class="alert-heading h6 fw-bold"><i class="bi bi-download me-2"></i>{{
+                                _('create_backup') }}</h5>
                             <p class="mb-2 small">{{ _('backup_desc') }}</p>
-                            <a href="{{ url_for('main.admin_backup_download') }}" class="btn btn-sm btn-primary">{{ _('download_backup') }}</a>
+                            <a href="{{ url_for('main.admin_backup_download') }}" class="btn btn-sm btn-primary">{{
+                                _('download_backup') }}</a>
                         </div>
 
                         <hr class="my-4">
 
                         <div class="alert alert-warning border-0 shadow-sm">
-                            <h5 class="alert-heading h6 fw-bold"><i class="bi bi-upload me-2"></i>{{ _('restore_backup') }}</h5>
+                            <h5 class="alert-heading h6 fw-bold"><i class="bi bi-upload me-2"></i>{{ _('restore_backup')
+                                }}</h5>
                             <p class="mb-3 small">{{ _('restore_warning') }}</p>
-                            <form action="{{ url_for('main.admin_restore') }}" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
-                                <input class="form-control form-control-sm" type="file" name="backup_file" accept=".zip" required>
-                                <button type="submit" class="btn btn-sm btn-danger text-nowrap" onclick="return confirm('{{ _('really_restore') }}')">{{ _('restore_submit') }}</button>
+                            <form action="{{ url_for('main.admin_restore') }}" method="POST"
+                                enctype="multipart/form-data" class="d-flex gap-2">
+                                <input class="form-control form-control-sm" type="file" name="backup_file" accept=".zip"
+                                    required>
+                                <button type="submit" class="btn btn-sm btn-danger text-nowrap"
+                                    onclick="return confirm('{{ _('really_restore') }}')">{{ _('restore_submit')
+                                    }}</button>
                             </form>
                         </div>
                     </div>
@@ -288,7 +366,8 @@
 
         <!-- About Section -->
         <div class="text-center mt-4">
-            <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-toggle="modal" data-bs-target="#aboutModal">
+            <button type="button" class="btn btn-link text-muted text-decoration-none" data-bs-toggle="modal"
+                data-bs-target="#aboutModal">
                 <i class="bi bi-info-circle me-1"></i> {{ _('about') }}
             </button>
         </div>
@@ -305,11 +384,12 @@
                             <i class="bi bi-collection-play text-primary" style="font-size: 4rem;"></i>
                         </div>
                         <h3 class="fw-bold mb-1">{{ _('app_name') }}</h3>
-                        <p class="text-muted mb-4">{{ _('version') }} 0.7.2</p>
-                        
+                        <p class="text-muted mb-4">{{ _('version') }} 0.8.0</p>
                         <div class="small text-muted">
                             <p class="mb-1">{{ _('developed_by') }} Johannes Keil</p>
-                            <p class="mb-0">&copy; <script>document.write(new Date().getFullYear())</script></p>
+                            <p class="mb-0">&copy;
+                                <script>document.write(new Date().getFullYear())</script>
+                            </p>
                         </div>
                     </div>
                 </div>

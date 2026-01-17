@@ -1,4 +1,4 @@
-# Media Management v0.7.2
+# Media Management v0.8.0
 
 A web-based application for managing your physical media collection (CDs, vinyl records, books, movies, video games).
 The system provides integrations with Discogs, Spotify, and Google Books to automatically load metadata and cover art.
@@ -6,6 +6,15 @@ The system provides integrations with Discogs, Spotify, and Google Books to auto
 ## Features
 
 * **Inventory**: Capture media items with barcode scanner support or manual entry.
+* **Label Printing**:
+  * Built-in label configuration suite for precise millimeter-based printing.
+  * Direct printing of selected items from the media list.
+  * Presets for common label sizes (Brother, Avery Zweckform, etc.).
+  * Persistent custom presets: Save, load, and delete your own label dimensions.
+  * "Start at position": Reuse partially used label sheets by skipping slots.
+  * Selective content: QR code, Title, Artist/Author, Inventory Number.
+  * Owner info integration (retrieves name, address, phone from settings).
+  * Flexible layout: Horizontal or Vertical (text below QR code) for narrow labels.
 * **Automatic metadata**:
 
   * **Music**: Search via the Discogs API (cover art, tracklists, year).
@@ -97,6 +106,25 @@ To use all features, API keys should be stored in **Settings**:
 In the admin area, you can download a complete backup at any time. It includes the SQLite database as well as all images. To restore, simply upload the ZIP file again.
 
 ## Changelog
+
+### v0.8.0
+
+* **Feature: Advanced Label Printing System**
+  * Built-in label configuration suite for precise millimeter-based printing.
+  * Direct printing of selected items from the media list.
+  * Presets for common label sizes (Brother, Avery Zweckform, etc.).
+  * Persistent custom presets: Save, load, and delete your own label dimensions.
+  * "Start at position": Reuse partially used label sheets by skipping slots.
+  * Selective content: QR code, Title, Artist/Author, Inventory Number.
+  * Owner info integration (retrieves name, address, phone from settings).
+  * Flexible layout: Horizontal or Vertical (text below QR code) for narrow labels.
+* **UI/UX Improvements**
+  * Redesigned bulk action bar with unified button styling and hover effects.
+  * Preserved filtering: Active filters and searches are now correctly maintained during pagination.
+  * Enhanced sorting: Sorting by "Author" now automatically secondary-sorts by "Title" for series.
+* **Fixes**
+  * Robust template rendering: Fixed layout corruption caused by browser-side formatting.
+  * Improved text containment: Added automatic wrapping and layout switches to prevent text truncation on small labels.
 
 ### v0.7.2
 
