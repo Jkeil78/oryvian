@@ -535,7 +535,7 @@ def index():
         secondary_sorts = [MediaItem.author_artist.asc()] 
     elif sort_field == 'author':
         primary_sort = MediaItem.author_artist
-        secondary_sorts = [MediaItem.release_year.desc(), MediaItem.title.asc()]
+        secondary_sorts = [MediaItem.title.asc(), MediaItem.release_year.desc()]
     elif sort_field == 'year':
         primary_sort = MediaItem.release_year
         secondary_sorts = [MediaItem.author_artist.asc(), MediaItem.title.asc()]
