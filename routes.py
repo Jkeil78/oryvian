@@ -698,6 +698,39 @@ def admin_restore():
     flash(get_text('flash_invalid_file'), 'error')
     return redirect(url_for('main.settings', tab='backup'))
 
+@main.route('/admin/cleanup_images', methods=['POST'])
+@login_required
+def admin_cleanup_images():
+    if not current_user.has_role('Admin'): 
+        return redirect(url_for('main.index'))
+    
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    if not os.path.exists(upload_folder):
+        flash('Upload folder does not exist.', 'error')
+        return redirect(url_for('main.settings', tab='system'))
+    
+    # 1. Get all files in uploads
+    all_files = set(os.listdir(upload_folder))
+    
+    # 2. Get all referenced filenames in DB
+    referenced_files = {item.image_filename for item in MediaItem.query.all() if item.image_filename}
+    
+    # 3. Calculate orphaned files
+    orphaned_files = all_files - referenced_files
+    
+    # 4. Delete orphaned files
+    count = 0
+    for filename in orphaned_files:
+        if filename == '.gitkeep': continue # Keep placeholder if exists
+        try:
+            os.remove(os.path.join(upload_folder, filename))
+            count += 1
+        except Exception as e:
+            print(f"Error deleting {filename}: {e}")
+            
+    flash(get_text('flash_cleanup_success').format(count=count), 'success')
+    return redirect(url_for('main.settings', tab='system'))
+
 # -- MEDIA --
 @main.route('/media/<int:item_id>')
 @login_required

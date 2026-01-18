@@ -232,6 +232,11 @@ TRANSLATIONS = {
         'save_preset': 'Save Preset',
         'preset_name': 'Preset Name',
         'delete_preset': 'Delete Preset',
+        'maintenance': 'System Maintenance',
+        'cleanup_images': 'Clean-Up Images',
+        'cleanup_images_desc': 'Deletes all images from the uploads folder that are not referenced in the database.',
+        'really_cleanup': 'Really delete all orphaned image files?',
+        'flash_cleanup_success': 'Cleanup complete: {count} images removed.',
     },
     'de': {
         'app_name': 'Oryvian',
@@ -466,6 +471,11 @@ TRANSLATIONS = {
         'save_preset': 'Vorlage speichern',
         'preset_name': 'Name der Vorlage',
         'delete_preset': 'Vorlage löschen',
+        'maintenance': 'Wartung',
+        'cleanup_images': 'Bereinigen',
+        'cleanup_images_desc': 'Löscht alle Bilder aus dem Uploads-Ordner, die nicht in der Datenbank verknüpft sind (Dateileichen).',
+        'really_cleanup': 'Alle ungenutzten Bilddateien wirklich löschen?',
+        'flash_cleanup_success': 'Bereinigung abgeschlossen: {count} Bilder wurden entfernt.',
     },
     'es': {
         'app_name': 'Oryvian',
@@ -681,6 +691,11 @@ TRANSLATIONS = {
         'address': 'Dirección',
         'phone_number': 'Número de Teléfono',
         'phone_hint': 'Opcional. Se utiliza para consultas en caso de pérdida.',
+        'maintenance': 'Mantenimiento del Sistema',
+        'cleanup_images': 'Limpiar Imágenes',
+        'cleanup_images_desc': 'Elimina todas las imágenes de la carpeta de subidas que no están referenciadas en la base de datos.',
+        'really_cleanup': '¿Realmente eliminar todos los archivos de imagen huérfanos?',
+        'flash_cleanup_success': 'Limpieza completada: {count} imágenes eliminadas.',
     },
     'fr': {
         'app_name': 'Oryvian',
@@ -896,5 +911,10 @@ TRANSLATIONS = {
         'address': 'Adresse',
         'phone_number': 'Numéro de téléphone',
         'phone_hint': 'Optionnel. Utilisé pour les demandes en cas de perte.',
-    }
+        'maintenance': 'Maintenance du Système',
+        'cleanup_images': 'Nettoyer les Images',
+        'cleanup_images_desc': 'Supprime toutes les images du dossier de téléchargement qui ne sont pas référencées dans la base de données.',
+        'really_cleanup': 'Vraiment supprimer tous los fichiers d\'image orphelins ?',
+        'flash_cleanup_success': 'Nettoyage terminé : {count} images supprimées.',
+    },
 }
