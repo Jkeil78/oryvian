@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    container_name: medienverwaltung
+    container_name: oryvian
     ports:
       # Syntax: "${VARIABLE:-DEFAULT}:CONTAINER_PORT"
       # Wenn APP_PORT gesetzt ist, nutze ihn. Sonst nimm 5000.
