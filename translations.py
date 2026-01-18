@@ -1,6 +1,7 @@
 TRANSLATIONS = {
     'en': {
-        'app_name': 'MediaApp',
+        'app_name': 'Oryvian',
+        'media_management': 'Media Management',
         'dashboard': 'Dashboard',
         'new_item': 'New Item',
         'lent_items': 'Lent Items',
@@ -233,7 +234,8 @@ TRANSLATIONS = {
         'delete_preset': 'Delete Preset',
     },
     'de': {
-        'app_name': 'MedienApp',
+        'app_name': 'Oryvian',
+        'media_management': 'Medienverwaltung',
         'dashboard': 'Dashboard',
         'new_item': 'Neues Medium',
         'lent_items': 'Verliehen',
@@ -466,7 +468,8 @@ TRANSLATIONS = {
         'delete_preset': 'Vorlage löschen',
     },
     'es': {
-        'app_name': 'MediaApp',
+        'app_name': 'Oryvian',
+        'media_management': 'Gestión de Medios',
         'dashboard': 'Tablero',
         'new_item': 'Nuevo Ítem',
         'lent_items': 'Prestados',
@@ -680,7 +683,8 @@ TRANSLATIONS = {
         'phone_hint': 'Opcional. Se utiliza para consultas en caso de pérdida.',
     },
     'fr': {
-        'app_name': 'MediaApp',
+        'app_name': 'Oryvian',
+        'media_management': 'Gestion des Médias',
         'dashboard': 'Tableau de bord',
         'new_item': 'Nouvel Élément',
         'lent_items': 'Prêtés',

@@ -1,4 +1,4 @@
-# Media Management v0.8.0
+# Oryvian - Media Management v0.8.0
 
 A web-based application for managing your physical media collection (CDs, vinyl records, books, movies, video games).
 The system provides integrations with Discogs, Spotify, and Google Books to automatically load metadata and cover art.
