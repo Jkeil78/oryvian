@@ -3,25 +3,28 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-12 col-xl-10">
-        
+
         <div class="card shadow-sm border-0">
             <div class="card-header border-bottom py-3">
                 <h4 class="mb-0 fw-bold text-primary">
                     <i class="bi bi-plus-circle-fill me-2"></i>{{ _('create_media') }}
                 </h4>
             </div>
-            
+
             <div class="card-body p-4">
                 <form method="POST" enctype="multipart/form-data" id="createForm">
-                    
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                     <div class="row mb-4">
                         <div class="col-md-12">
                             <label class="form-label fw-bold">{{ _('barcode_scanner') }}</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                <input type="text" id="barcode" name="barcode" class="form-control" placeholder="{{ _('scan_barcode_placeholder') }}" autofocus>
+                                <input type="text" id="barcode" name="barcode" class="form-control"
+                                    placeholder="{{ _('scan_barcode_placeholder') }}" autofocus>
                                 <button type="button" class="btn btn-primary" id="btn-search" onclick="lookupBarcode()">
-                                    <span id="search-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    <span id="search-spinner" class="spinner-border spinner-border-sm d-none"
+                                        role="status" aria-hidden="true"></span>
                                     <span id="search-text">
                                         <i class="bi bi-cloud-download"></i>
                                         <span class="d-none d-sm-inline ms-2">{{ _('fetch_data') }}</span>
@@ -37,14 +40,16 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label for="title" class="form-label fw-bold">{{ _('title_work') }}</label>
-                                    <input type="text" id="title" name="title" class="form-control form-control-lg" required placeholder="{{ _('title') }}">
+                                    <input type="text" id="title" name="title" class="form-control form-control-lg"
+                                        required placeholder="{{ _('title') }}">
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="author" class="form-label">{{ _('author_artist_reg') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                        <input type="text" id="author" name="author_artist" class="form-control" placeholder="{{ _('author_artist_reg') }}">
+                                        <input type="text" id="author" name="author_artist" class="form-control"
+                                            placeholder="{{ _('author_artist_reg') }}">
                                     </div>
                                 </div>
 
@@ -52,7 +57,8 @@
                                     <label for="year" class="form-label">{{ _('release_year') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
-                                        <input type="number" id="year" name="release_year" class="form-control" placeholder="JJJJ">
+                                        <input type="number" id="year" name="release_year" class="form-control"
+                                            placeholder="JJJJ">
                                     </div>
                                 </div>
 
@@ -60,7 +66,7 @@
                                     <label for="category" class="form-label fw-bold">{{ _('category') }} *</label>
                                     <select name="category" id="category" class="form-select" required>
                                         {% for cat in categories %}
-                                            <option value="{{ cat }}">{{ _(cat) }}</option>
+                                        <option value="{{ cat }}">{{ _(cat) }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -69,16 +75,18 @@
                                     <label for="location_id" class="form-label">{{ _('location') }}</label>
                                     <select name="location_id" id="location_id" class="form-select">
                                         {% for loc in locations %}
-                                            <option value="{{ loc.id }}" {% if loc.id == default_location_id %}selected{% endif %}>
-                                                {{ loc.full_path }}
-                                            </option>
+                                        <option value="{{ loc.id }}" {% if loc.id==default_location_id %}selected{%
+                                            endif %}>
+                                            {{ loc.full_path }}
+                                        </option>
                                         {% endfor %}
                                     </select>
                                 </div>
 
                                 <div class="col-12">
                                     <label for="description" class="form-label">{{ _('description') }}</label>
-                                    <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                                    <textarea id="description" name="description" class="form-control"
+                                        rows="4"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -87,23 +95,26 @@
                             <div class="card bg-body-secondary border-0 h-100">
                                 <div class="card-body">
                                     <label class="form-label fw-bold">{{ _('cover_image') }}</label>
-                                    
-                                    <input type="file" id="imageInput" name="image" class="d-none" accept="image/*" onchange="previewFile()">
+
+                                    <input type="file" id="imageInput" name="image" class="d-none" accept="image/*"
+                                        onchange="previewFile()">
                                     <input type="hidden" id="remote_image_url" name="remote_image_url">
-                                    
-                                    <div class="position-relative mt-2 bg-body rounded border d-flex align-items-center justify-content-center overflow-hidden group-hover-container" 
-                                         style="min-height: 250px; cursor: pointer;"
-                                         onclick="document.getElementById('imageInput').click();">
-                                        
-                                        <img id="preview" src="#" alt="Cover Vorschau" class="img-fluid" style="display: none; max-height: 250px; width: 100%; object-fit: contain;">
-                                        
+
+                                    <div class="position-relative mt-2 bg-body rounded border d-flex align-items-center justify-content-center overflow-hidden group-hover-container"
+                                        style="min-height: 250px; cursor: pointer;"
+                                        onclick="document.getElementById('imageInput').click();">
+
+                                        <img id="preview" src="#" alt="Cover Vorschau" class="img-fluid"
+                                            style="display: none; max-height: 250px; width: 100%; object-fit: contain;">
+
                                         <span id="preview-placeholder" class="text-muted text-center p-3">
                                             <i class="bi bi-cloud-upload fs-1 d-block mb-2"></i>
                                             {{ _('click_paste') }}<br>
                                             <small class="text-muted">{{ _('to_insert') }}</small>
                                         </span>
 
-                                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 opacity-0 hover-overlay transition-all">
+                                        <div
+                                            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50 opacity-0 hover-overlay transition-all">
                                             <span class="btn btn-light rounded-circle p-3 shadow">
                                                 <i class="bi bi-pencil-fill fs-5"></i>
                                             </span>
@@ -115,7 +126,8 @@
                     </div>
 
                     <div id="tracks-section" class="mt-4 pt-3 border-top" style="display: none;">
-                        <h5 class="mb-3 text-secondary"><i class="bi bi-music-note-list me-2"></i>{{ _('detected_tracks') }}</h5>
+                        <h5 class="mb-3 text-secondary"><i class="bi bi-music-note-list me-2"></i>{{
+                            _('detected_tracks') }}</h5>
                         <div class="table-responsive">
                             <table class="table table-sm table-hover align-middle" id="tracks-table">
                                 <thead>
@@ -126,7 +138,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tracks-container">
-                                    </tbody>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -135,12 +147,13 @@
                         <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary px-4">
                             {{ _('cancel') }}
                         </a>
-                        
+
                         <div class="d-flex gap-2">
-                            <button type="submit" name="commit_action" value="save_return" class="btn btn-outline-primary px-4">
+                            <button type="submit" name="commit_action" value="save_return"
+                                class="btn btn-outline-primary px-4">
                                 <i class="bi bi-check-lg me-2"></i>{{ _('save_return') }}
                             </button>
-                            
+
                             <button type="submit" name="commit_action" value="save_next" class="btn btn-primary px-4">
                                 <i class="bi bi-plus-square me-2"></i>{{ _('save_next') }}
                             </button>
@@ -154,116 +167,116 @@
 </div>
 
 <script>
-// Paste Support (STRG+V)
-document.addEventListener('paste', function(e) {
-    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-    for (let i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf("image") !== -1) {
-            const blob = items[i].getAsFile();
-            const file = new File([blob], "pasted_image.png", { type: blob.type });
-            
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            
-            const fileInput = document.getElementById('imageInput');
-            fileInput.files = dataTransfer.files;
-            
-            // Trigger change event manually to update preview
-            const event = new Event('change');
-            fileInput.dispatchEvent(event);
-            
-            // Clear remote url if pasted
-            document.getElementById('remote_image_url').value = '';
+    // Paste Support (STRG+V)
+    document.addEventListener('paste', function (e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") !== -1) {
+                const blob = items[i].getAsFile();
+                const file = new File([blob], "pasted_image.png", { type: blob.type });
+
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+
+                const fileInput = document.getElementById('imageInput');
+                fileInput.files = dataTransfer.files;
+
+                // Trigger change event manually to update preview
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+
+                // Clear remote url if pasted
+                document.getElementById('remote_image_url').value = '';
+            }
+        }
+    });
+
+    // Bild Vorschau für manuellen Upload
+    function previewFile() {
+        const preview = document.getElementById('preview');
+        const placeholder = document.getElementById('preview-placeholder');
+        const file = document.getElementById('imageInput').files[0];
+        const reader = new FileReader();
+
+        reader.addEventListener("load", function () {
+            preview.src = reader.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+            document.getElementById('remote_image_url').value = ''; // Reset remote URL on manual upload
+        }, false);
+
+        if (file) {
+            reader.readAsDataURL(file);
         }
     }
-});
 
-// Bild Vorschau für manuellen Upload
-function previewFile() {
-    const preview = document.getElementById('preview');
-    const placeholder = document.getElementById('preview-placeholder');
-    const file = document.getElementById('imageInput').files[0];
-    const reader = new FileReader();
+    async function lookupBarcode() {
+        const barcodeInput = document.getElementById('barcode');
+        const barcode = barcodeInput.value.trim();
 
-    reader.addEventListener("load", function () {
-        preview.src = reader.result;
-        preview.style.display = 'block';
-        placeholder.style.display = 'none';
-        document.getElementById('remote_image_url').value = ''; // Reset remote URL on manual upload
-    }, false);
+        if (!barcode) {
+            alert("Bitte erst einen Barcode eingeben oder scannen.");
+            return;
+        }
 
-    if (file) {
-        reader.readAsDataURL(file);
-    }
-}
+        // UI Loading State
+        const btn = document.getElementById('btn-search');
+        const spinner = document.getElementById('search-spinner');
+        const btnText = document.getElementById('search-text');
 
-async function lookupBarcode() {
-    const barcodeInput = document.getElementById('barcode');
-    const barcode = barcodeInput.value.trim();
-    
-    if (!barcode) {
-        alert("Bitte erst einen Barcode eingeben oder scannen.");
-        return;
-    }
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        btnText.textContent = " Suche läuft...";
 
-    // UI Loading State
-    const btn = document.getElementById('btn-search');
-    const spinner = document.getElementById('search-spinner');
-    const btnText = document.getElementById('search-text');
-    
-    btn.disabled = true;
-    spinner.classList.remove('d-none');
-    btnText.textContent = " Suche läuft...";
+        try {
+            const response = await fetch('/api/lookup/' + barcode);
+            const data = await response.json();
 
-    try {
-        const response = await fetch('/api/lookup/' + barcode);
-        const data = await response.json();
+            if (data.success) {
+                // Felder füllen mit kleiner Animation (Highlight)
+                const fill = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (val && el) {
+                        el.value = val;
+                        el.classList.add('bg-success-subtle', 'border-success'); // Visuelles Feedback
+                        setTimeout(() => el.classList.remove('bg-success-subtle', 'border-success'), 1200);
+                    }
+                };
 
-        if (data.success) {
-            // Felder füllen mit kleiner Animation (Highlight)
-            const fill = (id, val) => {
-                const el = document.getElementById(id);
-                if(val && el) {
-                    el.value = val;
-                    el.classList.add('bg-success-subtle', 'border-success'); // Visuelles Feedback
-                    setTimeout(() => el.classList.remove('bg-success-subtle', 'border-success'), 1200);
+                fill('title', data.title);
+                fill('author', data.author);
+                fill('year', data.year);
+                fill('description', data.description);
+
+                // Kategorie
+                const catSelect = document.getElementById('category');
+                if (data.category && data.category !== "") {
+                    catSelect.value = data.category;
+                } else {
+                    catSelect.value = "Buch";
                 }
-            };
 
-            fill('title', data.title);
-            fill('author', data.author);
-            fill('year', data.year);
-            fill('description', data.description);
+                // Cover Bild
+                if (data.image_url) {
+                    document.getElementById('remote_image_url').value = data.image_url;
+                    const imgPreview = document.getElementById('preview');
+                    const placeholder = document.getElementById('preview-placeholder');
 
-            // Kategorie
-            const catSelect = document.getElementById('category');
-            if (data.category && data.category !== "") {
-                catSelect.value = data.category;
-            } else {
-                catSelect.value = "Buch"; 
-            }
+                    imgPreview.src = data.image_url;
+                    imgPreview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
 
-            // Cover Bild
-            if (data.image_url) {
-                document.getElementById('remote_image_url').value = data.image_url;
-                const imgPreview = document.getElementById('preview');
-                const placeholder = document.getElementById('preview-placeholder');
-                
-                imgPreview.src = data.image_url;
-                imgPreview.style.display = 'block';
-                placeholder.style.display = 'none';
-            }
+                // Tracks
+                const trackSection = document.getElementById('tracks-section');
+                const trackContainer = document.getElementById('tracks-container');
+                trackContainer.innerHTML = '';
 
-            // Tracks
-            const trackSection = document.getElementById('tracks-section');
-            const trackContainer = document.getElementById('tracks-container');
-            trackContainer.innerHTML = ''; 
+                if (data.tracks && data.tracks.length > 0) {
+                    trackSection.style.display = 'block';
 
-            if (data.tracks && data.tracks.length > 0) {
-                trackSection.style.display = 'block';
-                
-                data.tracks.forEach((track) => {
-                    const row = `
+                    data.tracks.forEach((track) => {
+                        const row = `
                         <tr>
                             <td>
                                 <input type="text" name="track_position" value="${track.position}" class="form-control form-control-sm text-center">
@@ -276,37 +289,42 @@ async function lookupBarcode() {
                             </td>
                         </tr>
                     `;
-                    trackContainer.insertAdjacentHTML('beforeend', row);
-                });
+                        trackContainer.insertAdjacentHTML('beforeend', row);
+                    });
+                } else {
+                    trackSection.style.display = 'none';
+                }
+
             } else {
-                trackSection.style.display = 'none';
+                alert("Keine Daten gefunden. Bitte manuell eingeben.");
             }
-
-        } else {
-            alert("Keine Daten gefunden. Bitte manuell eingeben.");
+        } catch (error) {
+            console.error('Fehler:', error);
+            alert("Verbindungsfehler zur API.");
+        } finally {
+            // Reset UI
+            btn.disabled = false;
+            spinner.classList.add('d-none');
+            btnText.innerHTML = '<i class="bi bi-cloud-download"></i><span class="d-none d-sm-inline ms-2">Daten abrufen</span>';
         }
-    } catch (error) {
-        console.error('Fehler:', error);
-        alert("Verbindungsfehler zur API.");
-    } finally {
-        // Reset UI
-        btn.disabled = false;
-        spinner.classList.add('d-none');
-        btnText.innerHTML = '<i class="bi bi-cloud-download"></i><span class="d-none d-sm-inline ms-2">Daten abrufen</span>';
     }
-}
 
-// Enter-Taste im Barcode Feld
-document.getElementById('barcode').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        e.preventDefault(); 
-        lookupBarcode();
-    }
-});
+    // Enter-Taste im Barcode Feld
+    document.getElementById('barcode').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            lookupBarcode();
+        }
+    });
 </script>
 
 <style>
-.hover-overlay { transition: opacity 0.2s ease-in-out; }
-.group-hover-container:hover .hover-overlay { opacity: 1 !important; }
+    .hover-overlay {
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .group-hover-container:hover .hover-overlay {
+        opacity: 1 !important;
+    }
 </style>
 {% endblock %}

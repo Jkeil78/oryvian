@@ -2,7 +2,7 @@ import os
 from datetime import timedelta
 from flask import Flask
 from sqlalchemy import text, inspect
-from extensions import db, login_manager
+from extensions import db, login_manager, csrf
 from routes import main, create_initial_data
 
 # 1. instance_relative_config=True activates the separate "instance" folder for the DB
@@ -34,6 +34,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Max 16 MB
 # -- INITIALIZATION --
 db.init_app(app)
 login_manager.init_app(app)
+csrf.init_app(app)
 login_manager.login_view = 'main.login'
 
 app.register_blueprint(main)

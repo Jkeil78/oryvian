@@ -145,6 +145,7 @@
 {% if items %}
 {% if current_user.has_role('Admin') %}
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <div class="card mb-3 shadow-sm border-0 bg-body-secondary collapse d-md-block mobile-collapsible">
         <div class="card-body py-2 d-flex align-items-center gap-2 flex-wrap">

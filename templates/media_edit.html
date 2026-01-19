@@ -19,6 +19,7 @@
 
             <div class="card-body p-4">
                 <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="overwrite_tracks" id="overwrite_tracks" value="no">
 
                     <div class="row g-4">

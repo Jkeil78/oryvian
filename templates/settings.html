@@ -56,6 +56,7 @@
                     <div class="tab-pane fade {% if active_tab == 'ownership' %}show active{% endif %}" id="ownership"
                         role="tabpanel">
                         <form method="POST" action="{{ url_for('main.settings') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <p class="text-muted">{{ _('ownership_intro') }}</p>
 
                             <div class="mb-3">
@@ -89,7 +90,7 @@
                     <div class="tab-pane fade {% if active_tab == 'system' %}show active{% endif %}" id="system"
                         role="tabpanel">
                         <form method="POST" action="{{ url_for('main.settings') }}">
-
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <h5 class="mb-3">{{ _('language') }}</h5>
                             <div class="mb-3">
                                 <select name="language" class="form-select">
@@ -163,6 +164,7 @@
                                         <p class="mb-0 small text-muted">{{ _('cleanup_images_desc') }}</p>
                                     </div>
                                     <form action="{{ url_for('main.admin_cleanup_images') }}" method="POST">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button type="submit" class="btn btn-sm btn-outline-info"
                                             onclick="return confirm('{{ _('really_cleanup') }}')">
                                             <i class="bi bi-trash3 me-1"></i> {{ _('cleanup_images') }}
@@ -177,7 +179,7 @@
                     <div class="tab-pane fade {% if active_tab == 'api' %}show active{% endif %}" id="api"
                         role="tabpanel">
                         <form method="POST" action="{{ url_for('main.settings') }}">
-
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <h5 class="mb-3">Discogs (Musik-Metadaten)</h5>
                             <div class="mb-3">
                                 <label for="discogs_token" class="form-label">{{ _('personal_token') }}</label>
@@ -224,6 +226,7 @@
                                     <div class="card-body">
                                         <h6 class="fw-bold mb-3">{{ _('new_location') }}</h6>
                                         <form method="POST" action="{{ url_for('main.location_create') }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                             <div class="mb-3">
                                                 <label class="form-label small text-muted">{{ _('name') }}</label>
                                                 <input type="text" name="name" class="form-control" required
@@ -326,6 +329,7 @@
                                     <div class="card-body">
                                         <h6 class="fw-bold mb-3">{{ _('create_user') }}</h6>
                                         <form action="{{ url_for('main.user_create') }}" method="POST">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                             <div class="mb-2">
                                                 <input type="text" name="username" class="form-control form-control-sm"
                                                     required placeholder="{{ _('username') }}">
@@ -372,6 +376,8 @@
                                 }}</h5>
                             <p class="mb-3 small">{{ _('restore_warning') }}</p>
                             <form action="{{ url_for('main.admin_restore') }}" method="POST"
+                                enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 enctype="multipart/form-data">
                                 <div class="input-group input-group-sm">
                                     <label class="btn btn-outline-secondary px-3" for="backup_file">
