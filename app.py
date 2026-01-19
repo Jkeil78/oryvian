@@ -29,7 +29,7 @@ app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
 # Upload Configuration
 # We use app.root_path to ensure we stay in the app directory
 app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Max 16 MB
+app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024  # Max 128 MB
 
 # -- INITIALIZATION --
 db.init_app(app)
