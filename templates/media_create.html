@@ -166,7 +166,35 @@
     </div>
 </div>
 
+<!-- Duplicate Warning Modal -->
+<div class="modal fade" id="duplicateModal" tabindex="-1" aria-labelledby="duplicateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-warning shadow">
+            <div class="modal-header bg-warning bg-opacity-10">
+                <h5 class="modal-title fw-bold text-warning" id="duplicateModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ _('duplicate_warning_title') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">{{ _('duplicate_warning_message') }}</p>
+                <div id="duplicate-barcode-info" class="mt-2 fw-bold text-center p-2 bg-light rounded border"></div>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ _('cancel')
+                    }}</button>
+                <button type="button" class="btn btn-warning" id="btn-create-anyway">
+                    <i class="bi bi-check-lg me-2"></i>{{ _('yes_create_anyway') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    const duplicateCheckEnabled = {{ duplicate_check | lower }};
+    let duplicateAccepted = false;
+    let lastCheckedBarcode = '';
     // Paste Support (STRG+V)
     document.addEventListener('paste', function (e) {
         const items = (e.clipboardData || e.originalEvent.clipboardData).items;
@@ -314,6 +342,70 @@
         if (e.key === 'Enter') {
             e.preventDefault();
             lookupBarcode();
+        }
+    });
+
+    // Duplicate Check logic
+    const barcodeInput = document.getElementById('barcode');
+    const createForm = document.getElementById('createForm');
+    const duplicateModal = new bootstrap.Modal(document.getElementById('duplicateModal'));
+    const btnCreateAnyway = document.getElementById('btn-create-anyway');
+
+    async function checkDuplicate(barcode) {
+        if (!duplicateCheckEnabled || !barcode || barcode === lastCheckedBarcode) return;
+
+        try {
+            const response = await fetch('/api/check_duplicate/' + barcode);
+            const data = await response.json();
+
+            if (data.exists) {
+                document.getElementById('duplicate-barcode-info').textContent = barcode;
+                duplicateModal.show();
+            }
+            lastCheckedBarcode = barcode;
+        } catch (error) {
+            console.error('Duplicate check error:', error);
+        }
+    }
+
+    barcodeInput.addEventListener('change', () => {
+        checkDuplicate(barcodeInput.value.trim());
+    });
+
+    // Also check after lookup
+    const originalLookup = lookupBarcode;
+    lookupBarcode = async function () {
+        await originalLookup();
+        const barcode = barcodeInput.value.trim();
+        if (barcode) {
+            checkDuplicate(barcode);
+        }
+    };
+
+    btnCreateAnyway.addEventListener('click', () => {
+        duplicateAccepted = true;
+        duplicateModal.hide();
+        // Since the user clicked "Create anyway", we can let the form submit next time
+    });
+
+    createForm.addEventListener('submit', async function (e) {
+        const barcode = barcodeInput.value.trim();
+
+        if (duplicateCheckEnabled && barcode && !duplicateAccepted) {
+            // Quick check again if modal wasn't triggered yet
+            try {
+                const response = await fetch('/api/check_duplicate/' + barcode);
+                const data = await response.json();
+
+                if (data.exists) {
+                    e.preventDefault();
+                    document.getElementById('duplicate-barcode-info').textContent = barcode;
+                    duplicateModal.show();
+                    return;
+                }
+            } catch (error) {
+                console.error('Submit check error:', error);
+            }
         }
     });
 </script>

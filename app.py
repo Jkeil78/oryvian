@@ -90,6 +90,17 @@ if __name__ == '__main__':
                     with db.engine.connect() as conn:
                         conn.execute(text("ALTER TABLE user ADD COLUMN sort_order VARCHAR(10) DEFAULT 'desc'"))
                         conn.commit()
+
+            if 'media_item' in inspector.get_table_names():
+                # On SQLite, we might need to drop the unique index if it exists
+                # inspector.get_indexes('media_item') will show if 'barcode' has a unique index
+                indexes = inspector.get_indexes('media_item')
+                for idx in indexes:
+                    if 'barcode' in idx['column_names'] and idx['unique']:
+                        print(f"DEBUG: Applying migration - Dropping unique index {idx['name']} on 'barcode'")
+                        with db.engine.connect() as conn:
+                            conn.execute(text(f"DROP INDEX {idx['name']}"))
+                            conn.commit()
         except Exception as e:
             print(f"DEBUG: Migration warning: {e}")
         

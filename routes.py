@@ -440,6 +440,12 @@ def api_lookup(barcode):
 
     return jsonify(data)
 
+@main.route('/api/check_duplicate/<barcode>')
+@login_required
+def api_check_duplicate(barcode):
+    exists = MediaItem.query.filter_by(barcode=barcode).first() is not None
+    return jsonify({'exists': exists})
+
 # -- QR Code --
 @main.route('/qrcode_image/<inventory_number>')
 def qrcode_image(inventory_number):
@@ -629,6 +635,10 @@ def settings():
                 current_user.theme = theme
                 
                 db.session.commit()
+            
+            # Duplicate check toggle
+            set_config_value('duplicate_check', 'true' if 'duplicate_check' in request.form else 'false')
+            
             flash(get_text('settings_saved'), 'success')
             return redirect(url_for('main.settings', tab='system'))
         
@@ -647,6 +657,7 @@ def settings():
                            discogs_token=get_config_value('discogs_token', ''),
                            spotify_client_id=get_config_value('spotify_client_id', ''),
                            spotify_client_secret=get_config_value('spotify_client_secret', ''),
+                           duplicate_check=get_config_value('duplicate_check', 'false'),
                            owner_name=get_config_value('owner_name', ''),
                            owner_address=get_config_value('owner_address', ''),
                            owner_phone=get_config_value('owner_phone', ''))
@@ -789,7 +800,11 @@ def media_create():
         return redirect(url_for('main.index'))
 
     default_location_id = session.get('last_location_id', 1)
-    return render_template('media_create.html', locations=sorted(Location.query.all(), key=lambda x: x.full_path), categories=["Buch", "Film (DVD/BluRay)", "CD", "Vinyl/LP", "Videospiel", "Sonstiges"], default_location_id=default_location_id)
+    return render_template('media_create.html', 
+                           locations=sorted(Location.query.all(), key=lambda x: x.full_path), 
+                           categories=["Buch", "Film (DVD/BluRay)", "CD", "Vinyl/LP", "Videospiel", "Sonstiges"], 
+                           default_location_id=default_location_id,
+                           duplicate_check=get_config_value('duplicate_check', 'false'))
 
 @main.route('/media/edit/<int:item_id>', methods=['GET', 'POST'])
 @login_required
