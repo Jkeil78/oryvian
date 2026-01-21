@@ -192,7 +192,8 @@
 </div>
 
 <script>
-    const duplicateCheckEnabled = {{ duplicate_check | lower }};
+    const duplicateCheckEnabled = "{{ duplicate_check | lower }}" === "true";
+    console.log("Duplicate Check Enabled:", duplicateCheckEnabled, "(from: {{ duplicate_check }})");
     let duplicateAccepted = false;
     let lastCheckedBarcode = '';
     // Paste Support (STRG+V)
@@ -385,26 +386,35 @@
     btnCreateAnyway.addEventListener('click', () => {
         duplicateAccepted = true;
         duplicateModal.hide();
-        // Since the user clicked "Create anyway", we can let the form submit next time
+        // Manually trigger form submit now that it's accepted
+        createForm.submit();
     });
 
     createForm.addEventListener('submit', async function (e) {
-        const barcode = barcodeInput.value.trim();
+        if (duplicateAccepted) return; // Allow submission if already cleared
 
-        if (duplicateCheckEnabled && barcode && !duplicateAccepted) {
-            // Quick check again if modal wasn't triggered yet
+        const barcode = barcodeInput.value.trim();
+        console.log("Submit triggered. Barcode:", barcode, "Enabled:", duplicateCheckEnabled);
+
+        if (duplicateCheckEnabled && barcode) {
+            e.preventDefault(); // Stop submission to check
+
             try {
+                console.log("Checking duplicate for:", barcode);
                 const response = await fetch('/api/check_duplicate/' + barcode);
                 const data = await response.json();
+                console.log("Duplicate API response:", data);
 
                 if (data.exists) {
-                    e.preventDefault();
                     document.getElementById('duplicate-barcode-info').textContent = barcode;
                     duplicateModal.show();
-                    return;
+                } else {
+                    duplicateAccepted = true;
+                    createForm.submit();
                 }
             } catch (error) {
                 console.error('Submit check error:', error);
+                createForm.submit(); // Submit anyway on API error
             }
         }
     });
