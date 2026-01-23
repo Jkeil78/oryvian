@@ -249,6 +249,8 @@ TRANSLATIONS = {
         'tab': 'Tab',
         'fields_to_export': 'Fields to export',
         'export': 'Export',
+        'export_excel': 'Excel Export',
+        'export_format': 'Export Format',
     },
     'de': {
         'app_name': 'Oryvian',
@@ -500,6 +502,8 @@ TRANSLATIONS = {
         'tab': 'Tabulator',
         'fields_to_export': 'Zu exportierende Felder',
         'export': 'Exportieren',
+        'export_excel': 'Excel Export',
+        'export_format': 'Export-Format',
     },
     'es': {
         'app_name': 'Oryvian',
@@ -732,6 +736,8 @@ TRANSLATIONS = {
         'tab': 'Tabulación',
         'fields_to_export': 'Campos a exportar',
         'export': 'Exportar',
+        'export_excel': 'Exportar a Excel',
+        'export_format': 'Formato de exportación',
     },
     'fr': {
         'app_name': 'Oryvian',
@@ -964,5 +970,7 @@ TRANSLATIONS = {
         'tab': 'Tabulation',
         'fields_to_export': 'Champs à exporter',
         'export': 'Exporter',
+        'export_excel': 'Export Excel',
+        'export_format': 'Format d\'exportation',
     },
 }

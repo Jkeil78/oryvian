@@ -6,3 +6,4 @@ requests==2.31.0
 python-barcode==0.15.1
 qrcode==7.4.2
 Pillow==10.1.0
+openpyxl==3.1.2

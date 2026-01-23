@@ -9,7 +9,7 @@
                 <span class="badge bg-white text-primary">{{ item_ids|length }} {{ _('items') }}</span>
             </div>
             <div class="card-body">
-                <form action="{{ url_for('main.media_bulk_export_csv') }}" method="POST">
+                <form action="{{ url_for('main.media_bulk_export') }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     {% for item_id in item_ids %}
@@ -17,6 +17,22 @@
                     {% endfor %}
 
                     <div class="mb-4">
+                        <label class="form-label fw-bold">{{ _('export_format') }}</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="format" id="format_csv" value="csv"
+                                    checked onchange="toggleDelimiter()">
+                                <label class="form-check-label" for="format_csv">CSV</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="format" id="format_excel"
+                                    value="excel" onchange="toggleDelimiter()">
+                                <label class="form-check-label" for="format_excel">Excel (.xlsx)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4" id="delimiter_section">
                         <label class="form-label fw-bold">{{ _('csv_delimiter') }}</label>
                         <select name="delimiter" class="form-select">
                             <option value="comma">{{ _('comma') }}</option>
@@ -24,6 +40,13 @@
                             <option value="tab">{{ _('tab') }}</option>
                         </select>
                     </div>
+
+                    <script>
+                        function toggleDelimiter() {
+                            const isCsv = document.getElementById('format_csv').checked;
+                            document.getElementById('delimiter_section').style.display = isCsv ? 'block' : 'none';
+                        }
+                    </script>
 
                     <div class="mb-4">
                         <label class="form-label fw-bold">{{ _('fields_to_export') }}</label>
