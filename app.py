@@ -10,10 +10,6 @@ app = Flask(__name__, instance_relative_config=True)
 
 # -- CONFIGURATION --
 
-# We define the path to the instance folder (for debugging output)
-# In Docker this is /app/instance by default
-print(f"DEBUG: Instance Path ist: {app.instance_path}")
-
 # 2. Set database path dynamically
 # The database now lands in: /app/instance/inventory.db
 db_filename = 'inventory.db'
@@ -46,17 +42,14 @@ if __name__ == '__main__':
     # Instance Folder (for database)
     try:
         os.makedirs(app.instance_path)
-        print(f"DEBUG: Instance Ordner erstellt: {app.instance_path}")
     except OSError:
         pass # Folder already exists, all good
 
     # Upload Folder (for images)
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
-        print(f"DEBUG: Upload Ordner erstellt: {app.config['UPLOAD_FOLDER']}")
 
     # Database Initialization
-    print(f"DEBUG: DB URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
     with app.app_context():
         # Creates tables only if the file inventory.db does not exist/is empty
@@ -68,25 +61,21 @@ if __name__ == '__main__':
             if 'user' in inspector.get_table_names():
                 columns = [col['name'] for col in inspector.get_columns('user')]
                 if 'language' not in columns:
-                    print("DEBUG: Applying migration - Adding 'language' column to 'user' table")
                     with db.engine.connect() as conn:
                         conn.execute(text("ALTER TABLE user ADD COLUMN language VARCHAR(10) DEFAULT 'en'"))
                         conn.commit()
                 
                 if 'theme' not in columns:
-                    print("DEBUG: Applying migration - Adding 'theme' column to 'user' table")
                     with db.engine.connect() as conn:
                         conn.execute(text("ALTER TABLE user ADD COLUMN theme VARCHAR(20) DEFAULT 'cerulean'"))
                         conn.commit()
 
                 if 'sort_field' not in columns:
-                    print("DEBUG: Applying migration - Adding 'sort_field' column to 'user' table")
                     with db.engine.connect() as conn:
                         conn.execute(text("ALTER TABLE user ADD COLUMN sort_field VARCHAR(50) DEFAULT 'added'"))
                         conn.commit()
 
                 if 'sort_order' not in columns:
-                    print("DEBUG: Applying migration - Adding 'sort_order' column to 'user' table")
                     with db.engine.connect() as conn:
                         conn.execute(text("ALTER TABLE user ADD COLUMN sort_order VARCHAR(10) DEFAULT 'desc'"))
                         conn.commit()
@@ -101,7 +90,6 @@ if __name__ == '__main__':
                 for idx in indexes:
                     if 'barcode' in idx['column_names'] and idx['unique']:
                         has_unique_barcode = True
-                        print(f"DEBUG: Found unique index involving barcode: {idx['name']}")
                         break
                 
                 # Check unique constraints if not found in indexes
@@ -109,11 +97,9 @@ if __name__ == '__main__':
                     for cnst in constraints:
                         if 'barcode' in cnst['column_names']:
                             has_unique_barcode = True
-                            print(f"DEBUG: Found unique constraint involving barcode: {cnst['name']}")
                             break
                 
                 if has_unique_barcode:
-                    print("DEBUG: Applying migration - Recreating 'media_item' table to remove UNIQUE constraint on 'barcode'")
                     try:
                         with db.engine.connect() as conn:
                             # 1. Disable FKs
@@ -122,11 +108,9 @@ if __name__ == '__main__':
                             # 2. Rename old table
                             conn.execute(text("ALTER TABLE media_item RENAME TO media_item_old"))
                             conn.commit()
-                            print("DEBUG: Renamed media_item to media_item_old")
                         
                         # 3. Create new table (with current model: unique=False)
                         db.create_all()
-                        print("DEBUG: Created new media_item table via db.create_all()")
                         
                         with db.engine.connect() as conn:
                             # 4. Copy data (explicit columns to avoid issues with order/count)
@@ -139,22 +123,18 @@ if __name__ == '__main__':
                             # 6. Re-enable FKs
                             conn.execute(text("PRAGMA foreign_keys=ON"))
                             conn.commit()
-                            print("DEBUG: Migration successful - 'media_item' recreated without UNIQUE constraint")
-                    except Exception as e:
-                        print(f"DEBUG: Migration failed: {e}")
+                    except Exception:
                         # Clean up if possible
                         try:
                             with db.engine.connect() as conn:
                                 conn.execute(text("PRAGMA foreign_keys=ON"))
                                 conn.commit()
                         except: pass
-                else:
-                    print("DEBUG: No unique constraint/index found on 'media_item.barcode'. Skipping migration.")
-        except Exception as e:
-            print(f"DEBUG: Migration warning: {e}")
+        except Exception:
+            pass
         
         # Create Admin User & Default Data
         create_initial_data()
         
     # Start
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)

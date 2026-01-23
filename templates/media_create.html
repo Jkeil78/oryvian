@@ -365,15 +365,12 @@
 
     async function checkDuplicate(barcode, triggerSource = 'passive') {
         if (!duplicateCheckEnabled || !barcode || barcode === lastCheckedBarcode) {
-            console.log("Skipping duplicate check for barcode:", barcode, "Trigger:", triggerSource);
             return false;
         }
 
         try {
-            console.log("Checking duplicate for:", barcode, "Trigger:", triggerSource);
             const response = await fetch('/api/check_duplicate/' + encodeURIComponent(barcode));
             const data = await response.json();
-            console.log("Duplicate API response:", data);
 
             if (data.exists) {
                 isSubmitTriggered = (triggerSource === 'submit');
@@ -387,20 +384,17 @@
             lastCheckedBarcode = barcode;
             return false;
         } catch (error) {
-            console.error('Duplicate check error:', error);
             return false;
         }
     }
 
     // Check on barcode change (manual entry)
     barcodeInput.addEventListener('change', () => {
-        console.log("Barcode change detected:", barcodeInput.value);
         checkDuplicate(barcodeInput.value.trim(), 'passive');
     });
 
     // Handle "Create anyway"
     btnCreateAnyway.addEventListener('click', () => {
-        console.log("User accepted duplicate. Submit triggered:", isSubmitTriggered);
         duplicateAccepted = true;
         const modal = bootstrap.Modal.getInstance(document.getElementById('duplicateModal'));
         if (modal) modal.hide();
@@ -413,18 +407,15 @@
     // Main Submit Handler
     createForm.addEventListener('submit', async function (e) {
         if (duplicateAccepted) {
-            console.log("Form submission allowed (duplicate accepted or none found).");
             return;
         }
 
         const barcode = barcodeInput.value.trim();
-        console.log("Submit triggered. Barcode:", barcode, "Enabled:", duplicateCheckEnabled);
 
         // Set the clicked button's value to our hidden field (always do this on submit)
         const clickedBtn = e.submitter;
         if (clickedBtn && clickedBtn.name === 'commit_action') {
             actionInput.value = clickedBtn.value;
-            console.log("Preserved action:", clickedBtn.value);
         }
 
         if (duplicateCheckEnabled && barcode) {
@@ -432,11 +423,8 @@
 
             const isDuplicate = await checkDuplicate(barcode, 'submit');
             if (!isDuplicate) {
-                console.log("No duplicate found, submitting...");
                 duplicateAccepted = true;
                 createForm.submit();
-            } else {
-                console.log("Duplicate found, modal showed.");
             }
         }
     });
