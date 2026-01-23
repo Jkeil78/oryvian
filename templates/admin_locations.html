@@ -1,78 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2 class="h4 mb-4">Standorte verwalten</h2>
+<h2 class="h4 mb-4">Standorte verwalten</h2>
 
-    <div class="row g-4">
-        <div class="col-12 col-md-4 order-md-2">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white fw-bold">Neuen Ort anlegen</div>
-                <div class="card-body">
-                    <form method="POST" action="{{ url_for('main.location_create') }}">
-                        <div class="mb-3">
-                            <label class="form-label small text-muted">Name (z.B. "Regal A")</label>
-                            <input type="text" name="name" class="form-control" required placeholder="Bezeichnung...">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label small text-muted">Gehört zu (Optional)</label>
-                              <select name="parent_id" class="form-control">
-                                  <option value="">-- Hauptkategorie --</option>
-                                  {% for loc in locations %}
-                                    <option value="{{ loc.id }}">
-                                          {{ loc.full_path }}
-                                    </option>
-                                  {% endfor %}
-                              </select>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success w-100">Anlegen</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+<div class="row g-4">
+    <div class="col-12 col-md-4 order-md-2">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white fw-bold">Neuen Ort anlegen</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.location_create') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Name (z.B. "Regal A")</label>
+                        <input type="text" name="name" class="form-control" required placeholder="Bezeichnung...">
+                    </div>
 
-<div class="col-12 col-md-8 order-md-1">
-            <div class="card shadow-sm">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Hierarchie (Pfad)</th>
-                                <th class="text-end">Aktion</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Gehört zu (Optional)</label>
+                        <select name="parent_id" class="form-control">
+                            <option value="">-- Hauptkategorie --</option>
                             {% for loc in locations %}
-                            <tr>
-                                <td>
-                                    {% if loc.parent %}
-                                        <i class="bi bi-arrow-return-right text-muted me-2"></i>
-                                    {% else %}
-                                        <i class="bi bi-folder-fill text-warning me-2"></i>
-                                    {% endif %}
-                                    {{ loc.full_path }}
-                                </td>
-                                <td class="text-end">
-                                    {% if loc.name != 'Unsortiert' %}
-                                        <a href="{{ url_for('main.location_edit', loc_id=loc.id) }}" 
-                                           class="btn btn-sm btn-outline-primary me-1" title="Bearbeiten">
-                                           <i class="bi bi-pencil"></i>
-                                        </a>
-                                        
-                                        <a href="{{ url_for('main.location_delete', loc_id=loc.id) }}" 
-                                           class="btn btn-sm btn-outline-danger"
-                                           onclick="return confirm('Löschen? Falls noch Medien hier liegen, wird das blockiert.')">
-                                           <i class="bi bi-trash"></i>
-                                        </a>
-                                    {% endif %}
-                                </td>
-                            </tr>
+                            <option value="{{ loc.id }}">
+                                {{ loc.full_path }}
+                            </option>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">Anlegen</button>
+                </form>
             </div>
         </div>
     </div>
+
+    <div class="col-12 col-md-8 order-md-1">
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hierarchie (Pfad)</th>
+                            <th class="text-end">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loc in locations %}
+                        <tr>
+                            <td>
+                                {% if loc.parent %}
+                                <i class="bi bi-arrow-return-right text-muted me-2"></i>
+                                {% else %}
+                                <i class="bi bi-folder-fill text-warning me-2"></i>
+                                {% endif %}
+                                {{ loc.full_path }}
+                            </td>
+                            <td class="text-end">
+                                {% if loc.name != 'Unsortiert' %}
+                                <a href="{{ url_for('main.location_edit', loc_id=loc.id) }}"
+                                    class="btn btn-sm btn-outline-primary me-1" title="Bearbeiten">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <a href="{{ url_for('main.location_delete', loc_id=loc.id) }}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Löschen? Falls noch Medien hier liegen, wird das blockiert.')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

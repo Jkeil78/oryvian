@@ -11,7 +11,7 @@
 </div>
 
 <div class="row g-4">
-    
+
     <div class="col-lg-8">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white border-bottom py-3">
@@ -35,31 +35,31 @@
                                 <td class="fw-bold">
                                     {{ user.username }}
                                     {% if user.id == current_user.id %}
-                                        <span class="badge bg-light text-dark border ms-2">Du</span>
+                                    <span class="badge bg-light text-dark border ms-2">Du</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if user.role.name == 'Admin' %}
-                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
-                                            <i class="bi bi-shield-fill me-1"></i>Admin
-                                        </span>
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                        <i class="bi bi-shield-fill me-1"></i>Admin
+                                    </span>
                                     {% else %}
-                                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
-                                            <i class="bi bi-person me-1"></i>User
-                                        </span>
+                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
+                                        <i class="bi bi-person me-1"></i>User
+                                    </span>
                                     {% endif %}
                                 </td>
                                 <td class="text-end pe-4">
                                     {% if user.id != current_user.id %}
-                                        <a href="{{ url_for('main.user_delete', user_id=user.id) }}" 
-                                           class="btn btn-sm btn-outline-danger"
-                                           onclick="return confirm('Benutzer {{ user.username }} wirklich löschen?');">
-                                            <i class="bi bi-trash"></i> Löschen
-                                        </a>
+                                    <a href="{{ url_for('main.user_delete', user_id=user.id) }}"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Benutzer {{ user.username }} wirklich löschen?');">
+                                        <i class="bi bi-trash"></i> Löschen
+                                    </a>
                                     {% else %}
-                                        <button class="btn btn-sm btn-light text-muted" disabled>
-                                            <i class="bi bi-lock"></i>
-                                        </button>
+                                    <button class="btn btn-sm btn-light text-muted" disabled>
+                                        <i class="bi bi-lock"></i>
+                                    </button>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -80,12 +80,14 @@
             </div>
             <div class="card-body">
                 <form action="{{ url_for('main.user_create') }}" method="POST">
-                    
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-uppercase text-muted">Benutzername</label>
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0"><i class="bi bi-person"></i></span>
-                            <input type="text" name="username" class="form-control border-start-0" required placeholder="Name eingeben...">
+                            <input type="text" name="username" class="form-control border-start-0" required
+                                placeholder="Name eingeben...">
                         </div>
                     </div>
 
@@ -93,7 +95,8 @@
                         <label class="form-label fw-bold small text-uppercase text-muted">Passwort</label>
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0"><i class="bi bi-key"></i></span>
-                            <input type="password" name="password" class="form-control border-start-0" required placeholder="******">
+                            <input type="password" name="password" class="form-control border-start-0" required
+                                placeholder="******">
                         </div>
                     </div>
 
@@ -101,7 +104,7 @@
                         <label class="form-label fw-bold small text-uppercase text-muted">Rolle</label>
                         <select name="role_id" class="form-select">
                             {% for role in roles %}
-                                <option value="{{ role.id }}">{{ role.name }}</option>
+                            <option value="{{ role.id }}">{{ role.name }}</option>
                             {% endfor %}
                         </select>
                         <div class="form-text small">Admins haben vollen Zugriff auf Einstellungen & Backups.</div>
@@ -115,11 +118,12 @@
                 </form>
             </div>
         </div>
-        
+
         <div class="alert alert-info d-flex align-items-center mt-3 shadow-sm border-0" role="alert">
             <i class="bi bi-info-circle-fill fs-4 me-3"></i>
             <div>
-                <small>Passwörter werden als sicherer Hash gespeichert. Ein Zurücksetzen ist nur durch Löschen und Neuanlegen möglich.</small>
+                <small>Passwörter werden als sicherer Hash gespeichert. Ein Zurücksetzen ist nur durch Löschen und
+                    Neuanlegen möglich.</small>
             </div>
         </div>
     </div>

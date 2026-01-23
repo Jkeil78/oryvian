@@ -11,7 +11,7 @@
             </div>
             <div class="card-body">
                 <p>
-                    Hier können Sie ein vollständiges Backup des Systems herunterladen. 
+                    Hier können Sie ein vollständiges Backup des Systems herunterladen.
                     Die ZIP-Datei enthält die <strong>Datenbank</strong> und alle hochgeladenen <strong>Bilder</strong>.
                 </p>
                 <div class="alert alert-info">
@@ -29,16 +29,19 @@
             </div>
             <div class="card-body">
                 <div class="alert alert-warning">
-                    <strong>ACHTUNG:</strong> Beim Wiederherstellen werden alle aktuellen Daten (Datenbank und Bilder) 
-                    <strong>unwiderruflich überschrieben</strong>! 
+                    <strong>ACHTUNG:</strong> Beim Wiederherstellen werden alle aktuellen Daten (Datenbank und Bilder)
+                    <strong>unwiderruflich überschrieben</strong>!
                 </div>
-                
+
                 <form action="{{ url_for('main.admin_restore') }}" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="backup_file" class="form-label">ZIP-Datei auswählen</label>
-                        <input class="form-control" type="file" id="backup_file" name="backup_file" accept=".zip" required>
+                        <input class="form-control" type="file" id="backup_file" name="backup_file" accept=".zip"
+                            required>
                     </div>
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Sind Sie sicher? Alle aktuellen Daten gehen verloren!');">
+                    <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Sind Sie sicher? Alle aktuellen Daten gehen verloren!');">
                         <i class="bi bi-arrow-counterclockwise"></i> System wiederherstellen
                     </button>
                 </form>

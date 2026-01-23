@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Labels Print Preview</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Store config as JSON in a hidden element to avoid beautifier mangling Jinja in scripts/styles -->
     <div id="config-data" style="display:none" data-config='{{ config | tojson }}'></div>
 

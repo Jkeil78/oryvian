@@ -10,6 +10,7 @@
             </div>
             <div class="card-body">
                 <form id="labelConfigForm" action="{{ url_for('main.labels_print') }}" method="POST" target="_blank">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <!-- Hidden IDs -->
                     {% for item_id in item_ids %}
                     <input type="hidden" name="item_ids" value="{{ item_id }}">
@@ -205,7 +206,10 @@
 
         const resp = await fetch("{{ url_for('main.save_label_preset') }}", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
             body: JSON.stringify(data)
         });
 
@@ -224,7 +228,12 @@
 
         if (!confirm(`Delete preset "${name}"?`)) return;
 
-        const resp = await fetch(`/labels/delete_preset/${name}`, { method: 'POST' });
+        const resp = await fetch(`/labels/delete_preset/${name}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
         if (resp.ok) {
             location.reload();
         } else {
