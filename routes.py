@@ -1106,6 +1106,102 @@ def save_label_preset():
     set_config_value('custom_label_presets', json.dumps(custom_presets))
     return jsonify({'success': True})
 
+@main.route('/media/export_config', methods=['POST'])
+@login_required
+def media_export_config():
+    if not current_user.has_role('Admin'):
+        flash(get_text('flash_no_permission'), 'error')
+        return redirect(url_for('main.index'))
+    
+    item_ids = request.form.getlist('item_ids')
+    if not item_ids:
+        flash(get_text('no_selection'), 'warning')
+        return redirect(url_for('main.index'))
+
+    return render_template('export_config.html', item_ids=item_ids)
+
+@main.route('/media/bulk_export_csv', methods=['POST'])
+@login_required
+def media_bulk_export_csv():
+    if not current_user.has_role('Admin'):
+        flash(get_text('flash_no_permission'), 'error')
+        return redirect(url_for('main.index'))
+    
+    item_ids = request.form.getlist('item_ids')
+    selected_fields = request.form.getlist('fields')
+    delimiter_name = request.form.get('delimiter', 'semicolon')
+    
+    if not item_ids:
+        flash(get_text('no_selection'), 'warning')
+        return redirect(url_for('main.index'))
+
+    if not selected_fields:
+        flash(get_text('flash_error'), 'error')
+        return redirect(url_for('main.index'))
+
+    # Map delimiter
+    delimiters = {
+        'comma': ',',
+        'semicolon': ';',
+        'tab': '\t'
+    }
+    delim = delimiters.get(delimiter_name, ';')
+
+    # Fetch items
+    items = MediaItem.query.filter(MediaItem.id.in_(item_ids)).all()
+    # Sort them as selected if possible, but for now just query is fine
+    # To maintain order:
+    items_map = {str(i.id): i for i in items}
+    sorted_items = [items_map[str(iid)] for iid in item_ids if str(iid) in items_map]
+
+    import csv
+    import io
+    from flask import Response
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=delim, quoting=csv.QUOTE_MINIMAL)
+    
+    # Header
+    header = []
+    field_labels = {
+        'inventory_number': get_text('inventory_num'),
+        'title': get_text('title'),
+        'author_artist': get_text('author_artist'),
+        'category': get_text('category'),
+        'release_year': get_text('release_year'),
+        'barcode': get_text('isbn_barcode'),
+        'location': get_text('location'),
+        'lent_to': get_text('lent_to'),
+        'lent_at': get_text('since'),
+        'description': get_text('description')
+    }
+    for f in selected_fields:
+        header.append(field_labels.get(f, f))
+    writer.writerow(header)
+
+    # Data
+    for item in sorted_items:
+        row = []
+        for f in selected_fields:
+            val = ""
+            if f == 'inventory_number': val = item.inventory_number
+            elif f == 'title': val = item.title
+            elif f == 'author_artist': val = item.author_artist
+            elif f == 'category': val = get_text(item.category)
+            elif f == 'release_year': val = item.release_year
+            elif f == 'barcode': val = item.barcode
+            elif f == 'location': val = item.location.full_path if item.location else ""
+            elif f == 'lent_to': val = item.lent_to
+            elif f == 'lent_at': val = item.lent_at.strftime('%Y-%m-%d %H:%M') if item.lent_at else ""
+            elif f == 'description': val = item.description
+            
+            row.append(val if val is not None else "")
+        writer.writerow(row)
+
+    response = Response(output.getvalue(), mimetype='text/csv')
+    response.headers.set("Content-Disposition", "attachment", filename=f"oryvian_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+    return response
+
 @main.route('/labels/delete_preset/<name>', methods=['POST'])
 @login_required
 def delete_label_preset(name):

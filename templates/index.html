@@ -175,6 +175,11 @@
                 formaction="{{ url_for('main.labels_config') }}">
                 <i class="bi bi-printer me-1"></i>{{ _('print_labels') }}
             </button>
+
+            <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap"
+                formaction="{{ url_for('main.media_export_config') }}">
+                <i class="bi bi-download me-1"></i>{{ _('export_csv') }}
+            </button>
         </div>
     </div>
     {% endif %}
